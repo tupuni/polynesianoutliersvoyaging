@@ -14,6 +14,7 @@ shapes <- c(
   "Vanuatu Arc"=24,"Tonga-Fiji"=25,"New Zealand"=21,
   "Caroline islands"=21,"Samoan islands"=24,"Austral-Cook chain"=23,
   "Society islands"=22,"Hawai'i islands"=25,"Marquesas islands"=21,
+  "Pitcairn-Gambier chain"=21,
   "E-11-03"=0,"E-11-06"=1,"E-11-07"=8,"E-11-08"=5,"E-11-08dup"=9,
   "E-11-10"=0,"E-11-11"=1,"E-11-13"=2,"E-11-16"=5,"E-11-18"=6,
   "E-11-19"=8,"T-12-06"=2,"T-12-06dup"=14,"T-12-07"=7,
@@ -27,6 +28,7 @@ cols <- c(
   "Caroline islands"="#320A5A","Samoan islands"="#781B6C",
   "Austral-Cook chain"="#BB3654","Society islands"="#EC6824",
   "Marquesas islands"="#FBB41A","Hawai'i islands"="#F4DD53",
+  "Pitcairn-Gambier chain"="#C96FB6",
   "E-11-03"="red","E-11-06"="red","E-11-07"="red","E-11-08"="red",
   "E-11-08dup"="red","E-11-10"="blue","E-11-11"="blue","E-11-13"="blue",
   "E-11-16"="blue","E-11-18"="blue","E-11-19"="blue","T-12-06"="red",
@@ -40,6 +42,7 @@ contour <- c(
   "Tonga-Fiji"="black","New Zealand"="black",
   "Caroline islands"="black","Samoan islands"="black","Austral-Cook chain"="black",
   "Society islands"="black","Hawai'i islands"="black","Marquesas islands"="black",
+  "Pitcairn-Gambier chain"="black",
   "E-11-03"="red","E-11-06"="red","E-11-07"="red","E-11-08"="red",
   "E-11-08dup"="red","E-11-10"="blue","E-11-11"="blue","E-11-13"="blue",
   "E-11-16"="blue","E-11-18"="blue","E-11-19"="blue","T-12-06"="red",
@@ -48,13 +51,14 @@ contour <- c(
   "K-12-28"="red","K-12-29"="red")
 
 d_map <- dbGetQuery(georoc,
-                    "SELECT id, file_id, LATITUDE_MIN, LONGITUDE_MIN
+                    "SELECT id, file_id, LOCATION, LATITUDE_MIN, LONGITUDE_MIN
                     FROM 'sample'
                     WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
                     PB206_PB204 > 1 AND PB207_PB204 > 1 AND PB208_PB204 > 1") %>%
-  get_georoc_location() %>%
-  rename(lat=LATITUDE_MIN, long=LONGITUDE_MIN)
+  dplyr::filter(!grepl("MURUROA|FANGATAUFA",LOCATION)) %>%
+  get_georoc_location() %>% rename(lat=LATITUDE_MIN, long=LONGITUDE_MIN)
 d_map$long <- ifelse(d_map$long < -25, d_map$long + 360, d_map$long)
+d_map <- d_map %>% dplyr::filter(long > 95 & long < 255 & lat > -45.5 & lat < 22.5)
 
 Fig1_A <- d_map %>% ggplot() +
   geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf),

@@ -41,17 +41,21 @@ contour <- c("Luzon Arc"="black","Sulawesi Arc"="black","Sunda Arc"="black",
 #OIB
 shapes <- c("Caroline islands"=21,"Samoan islands"=24,"Austral-Cook chain"=23,
             "Society islands"=22,"Hawai'i islands"=25,"Marquesas islands"=21,
+            "Pitcairn-Gambier chain"=21,
             "E-11-08"=5,"E-11-08dup"=9,"T-12-06"=2,"T-12-06dup"=14,
             "T-12-07"=7,"T-12-08"=6,"T-12-09"=10,"T-12-10"=11,"K-12-24"=12,
             "K-12-25"=13,"K-12-26"=14)
-cols <- c("Caroline islands"="#320A5A","Samoan islands"="#781B6C","Austral-Cook chain"="#BB3654",
-          "Society islands"="#EC6824","Marquesas islands"="#FBB41A","Hawai'i islands"="#F4DD53",
+cols <- c("Caroline islands"="#320A5A","Samoan islands"="#781B6C",
+          "Austral-Cook chain"="#BB3654","Society islands"="#EC6824",
+          "Marquesas islands"="#FBB41A","Hawai'i islands"="#F4DD53",
+          "Pitcairn-Gambier chain"="#C96FB6",
           "E-11-08"="red","E-11-08dup"="red","T-12-06"="red","T-12-06dup"="red",
           "T-12-07"="red","T-12-08"="red","T-12-09"="red",
           "T-12-10"="red","K-12-24"="red","K-12-25"="red","K-12-26"="red")
 contour <- c("Caroline islands"="black","Samoan islands"="black",
              "Austral-Cook chain"="black","Society islands"="black",
              "Hawai'i islands"="black","Marquesas islands"="black",
+             "Pitcairn-Gambier chain"="black",
              "E-11-08"="red","E-11-08dup"="red","T-12-06"="red","T-12-06dup"="red",
              "T-12-07"="red","T-12-08"="red","T-12-09"="red",
              "T-12-10"="red","K-12-24"="red","K-12-25"="red","K-12-26"="red")

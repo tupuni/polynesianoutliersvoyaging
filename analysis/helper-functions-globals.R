@@ -52,13 +52,12 @@ Fe2O3_from_FeO <- function(input) {
     mutate(Fe2O3 = ifelse(Fe2O3 %in% NA, FeO*1.1113, Fe2O3))
   return(output)
 }
-joined_data <- Fe2O3_from_FeO(joined_data)
 
 ## ranges()
 summary(joined_data[,c(
   "Sample","SiO2","K2O","Na2O","MgO","Nb","La","Ba","Ta","Sr","Nd","Pb",
   "Sm","Zr","Yb","Ti")])
-ranges <- function(df) {
+ranges_IAB <- function(df) {
   df_ranges <- df %>%
     dplyr::transmute(Sample = Sample,
       `SiO2 min` = SiO2 - 1.5, `SiO2 max` = SiO2 + 1.5,
@@ -82,34 +81,64 @@ ranges <- function(df) {
       `Nd143_Nd144 max` = (Nd143_Nd144+((Nd143_Nd144*1)/1000)), # 1‰
       `Sr87_Sr86 min` = (Sr87_Sr86-((Sr87_Sr86*1)/1000)), # 1‰
       `Sr87_Sr86 max` = (Sr87_Sr86+((Sr87_Sr86*1)/1000)), # 1‰
-      `Pb206_Pb204 min` = (Pb206_Pb204-((Pb206_Pb204*1)/100)), # 1%
-      `Pb206_Pb204 max` = (Pb206_Pb204+((Pb206_Pb204*1)/100)), # 1%
-      `Pb207_Pb204 min` = (Pb207_Pb204-((Pb207_Pb204*1)/100)), # 1%
-      `Pb207_Pb204 max` = (Pb207_Pb204+((Pb207_Pb204*1)/100)), # 1%
-      `Pb208_Pb204 min` = (Pb208_Pb204-((Pb208_Pb204*1)/100)), # 1%
-      `Pb208_Pb204 max` = (Pb208_Pb204+((Pb208_Pb204*1)/100))  # 1%
+      `Pb206_Pb204 min` = (Pb206_Pb204-((Pb206_Pb204*.5)/100)), # .5%
+      `Pb206_Pb204 max` = (Pb206_Pb204+((Pb206_Pb204*.5)/100)), # .5%
+      `Pb207_Pb204 min` = (Pb207_Pb204-((Pb207_Pb204*.5)/100)), # .5%
+      `Pb207_Pb204 max` = (Pb207_Pb204+((Pb207_Pb204*.5)/100)), # .5%
+      `Pb208_Pb204 min` = (Pb208_Pb204-((Pb208_Pb204*.5)/100)), # .5%
+      `Pb208_Pb204 max` = (Pb208_Pb204+((Pb208_Pb204*.5)/100))  # .5%
     )
   return(df_ranges)
 }
-joined_data_ranges <- ranges(joined_data)
-write_csv(joined_data_ranges, (here("analysis", "data", "derived_data",
-                                    "joined_data_ranges.csv")))
 
-#scale 0 to 1 range
-scale_0_1 <- function(x){
-  (x - min(x)) / (max(x) - min(x))
+ranges_OIB <- function(df) {
+  df_ranges <- df %>%
+    dplyr::transmute(Sample = Sample,
+                     `SiO2 min` = SiO2 - 1.5, `SiO2 max` = SiO2 + 1.5,
+                     `MgO min` = MgO - 1.5, `MgO max` = MgO + 1.5,
+                     `Na2O min` = Na2O - 1.5, `Na2O max` = Na2O + 1.5,
+                     `K2O min` = K2O - 1.5, `K2O max` = K2O + 1.5,
+                     `Cs min` = (Cs-((Cs*50)/100)), `Cs max` = (Cs+((Cs*50)/100)), # +/- 50%
+                     `Rb min` = (Rb-((Rb*50)/100)), `Rb max` = (Rb+((Rb*50)/100)), # +/- 50%
+                     `Ba min` = (Ba-((Ba*50)/100)), `Ba max` = (Ba+((Ba*50)/100)), # +/- 50%
+                     `Th min` = (Th-((Th*50)/100)), `Th max` = (Th+((Th*50)/100)), # +/- 50%
+                     `Ce min` = (Ce-((Ce*50)/100)), `Ce max` = (Ce+((Ce*50)/100)), # +/- 50%
+                     `Pb min` = (Pb-((Pb*50)/100)), `Pb max` = (Pb+((Pb*50)/100)), # +/- 50%
+                     `Nd min` = (Nd-((Nd*50)/100)), `Nd max` = (Nd+((Nd*50)/100)), # +/- 50%
+                     `Sr min` = (Sr-((Sr*50)/100)), `Sr max` = (Sr+((Sr*50)/100)), # +/- 50%
+                     `Nb min` = (Nb-((Nb*50)/100)), `Nb max` = (Nb+((Nb*50)/100)), # +/- 50%
+                     `Sm min` = (Sm-((Sm*50)/100)), `Sm max` = (Sm+((Sm*50)/100)), # +/- 50%
+                     `Zr min` = (Zr-((Zr*50)/100)), `Zr max` = (Zr+((Zr*50)/100)), # +/- 50%
+                     `Yb min` = (Yb-((Yb*50)/100)), `Yb max` = (Yb+((Yb*50)/100)), # +/- 50%
+                     `Ti min` = (Ti-((Ti*50)/100)), `Ti max` = (Ti+((Ti*50)/100)), # +/- 50%
+                     `Nd143_Nd144 min` = (Nd143_Nd144-((Nd143_Nd144*1)/1000)), # 1‰
+                     `Nd143_Nd144 max` = (Nd143_Nd144+((Nd143_Nd144*1)/1000)), # 1‰
+                     `Sr87_Sr86 min` = (Sr87_Sr86-((Sr87_Sr86*1)/1000)), # 1‰
+                     `Sr87_Sr86 max` = (Sr87_Sr86+((Sr87_Sr86*1)/1000)), # 1‰
+                     `Pb206_Pb204 min` = (Pb206_Pb204-((Pb206_Pb204*1)/100)), # 1%
+                     `Pb206_Pb204 max` = (Pb206_Pb204+((Pb206_Pb204*1)/100)), # 1%
+                     `Pb207_Pb204 min` = (Pb207_Pb204-((Pb207_Pb204*1)/100)), # 1%
+                     `Pb207_Pb204 max` = (Pb207_Pb204+((Pb207_Pb204*1)/100)), # 1%
+                     `Pb208_Pb204 min` = (Pb208_Pb204-((Pb208_Pb204*1)/100)), # 1%
+                     `Pb208_Pb204 max` = (Pb208_Pb204+((Pb208_Pb204*1)/100))  # 1%
+                     )
+  return(df_ranges)
   }
+
+IAB_ranges <- joined_data %>%
+  ranges_IAB(joined_data)
+write_csv(IAB_ranges, (here(
+  "analysis", "data", "derived_data","IAB_ranges.csv")))
+
+OIB_ranges <- joined_data %>%
+  ranges_OIB(joined_data)
+write_csv(OIB_ranges, (here(
+  "analysis", "data", "derived_data","OIB_ranges.csv")))
 
 
 ## paths to db : insert path to the sqlite files
-#path_to_georoc <- "~/insert-path-here"
-#path_to_pofatu <- "~/insert-path-here"
 path_to_georoc <- "~/Documents/Github/georoc-data/georoc.sqlite"
 path_to_pofatu <- "~/Documents/Github/pofatu-data/dist/pofatu.sqlite"
-
-
-####
-
 
 ## normalize()
 ## normalizes trace element values to primitive mantle,
