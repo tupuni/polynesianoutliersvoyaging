@@ -125,14 +125,15 @@ ranges_OIB <- function(df) {
   return(df_ranges)
   }
 
-IAB_ranges <- joined_data %>%
-  ranges_IAB(joined_data)
-write_csv(IAB_ranges, (here(
+ranges_s_IAB <- joined_data %>% dplyr::filter(Sample %in% c(
+  "E-11-03","E-11-06","E-11-07","K-12-28","K-12-29")) %>% ranges_IAB()
+write_csv(ranges_s_IAB, (here(
   "analysis", "data", "derived_data","IAB_ranges.csv")))
 
-OIB_ranges <- joined_data %>%
-  ranges_OIB(joined_data)
-write_csv(OIB_ranges, (here(
+ranges_s_OIB <- joined_data %>% dplyr::filter(Sample %in% c(
+  "E-11-08","T-12-06","T-12-07","T-12-08","T-12-09","T-12-10",
+  "K-12-24","K-12-25","K-12-26")) %>% ranges_OIB()
+write_csv(ranges_s_OIB, (here(
   "analysis", "data", "derived_data","OIB_ranges.csv")))
 
 
