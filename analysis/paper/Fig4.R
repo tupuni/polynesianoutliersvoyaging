@@ -113,8 +113,8 @@ dist <- data.frame(
       (PC4*eig[4,2])+(PC5*eig[5,2])) / (sum(eig[1:5,2])))
 
 # distances > distance index, from 1 (closer to artefact) to 5 (more distant)
-# 1= min > (1st quartile/2)
-# 2= (1st quartile/2) > 1st quartile
+# 1= min > middle point between Min and 1st quartile
+# 2= middle point between Min and 1st quartile > 1st quartile
 # 3= 1st quartile > median
 # 4= median > 3rd quartile
 # 5= 3rd quartile > max
@@ -347,8 +347,8 @@ dist <- data.frame(
       (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
 # distances > distance index, from 1 (closer to artefact) to 5 (more distant)
-# 1= min > (1st quartile/2)
-# 2= (1st quartile/2) > 1st quartile
+# 1= min > middle point between Min and 1st quartile
+# 2= middle point between Min and 1st quartile > 1st quartile
 # 3= 1st quartile > median
 # 4= median > 3rd quartile
 # 5= 3rd quartile > max
@@ -523,8 +523,8 @@ dist <- data.frame(
       (PC4*eig[4,2])+(PC5*eig[5,2])) / (sum(eig[1:5,2])))
 
 # distances > distance index, from 1 (closer to artefact) to 5 (more distant)
-# 1= min > (1st quartile/2)
-# 2= (1st quartile/2) > 1st quartile
+# 1= min > middle point between Min and 1st quartile
+# 2= middle point between Min and 1st quartile > 1st quartile
 # 3= 1st quartile > median
 # 4= median > 3rd quartile
 # 5= 3rd quartile > max
@@ -716,8 +716,8 @@ dist <- data.frame(
       (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
 # distances > distance index, from 1 (closer to artefact) to 5 (more distant)
-# 1= min > (1st quartile/2)
-# 2= (1st quartile/2) > 1st quartile
+# 1= min > middle point between Min and 1st quartile
+# 2= middle point between Min and 1st quartile > 1st quartile
 # 3= 1st quartile > median
 # 4= median > 3rd quartile
 # 5= 3rd quartile > max
@@ -894,8 +894,8 @@ dist <- data.frame(
       (PC4*eig[4,2])+(PC5*eig[5,2])) / (sum(eig[1:5,2])))
 
 # distances > distance index, from 1 (closer to artefact) to 5 (more distant)
-# 1= min > (1st quartile/2)
-# 2= (1st quartile/2) > 1st quartile
+# 1= min > middle point between Min and 1st quartile
+# 2= middle point between Min and 1st quartile > 1st quartile
 # 3= 1st quartile > median
 # 4= median > 3rd quartile
 # 5= 3rd quartile > max
@@ -1088,8 +1088,8 @@ dist <- data.frame(
       (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
 # distances > distance index, from 1 (closer to artefact) to 5 (more distant)
-# 1= min > (1st quartile/2)
-# 2= (1st quartile/2) > 1st quartile
+# 1= min > middle point between Min and 1st quartile
+# 2= middle point between Min and 1st quartile > 1st quartile
 # 3= 1st quartile > median
 # 4= median > 3rd quartile
 # 5= 3rd quartile > max
@@ -1265,8 +1265,8 @@ dist <- data.frame(
       (PC4*eig[4,2])+(PC5*eig[5,2])) / (sum(eig[1:5,2])))
 
 # distances > distance index, from 1 (closer to artefact) to 5 (more distant)
-# 1= min > (1st quartile/2)
-# 2= (1st quartile/2) > 1st quartile
+# 1= min > middle point between Min and 1st quartile
+# 2= middle point between Min and 1st quartile > 1st quartile
 # 3= 1st quartile > median
 # 4= median > 3rd quartile
 # 5= 3rd quartile > max
@@ -1372,8 +1372,7 @@ dev.off()
 #### Fig 4h ####
 ## K1226 PCA 2
 OIB <- q19 %>% dplyr::select(
-  Sample,Location,TiO2,Na2O,MgO,V,Cs,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
-
+  Sample,Location,SiO2,K2O,Na2O,MgO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Eu,Y,Yb)
 is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
@@ -1382,8 +1381,8 @@ s <- joined_data %>%
   dplyr::filter(Sample %in% c("K-12-26")) %>%
   mutate(Location = case_when(grepl("K-12-26", Sample) ~ "K-12-26")) %>%
   dplyr::select(
-    #Sample,Location,TiO2,Al2O3,MgO,CaO,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Hf,Eu,Y,Yb)
-    Sample,Location,TiO2,Na2O,MgO,V,Cs,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
+    Sample,Location,SiO2,K2O,Na2O,MgO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Eu,Y,Yb)
+    #Sample,Location,SiO2,K2O,Na2O,MgO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Hf,Eu,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
@@ -1395,7 +1394,7 @@ K1226_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  #scale_x_continuous(limits=c(-8, 5.5)) + scale_y_continuous(limits=c(-2, 2.5)) +
+  scale_x_continuous(limits=c(-6, 5)) + scale_y_continuous(limits=c(-1.5, 2)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -1419,7 +1418,7 @@ K1226_PCA_2b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-8, 5.5)) + scale_y_continuous(limits=c(-2, 2.5)) +
+  scale_x_continuous(limits=c(-6, 5)) + scale_y_continuous(limits=c(-1.5, 2)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -1461,8 +1460,8 @@ dist <- data.frame(
       (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
 # distances > distance index, from 1 (closer to artefact) to 5 (more distant)
-# 1= min > (1st quartile/2)
-# 2= (1st quartile/2) > 1st quartile
+# 1= min > middle point between Min and 1st quartile
+# 2= middle point between Min and 1st quartile > 1st quartile
 # 3= 1st quartile > median
 # 4= median > 3rd quartile
 # 5= 3rd quartile > max
