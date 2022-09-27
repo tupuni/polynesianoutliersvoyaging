@@ -361,7 +361,7 @@ plots <- ((Rb | Sr | Ba | Sc | V | Cr) /
             (Er | Yb | Th | plot_spacer() | plot_spacer() | plot_spacer()))
 
 #save
-pdf(here("analysis","supplementary-materials","linear-regression.pdf"),
+pdf(here("analysis","supplementary-materials","comparison_icpaes-icpms.pdf"),
     width=20, height=14)
 plots
 dev.off()
@@ -511,7 +511,7 @@ p6
 
 spiders <- (p1 | p2) / (p3 | p4) / (p5 | p6) + guide_area() + plot_layout(guides = 'collect')
 #save
-pdf(here("analysis","supplementary-materials","multielement-plots.pdf"),
+pdf(here("analysis","supplementary-materials","comparison_icpaes-icpms(2).pdf"),
     width=10, height=10)
 spiders
 dev.off()
