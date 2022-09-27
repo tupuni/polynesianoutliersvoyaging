@@ -17,16 +17,14 @@ IAB <- dbGetQuery(georoc,
 ROCK_TYPE, `NB(PPM)`, `LA(PPM)`, LATITUDE_MAX, LONGITUDE_MAX
 FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING = 'CONVERGENT MARGIN'")
-
-IAB <- IAB %>%
+TECTONIC_SETTING = 'CONVERGENT MARGIN'") %>%
   rename(Nb="NB(PPM)",La="LA(PPM)",lat="LATITUDE_MAX",long="LONGITUDE_MAX") %>%
   mutate(Nb_La = Nb/La) %>%
   dplyr::select(file_id, id, LOCATION, Nb, La, Nb_La, lat, long)
 is.na(IAB) <- sapply(IAB, is.infinite) # replaces Inf or -Inf by NA
 IAB[IAB==0] <- NA # replaces 0 by NA
 IAB <- IAB[complete.cases(IAB),] # removes rows with NA
-IAB <- IAB %>% filter(Nb_La < 3)
+IAB <- IAB %>% dplyr::filter(Nb_La < 3)
 
 summary(IAB$Nb_La)
 sd <- (sqrt(sum((IAB$Nb_La - mean(IAB$Nb_La)) ^ 2 / (length(IAB$Nb_La) - 1))))
@@ -36,27 +34,6 @@ stat_IAB <- data.frame(
             median(IAB$Nb_La)-sd,
             median(IAB$Nb_La)+sd,
             median(IAB$Nb_La))) %>% mutate(across(where(is.numeric), round, 3))
-cols <- (matrix(c("black","gray","gray","red"), nrow = 4, ncol = 2))
-font <- (matrix(c("bold","plain","plain","bold"), nrow = 4, ncol = 2))
-
-summary_IAB <- tableGrob(
-  stat_IAB, cols = NULL, rows=NULL,
-  theme=ttheme_minimal(base_size = 9))
-
-ggplot(IAB, aes(Nb_La)) +
-  geom_histogram(binwidth=.02, col="black", fill="blue", size=.2, alpha=.4) +
-  annotate("rect",xmin=0.133,xmax=0.774,ymin=-Inf,ymax=Inf,fill="blue",alpha=.15) +
-  geom_vline(data=stat, aes(xintercept=value, col=name, linetype=name), size=.5) +
-  scale_color_manual(values=c("mean"="blue", "median"="blue")) +
-  scale_linetype_manual(values=c("mean"="dashed", "median"="solid")) +
-  labs(x='Nb / La', y='Count') +
-  theme_bw(base_size=12) +
-  scale_y_continuous(limits=c(0, 2500)) +
-  annotate("text", x=2.25, y = 2250, label = "IAB", size = 5) +
-  annotation_custom(grob=summary_IAB, xmin=1.8, ymin=1000) +
-  theme(line=element_blank(), axis.ticks=element_line(),
-        legend.title=element_blank(), legend.position=c(.75,.5),
-        aspect.ratio=1)
 
 #### OIB ####
 OIB <- dbGetQuery(georoc,
@@ -84,28 +61,6 @@ stat_OIB <- data.frame(
             median(OIB$Nb_La)-sd,
             median(OIB$Nb_La)+sd,
             median(OIB$Nb_La))) %>% mutate(across(where(is.numeric), round, 3))
-cols <- (matrix(c("black","gray","gray","red"), nrow = 4, ncol = 2))
-font <- (matrix(c("bold","plain","plain","bold"), nrow = 4, ncol = 2))
-
-summary_OIB <- tableGrob(
-  stat_OIB, cols = NULL, rows=NULL,
-  theme=ttheme_minimal(base_size = 9))
-
-ggplot(OIB, aes(Nb_La)) +
-  geom_histogram(binwidth=.02, col="black", fill="red", size=.2, alpha=.4) +
-  annotate("rect",xmin=0.928,xmax=1.750,ymin=-Inf,ymax=Inf,fill="red",alpha=.15) +
-  geom_vline(data=stat, aes(xintercept=value, col=name, linetype=name), size=.5) +
-  scale_color_manual(values=c("mean"="red", "median"="red")) +
-  scale_linetype_manual(values=c("mean"="dashed", "median"="solid")) +
-  labs(x='Nb / La', y='Count') +
-  theme_bw(base_size=12) +
-  scale_y_continuous(limits=c(0, 2500)) +
-  annotate("text", x=2.25, y = 2250, label = "OIB", size = 5) +
-  annotation_custom(grob=summary_OIB, xmin=1.8, ymin=1000) +
-  theme(line=element_blank(), axis.ticks=element_line(),
-        legend.title=element_blank(), legend.position=c(.75,.5),
-        aspect.ratio=1)
-
 
 #### plots ####
 shapes <- c("E-11-03"=0,"E-11-06"=1,"E-11-07"=8,"E-11-10"=0,"E-11-11"=1,
@@ -126,24 +81,14 @@ A <- traces %>% dplyr::filter(Type %in% c("Artefact", "Source")) %>%
   scale_shape_manual(values=shapes) +
   scale_color_manual(values=cols) +
   theme_bw(base_size=12, base_rect_size=1) +
-  scale_x_continuous(limits=c(0,3), breaks = c(0,.85,1,2,3)) +
+  scale_x_continuous(limits=c(0,3), breaks = c(0,.77,1,2,3)) +
   theme(line=element_blank(),
         axis.text = element_blank(), axis.title = element_blank(), axis.ticks = element_blank(),
         legend.title = element_blank(), legend.text = element_text(size = 6),
         legend.direction="horizontal",legend.position=c(.75,.45)) + #aspect.ratio=1
-  annotate("segment", x=.85, xend=.85, y=0, yend=23, size = 0.5, linetype = "longdash") +
+  annotate("segment", x=.77, xend=.77, y=0, yend=23, size = 0.5, linetype = "longdash") +
   annotate("text", -Inf, Inf, label = "A", size = 7, hjust = -1, vjust = 2)
 A
-
-stat_OIB[1,2]
-stat_OIB[2,2]
-stat_OIB[3,2]
-stat_OIB[4,2]
-
-stat_IAB[1,2]
-stat_IAB[2,2]
-stat_IAB[3,2]
-stat_IAB[4,2]
 
 B <- ggplot(OIB, aes(Nb_La)) +
   geom_histogram(binwidth=.02, col="black", fill="red", size=.2, alpha=.4) + #OIB
@@ -163,12 +108,12 @@ B <- ggplot(OIB, aes(Nb_La)) +
   annotate("text", x=2.5, y = 2000, label = "IAB", hjust = 0, size = 4) +
   annotate("text", x=2.5, y = 1800, label = "mean = 0.457", hjust = 0, size = 3.5) +
   annotate("text", x=2.5, y = 1600, label = "median = 0.364", hjust = 0, size = 3.5) +
-  annotate("text", x=2.5, y = 1400, label = "SD = 0.039 - 0.688", hjust = 0, size = 3.5) +
+  annotate("text", x=2.5, y = 1400, label = "SD = 0.133 - 0.781", hjust = 0, size = 3.5) +
   annotate("text", x=2.5, y = 1000, label = "OIB", hjust = 0, size = 4) +
   annotate("text", x=2.5, y = 800, label = "mean = 1.338", hjust = 0, size = 3.5) +
   annotate("text", x=2.5, y = 600, label = "median = 1.266", hjust = 0, size = 3.5) +
-  annotate("text", x=2.5, y = 400, label = "SD = 0.860 - 1.671", hjust = 0, size = 3.5) +
-  scale_x_continuous(limits=c(0,3), breaks = c(0,.8,1,2,3)) +
+  annotate("text", x=2.5, y = 400, label = "SD = 0.86 - 1.671", hjust = 0, size = 3.5) +
+  scale_x_continuous(limits=c(0,3), breaks = c(0,.77,1,2,3)) +
   labs(x='Nb / La', y='Count') + theme_bw(base_size=12) +
   coord_cartesian(ylim = c(-20, 2400), clip = "off") +
   annotate("text", -Inf, Inf, label = "B", size = 7, hjust = -1, vjust = 2) +

@@ -27,7 +27,7 @@ PB208_PB204 > 38.268 AND PB208_PB204 < 38.652)") %>%
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 q1 %>% group_by(Location) %>% tally()
 
-ranges_s_IAB[1,2:35]
+ranges_s_IAB[1,1:35]
 q2 <- dbGetQuery(georoc,
 "SELECT *
 FROM 'sample'
@@ -123,6 +123,8 @@ m.parameter IN ('SiO2 [%]', 'TiO2 [%]', 'Al2O3 [%]', 'MnO [%]', 'MgO [%]', 'Fe2O
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204) %>%
   filter(SiO2 > 68.6 & SiO2 < 71.6 & K2O > 2.62 & K2O < 5.62)
+q3 %>% group_by(Location) %>% tally()
+
 
 #### E-11-06_E-11-07 ####
 ranges_s_IAB[2:3,36:39] %>% round(digits = 6)
@@ -148,6 +150,7 @@ PB208_PB204 > 38.313 AND PB208_PB204 < 38.699))") %>%
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+q4 %>% group_by(Location) %>% tally()
 
 ranges_s_IAB[2:3,1:9]
 q5 <- dbGetQuery(georoc,
@@ -231,16 +234,9 @@ WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
 LATITUDE_MAX < 20 AND TECTONIC_SETTING='CONVERGENT MARGIN' AND
 (SR87_SR86 > 0.703693 AND SR87_SR86 < 0.705101 AND
 ND143_ND144 > 0.512403 AND ND143_ND144 < 0.513429 AND
+PB206_PB204 > 18.454 AND PB206_PB204 < 18.64 AND
 PB207_PB204 > 15.492 AND PB207_PB204 < 15.648 AND
-PB208_PB204 > 38.234 AND PB208_PB204 < 38.618) AND
-(file_id = '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv' OR
-file_id = '2022-06-PVFZCE_LUZON_ARC.csv' OR
-file_id = '2022-06-PVFZCE_MARIANA_ARC.csv' OR
-file_id = '2022-06-PVFZCE_NEW_HEBRIDES_ARC_VANUATU_ARCHIPELAGO.csv' OR
-file_id = '2022-06-PVFZCE_SOLOMON_ISLAND_ARC.csv' OR
-file_id = '2022-06-PVFZCE_SULAWESI_ARC.csv' OR
-file_id = '2022-06-PVFZCE_SUNDA_ARC.csv' OR
-file_id = '2022-06-PVFZCE_TONGA_ARC.csv')") %>%
+PB208_PB204 > 38.234 AND PB208_PB204 < 38.618)") %>%
   get_georoc_location() %>% filter(Location != "na") %>% rename_georoc() %>%
   Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
@@ -249,27 +245,48 @@ file_id = '2022-06-PVFZCE_TONGA_ARC.csv')") %>%
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 q8 %>% group_by(Location) %>% tally() #the island arcs represented
 
+# The Yap arc has less than 10 samples isotopically documented for Palau islands
+# and only two samples documented for all 5 isotope ratios !
+yap <- dbGetQuery(georoc,
+"SELECT file_id, LOCATION, PB206_PB204, PB207_PB204, PB208_PB204, ND143_ND144, SR87_SR86
+FROM 'sample' WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
+file_id = '2022-06-PVFZCE_YAP_ARC.csv'")
+yap
 
+range <- ranges_s_IAB[5,]
 q9 <- dbGetQuery(georoc,
 "SELECT *
 FROM 'sample'
 WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
-(SR87_SR86 > 0.703693 AND SR87_SR86 < 0.705101 AND
-ND143_ND144 > 0.512403 AND ND143_ND144 < 0.513429) AND
-(file_id = '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv' OR
-file_id = '2022-06-PVFZCE_LUZON_ARC.csv' OR
-file_id = '2022-06-PVFZCE_SULAWESI_ARC.csv')") %>%
-  get_georoc_location() %>% dplyr::filter(Location != "na") %>% rename_georoc() %>%
+(LONGITUDE_MAX > 90 OR LONGITUDE_MAX < 0) AND
+LATITUDE_MAX < 20 AND TECTONIC_SETTING='CONVERGENT MARGIN' AND
+(`K2O(WT%)` > 0.14 AND `K2O(WT%)` < 3.14 AND
+`RB(PPM)` > 4.85 AND `RB(PPM)` < 14.55 AND
+`SR(PPM)` > 269 AND `SR(PPM)` < 806 AND
+`SM(PPM)` > 1.635 AND `SM(PPM)` < 4.905 AND
+`YB(PPM)` > 1.05 AND `YB(PPM)` < 3.15)") %>%
+  get_georoc_location() %>% rename_georoc() %>%
+  dplyr::filter(Location != "na" & Location != "New Zealand" & Location != "Banda Arc") %>%
   Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::filter(Ti > 2388 & Ti < 7165) %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204) #%>%
+  #dplyr::filter(Ti > 2388 & Ti < 7165)
 q9 %>% group_by(Location) %>% tally() #the island arcs represented
-q9 %>% dplyr::filter(Nb != "NA") %>%
-  summarise(min=min(Nb), max=max(Nb))
 
+# ! Overall, only 68 samples are geochemically documented for Yap arc (Palau islands) !
+yap <- dbGetQuery(georoc,
+"SELECT file_id,LOCATION,`SIO2(WT%)`,`TIO2(WT%)`,`AL2O3(WT%)`,`MNO(WT%)`,
+`MGO(WT%)`,`CAO(WT%)`,`NA2O(WT%)`,`K2O(WT%)`,`LI(PPM)`,`SC(PPM)`,`TI(PPM)`,
+`V(PPM)`,`CR(PPM)`,`CO(PPM)`,`NI(PPM)`,`CU(PPM)`,`ZN(PPM)`,`AS(PPM)`,`RB(PPM)`,
+`SR(PPM)`,`Y(PPM)`,`ZR(PPM)`,`NB(PPM)`,`CD(PPM)`,`CS(PPM)`,`BA(PPM)`,`LA(PPM)`,
+`CE(PPM)`,`PR(PPM)`,`ND(PPM)`,`SM(PPM)`,`EU(PPM)`,`GD(PPM)`,`TB(PPM)`,`DY(PPM)`,
+`HO(PPM)`,`ER(PPM)`,`TM(PPM)`,`YB(PPM)`,`LU(PPM)`,`HF(PPM)`,`TA(PPM)`,`PB(PPM)`,
+ `TH(PPM)`,`U(PPM)`
+FROM 'sample' WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
+file_id = '2022-06-PVFZCE_YAP_ARC.csv'")
+yap
 
 
 #### Emae-Taumako OIB ####
@@ -692,7 +709,6 @@ FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 TECTONIC_SETTING='OCEAN ISLAND' AND
 (ND143_ND144 > 0.512396 AND ND143_ND144 < 0.513422 AND
-SR87_SR86 > 0.703423 AND SR87_SR86 < 0.704831 AND
 PB206_PB204 > 18.438 AND PB206_PB204 < 18.81 AND
 PB207_PB204 > 15.427 AND PB207_PB204 < 15.739 AND
 PB208_PB204 > 38.274 AND PB208_PB204 < 39.048)") %>%
@@ -704,6 +720,7 @@ PB208_PB204 > 38.274 AND PB208_PB204 < 39.048)") %>%
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 q16 %>% group_by(Location) %>% tally()
 
+joined_data[17,]
 ranges_s_OIB[8,1:35]
 q17 <- dbGetQuery(georoc,
 "SELECT *
@@ -711,10 +728,9 @@ FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 TECTONIC_SETTING='OCEAN ISLAND' AND
 (`SIO2(WT%)` > 43.1 AND `SIO2(WT%)` < 46.1 AND
-`K2O(WT%)` < 1.89 AND
-`NA2O(WT%)` > 0.89 AND `NA2O(WT%)` < 3.89 AND
-ND143_ND144 > 0.512396 AND ND143_ND144 < 0.513422 AND
-PB206_PB204 > 18.438 AND PB206_PB204 < 18.81)") %>%
+PB206_PB204 > 18.438 AND PB206_PB204 < 18.81 AND
+PB207_PB204 > 15.427 AND PB207_PB204 < 15.739 AND
+PB208_PB204 > 38.274 AND PB208_PB204 < 39.048)") %>%
   get_georoc_location() %>% filter(Location != "na") %>% rename_georoc() %>%
   Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
@@ -722,8 +738,6 @@ PB206_PB204 > 18.438 AND PB206_PB204 < 18.81)") %>%
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 q17 %>% group_by(Location) %>% tally()
-joined_data[17,]
-q17%>%dplyr::filter(Sample %in% c("1175185","1175184","1360-RAR-B-9"))
 
 #### K-12-26 ####
 ranges_s_OIB[9,]
@@ -754,16 +768,13 @@ FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 TECTONIC_SETTING='OCEAN ISLAND' AND
 (`SIO2(WT%)` > 42.9 AND `SIO2(WT%)` < 45.9 AND
-`K2O(WT%)` < 2.351 AND
-ND143_ND144 > 0.51248 AND ND143_ND144 < 0.513506 AND
-PB206_PB204 > 18.54 AND PB206_PB204 < 18.914) AND
-(file_id = '2022-06-WFJZKY_AUSTRAL-COOK_ISLANDS.csv' OR
-file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv' OR
+PB207_PB204 > 15.378 AND PB207_PB204 < 15.688 AND
+PB208_PB204 > 38.059 AND PB208_PB204 < 38.827) AND
+(file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv' OR
 file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part1.csv' OR
-file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv' OR
-file_id = '2022-06-WFJZKY_SOCIETY_ISLANDS.csv')") %>%
-  get_georoc_location() %>% dplyr::filter(Location != "na") %>% rename_georoc() %>%
-  Ti_from_TiO2() %>% K_from_K2O() %>%
+file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv')") %>%
+  get_georoc_location() %>% dplyr::filter(Location != "na") %>%
+  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
