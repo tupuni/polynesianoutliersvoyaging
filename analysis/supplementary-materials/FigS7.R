@@ -3,9 +3,6 @@ require(tidyverse)
 require(RSQLite)
 require(patchwork)
 require(stats)
-require(gridExtra)
-require(FactoMineR)
-require(factoextra)
 
 georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
 pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
@@ -26,13 +23,15 @@ IAB[IAB==0] <- NA # replaces 0 by NA
 IAB <- IAB[complete.cases(IAB),] # removes rows with NA
 IAB <- IAB %>% dplyr::filter(Nb_La < 3)
 
+IAB <- IAB %>% dplyr::filter(Nb_La < 3)
+
 summary(IAB$Nb_La)
 sd <- (sqrt(sum((IAB$Nb_La - mean(IAB$Nb_La)) ^ 2 / (length(IAB$Nb_La) - 1))))
 stat_IAB <- data.frame(
   name = c("mean", "sd min", "sd max", "median"),
   value = c(mean(IAB$Nb_La),
-            median(IAB$Nb_La)-sd,
-            median(IAB$Nb_La)+sd,
+            mean(IAB$Nb_La)-sd,
+            mean(IAB$Nb_La)+sd,
             median(IAB$Nb_La))) %>% mutate(across(where(is.numeric), round, 3))
 
 #### OIB ####
@@ -41,9 +40,7 @@ OIB <- dbGetQuery(georoc,
 ROCK_TYPE, `NB(PPM)`, `LA(PPM)`, LATITUDE_MAX, LONGITUDE_MAX
 FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING = 'OCEAN ISLAND'")
-
-OIB <- OIB %>%
+TECTONIC_SETTING = 'OCEAN ISLAND'") %>%
   rename(Nb="NB(PPM)",La="LA(PPM)",lat="LATITUDE_MAX",long="LONGITUDE_MAX") %>%
   mutate(Nb_La = Nb/La) %>%
   dplyr::select(file_id, id, LOCATION, Nb, La, Nb_La, lat, long)
@@ -58,8 +55,8 @@ sd <- (sqrt(sum((OIB$Nb_La - mean(OIB$Nb_La)) ^ 2 / (length(OIB$Nb_La) - 1))))
 stat_OIB <- data.frame(
   name = c("mean", "sd min", "sd max", "median"),
   value = c(mean(OIB$Nb_La),
-            median(OIB$Nb_La)-sd,
-            median(OIB$Nb_La)+sd,
+            mean(OIB$Nb_La)-sd,
+            mean(OIB$Nb_La)+sd,
             median(OIB$Nb_La))) %>% mutate(across(where(is.numeric), round, 3))
 
 #### plots ####
@@ -81,12 +78,12 @@ A <- traces %>% dplyr::filter(Type %in% c("Artefact", "Source")) %>%
   scale_shape_manual(values=shapes) +
   scale_color_manual(values=cols) +
   theme_bw(base_size=12, base_rect_size=1) +
-  scale_x_continuous(limits=c(0,3), breaks = c(0,.77,1,2,3)) +
+  scale_x_continuous(limits=c(0,3), breaks = c(0,.86,1,2,3)) +
   theme(line=element_blank(),
         axis.text = element_blank(), axis.title = element_blank(), axis.ticks = element_blank(),
         legend.title = element_blank(), legend.text = element_text(size = 6),
         legend.direction="horizontal",legend.position=c(.75,.45)) + #aspect.ratio=1
-  annotate("segment", x=.77, xend=.77, y=0, yend=23, size = 0.5, linetype = "longdash") +
+  annotate("segment", x=.86, xend=.86, y=0, yend=23, size = 0.5, linetype = "longdash") +
   annotate("text", -Inf, Inf, label = "A", size = 7, hjust = -1, vjust = 2)
 A
 
@@ -112,8 +109,8 @@ B <- ggplot(OIB, aes(Nb_La)) +
   annotate("text", x=2.5, y = 1000, label = "OIB", hjust = 0, size = 4) +
   annotate("text", x=2.5, y = 800, label = "mean = 1.338", hjust = 0, size = 3.5) +
   annotate("text", x=2.5, y = 600, label = "median = 1.266", hjust = 0, size = 3.5) +
-  annotate("text", x=2.5, y = 400, label = "SD = 0.86 - 1.671", hjust = 0, size = 3.5) +
-  scale_x_continuous(limits=c(0,3), breaks = c(0,.77,1,2,3)) +
+  annotate("text", x=2.5, y = 400, label = "SD = 0.933 - 1.744", hjust = 0, size = 3.5) +
+  scale_x_continuous(limits=c(0,3), breaks = c(0,.86,1,2,3)) +
   labs(x='Nb / La', y='Count') + theme_bw(base_size=12) +
   coord_cartesian(ylim = c(-20, 2400), clip = "off") +
   annotate("text", -Inf, Inf, label = "B", size = 7, hjust = -1, vjust = 2) +
@@ -142,12 +139,12 @@ map <- ggplot() +
 
 C <- map + geom_point(data = IAB, aes(x=long, y=lat, fill=Nb_La),
              shape=21, colour="black", size=3, stroke = .25) +
-  scale_fill_gradient2(low = "#3B4CC0", high = "#B40426", midpoint = 0.8) +
+  scale_fill_gradient2(low = "#3B4CC0", high = "#B40426", midpoint = 0.86) +
   annotate("text", -Inf, Inf, label = "C", size = 7, hjust = -1, vjust = 2) +
   labs(fill='Nb/La')
 D <- map + geom_point(data = OIB, aes(x=long, y=lat, fill=Nb_La),
                          shape=21, colour="black", size=3, stroke = .25) +
-  scale_fill_gradient2(low = "#3B4CC0", high = "#B40426", midpoint = 0.8) +
+  scale_fill_gradient2(low = "#3B4CC0", high = "#B40426", midpoint = 0.86) +
   annotate("text", -Inf, Inf, label = "D", size = 7, hjust = -1, vjust = 2) +
   labs(fill='Nb/La')
 C/D

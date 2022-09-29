@@ -22,12 +22,12 @@ A <- traces %>% dplyr::filter(Type %in% c("Artefact", "Source")) %>%
   scale_shape_manual(values=shapes) +
   scale_color_manual(values=cols) +
   theme_bw(base_size=12, base_rect_size=1) +
-  scale_x_continuous(limits=c(0,3), breaks = c(0,.77,1,2,3)) +
+  scale_x_continuous(limits=c(0,2), breaks = c(0,.86,1,2)) +
   theme(line=element_blank(), axis.ticks=element_line(),
         legend.title = element_blank(),legend.text = element_text(size=9),
         axis.text.x = element_blank(), axis.title.x = element_blank(), axis.ticks.x = element_blank(),
         legend.direction="horizontal",legend.position="none") + #aspect.ratio=1
-  annotate("segment", x=.77, xend=.77, y=0, yend=23, size = 0.5, linetype = "dashed") +
+  annotate("segment", x=.86, xend=.86, y=0, yend=23, size = 0.5, linetype = "dashed") +
   annotate("text", Inf, Inf, label = "A", size = 7, hjust = 2, vjust = 2)
 A
 
@@ -59,8 +59,8 @@ sd <- (sqrt(sum((IAB$Nb_La - mean(IAB$Nb_La)) ^ 2 / (length(IAB$Nb_La) - 1))))
 stat_IAB <- data.frame(
   name = c("mean", "sd min", "sd max", "median"),
   value = c(mean(IAB$Nb_La),
-            median(IAB$Nb_La)-sd,
-            median(IAB$Nb_La)+sd(IAB$Nb_La),
+            mean(IAB$Nb_La)-sd,
+            mean(IAB$Nb_La)+sd(IAB$Nb_La),
             median(IAB$Nb_La))) %>% mutate(across(where(is.numeric), round, 3))
 
 
@@ -84,8 +84,8 @@ sd <- (sqrt(sum((OIB$Nb_La - mean(OIB$Nb_La)) ^ 2 / (length(OIB$Nb_La) - 1))))
 stat_OIB <- data.frame(
   name = c("mean", "sd min", "sd max", "median"),
   value = c(mean(OIB$Nb_La),
-            median(OIB$Nb_La)-sd,
-            median(OIB$Nb_La)+sd,
+            mean(OIB$Nb_La)-sd,
+            mean(OIB$Nb_La)+sd,
             median(OIB$Nb_La))) %>% mutate(across(where(is.numeric), round, 3))
 
 B <- ggplot(OIB, aes(Nb_La)) +
@@ -110,8 +110,8 @@ B <- ggplot(OIB, aes(Nb_La)) +
   annotate("text", x=2.5, y = 1000, label = "OIB", hjust = 0, size = 4) +
   annotate("text", x=2.5, y = 800, label = "mean = 1.338", hjust = 0, size = 3.5) +
   annotate("text", x=2.5, y = 600, label = "median = 1.266", hjust = 0, size = 3.5) +
-  annotate("text", x=2.5, y = 400, label = "SD = 0.86 - 1.671", hjust = 0, size = 3.5) +
-  scale_x_continuous(limits=c(0,3), breaks = c(0,.77,1,2,3)) +
+  annotate("text", x=2.5, y = 400, label = "SD = 0.933 - 1.744", hjust = 0, size = 3.5) +
+  scale_x_continuous(limits=c(0,2), breaks = c(0,.86,1,2)) +
   labs(x='Nb / La', y='Count') + theme_bw(base_size=12) +
   coord_cartesian(ylim = c(-20, 2400), clip = "off") +
   annotate("text", -Inf, Inf, label = "B", size = 7, hjust = -1, vjust = 2) +

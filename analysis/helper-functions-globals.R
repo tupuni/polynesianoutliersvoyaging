@@ -159,12 +159,11 @@ joined_data_norm <- normalize(joined_data)
 
 normalize_to_pm <- function(df) {
   df_normalized <- df %>%
-    dplyr::transmute(
-      Sample=Sample,Location=Location,Cs=Cs/0.032,Rb=Rb/0.635,Ba=Ba/6.989,
-      Th=Th/0.085,U=U/0.021,Nb=Nb/0.713,Ta=Ta/0.041,La=La/0.687,Ce=Ce/1.775,
-      Pr=Pr/0.276,Pb=Pb/0.185,Nd=Nd/1.354,Sr=Sr/21.1,Sm=Sm/0.444,Zr=Zr/11.2,
-      Hf=Hf/0.309,Ti=Ti/1300,Eu=Eu/0.168,Gd=Gd/0.596,Tb=Tb/0.108,Dy=Dy/0.737,
-      Ho=Ho/0.164,Y=Y/4.55,Er=Er/0.48,Li=Li/1.6,Yb=Yb/0.493,Lu=Lu/0.074) %>%
+    dplyr::mutate(
+      Cs=Cs/0.032,Rb=Rb/0.635,Ba=Ba/6.989,Th=Th/0.085,U=U/0.021,Nb=Nb/0.713,
+      Ta=Ta/0.041,La=La/0.687,Ce=Ce/1.775,Pr=Pr/0.276,Nd=Nd/1.354,Sr=Sr/21.1,
+      Sm=Sm/0.444,Zr=Zr/11.2,Ti=Ti/1300,Eu=Eu/0.168,Gd=Gd/0.596,Tb=Tb/0.108,
+      Dy=Dy/0.737,Y=Y/4.55,Er=Er/0.48,Yb=Yb/0.493,Lu=Lu/0.074) %>%
     gather("var","conc",Cs:Lu)
   return(df_normalized)
 }

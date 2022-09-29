@@ -781,3 +781,18 @@ file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv')") %>%
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 q19 %>% group_by(Location) %>% tally()
 
+
+
+
+
+
+IAB_ref <- dbGetQuery(georoc,
+                      "SELECT sample_id, reference_id
+FROM 'citation'
+WHERE sample_id='1776564'")
+IAB_ref
+IAB_ref <- dbGetQuery(georoc,
+                      "SELECT id, reference
+FROM 'reference'
+WHERE id='23842'")
+IAB_ref
