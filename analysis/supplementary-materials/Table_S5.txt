@@ -1,0 +1,65 @@
+Plot()
+ {
+  Phase("Kapingamarangi")
+  {
+   Outlier_model("General",T(5),U(0,4),"t");
+   Curve("IntCal20","intcal20.14c");
+   Sequence("Kapingamarangi")
+   {
+    Boundary("Start Kapinga");
+    Phase("Phase 1")
+    {
+     R_Date("NZ5142", 591, 59)
+     {
+      Outlier("Charcoal", 1);
+     };
+    };
+    Boundary("Phase 1 - Phase 2");
+    Phase("Phase 2")
+    {
+     R_Date("NZ5140", 710, 59)
+     {
+      Outlier("Charcoal", 1);
+     };
+     R_Date("NZ5135", 695, 65)
+     {
+      Outlier("Charcoal", 1);
+     };
+     R_Date("NZ5146", 573, 86)
+     {
+      Outlier("Charcoal", 1);
+     };
+     R_Date("NZ5141", 560, 64)
+     {
+      Outlier("Charcoal", 1);
+     };
+     R_Date("NZ5145", 430, 58)
+     {
+      Outlier("Charcoal", 1);
+     };
+    };
+    Boundary("Phase 2 - Phase 3");
+    Phase("Phase 3")
+    {
+     R_Date("NZ5144", 362, 58)
+     {
+      Outlier("Charcoal", 1);
+     };
+    };
+    Boundary("Phase 3 - Phase 4");
+    Phase("Phase 4")
+    {
+     C_Date("Coin 1", 1942, 0)
+     {
+      Outlier("General", 0.05);
+     };
+     C_Date("Coin 2", 1964, 0)
+     {
+      Outlier("General", 0.05);
+     };
+    };
+    C_Date("Excavation", 1979, 0);
+    Boundary("End Kapinga");
+   };
+  };
+ }
