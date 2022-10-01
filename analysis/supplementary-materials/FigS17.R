@@ -1,12 +1,13 @@
 require(here)
 require(tidyverse)
 require(RSQLite)
+require(osmdata)
 require(patchwork)
 
 georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
 pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
-#### Fig S18 ####
+#### Fig S17 ####
 OIB <- dbGetQuery(pofatu,
 "SELECT s.id AS sample_id, s.sample_category,
 s.location_subregion, s.site_name, s.sample_comment,
@@ -115,101 +116,39 @@ s <- joined_data %>% dplyr::filter(Sample %in% c(
 
 cols <- c("Tatagamatau-source"="#77246C","Tatagamatau-artefact"="#77246C",
           "Malaeloa-source"="#D694C9","Malaeloa-artefact"="#D694C9",
-          "Maloata-source"="#B262A7","Maloata-artefact"="#B262A7",
-          "E-11-08"="red","T-12-06"="red","T-12-07"="red",
-          "T-12-08"="red","T-12-09"="red","T-12-10"="red")
+          "Maloata-source"="#B262A7","Maloata-artefact"="#B262A7")
 shapes <- c("Tatagamatau-source"=21,"Tatagamatau-artefact"=1,
             "Malaeloa-source"=25,"Malaeloa-artefact"=6,
-            "Maloata-source"=23,"Maloata-artefact"=5,"E-11-08"=21,"T-12-06"=24,
-            "T-12-07"=14,"T-12-08"=25,"T-12-09"=9,"T-12-10"=23)
+            "Maloata-source"=23,"Maloata-artefact"=5)
 contour <- c("Tatagamatau-source"="black","Tatagamatau-artefact"="#77246C",
              "Malaeloa-source"="black","Malaeloa-artefact"="#D694C9",
-             "Maloata-source"="black","Maloata-artefact"="#B262A7",
-             "E-11-08"="black","T-12-06"="black","T-12-07"="red",
-             "T-12-08"="black","T-12-09"="red","T-12-10"="black")
+             "Maloata-source"="black","Maloata-artefact"="#B262A7")
 
-p1 <- OIB %>%
-  ggplot(aes(x=TiO2/Fe2O3,y=Al2O3, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(.23,.36)) + scale_y_continuous(limits=c(13.6,16.3)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.title.x = element_blank(),
-        axis.text = element_text(size = 8), legend.position = "none", aspect.ratio=1) +
-  labs(x=expression(paste(TiO[2]*" / Fe"[2]*"O"[3]))) +
-  labs(y=expression(Al[2]*O[3]*~ "(wt%)"))
-p2 <-  OIB %>%
-  ggplot(aes(x=TiO2/Fe2O3,y=CaO, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(.23,.36)) + scale_y_continuous(limits=c(7,9.5)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.title.x = element_blank(),
-        axis.text = element_text(size = 8), legend.position = "none", aspect.ratio=1) +
-  labs(x=expression(paste(TiO[2]*" / Fe"[2]*"O"[3]))) +
-  labs(y=expression("CaO (wt%)"))
-p3 <- OIB %>%
-  ggplot(aes(x=TiO2/Fe2O3,y=Na2O+K2O, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(.23,.36)) + scale_y_continuous(limits=c(3.5,6)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        legend.position = "none", aspect.ratio=1) +
-  labs(x=expression(paste(TiO[2]*" / Fe"[2]*"O"[3]))) +
-  labs(y=expression(paste(Na[2]*"O + K"[2]*~"O")))
-p4 <- OIB %>%
-  ggplot(aes(x=Rb,y=Sr, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(19,60)) + scale_y_continuous(limits=c(450,800)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.title.x = element_blank(),
-        axis.text = element_text(size = 8), legend.position = "none", aspect.ratio=1) +
-  labs(x="Rb (ppm)",  y="Sr (ppm)")
-p5 <- OIB %>%
-  ggplot(aes(x=Rb,y=Zr, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(19,60)) + scale_y_continuous(limits=c(280,430)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.title.x = element_blank(),
-        axis.text = element_text(size = 8), legend.position = "none", aspect.ratio=1) +
-  labs(x="Rb (ppm)", y="Zr (ppm)")
-p6 <- OIB %>%
-  ggplot(aes(x=Rb,y=Y, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(19,60)) + scale_y_continuous(limits=c(30,55)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        legend.position = "none", aspect.ratio=1) +
-  labs(x="Rb (ppm)", y="Y (ppm)")
+coast <- getbb("Tutuila Samoa")%>% opq()%>%
+  add_osm_feature(key = "natural", value = c("coastline")) %>%
+  osmdata_sf()
+rivers <- getbb("Tutuila Samoa")%>% opq()%>%
+  add_osm_feature(key = "waterway", value = c("river","stream")) %>%
+  osmdata_sf()
 
-pdf(here("analysis","supplementary-materials","FigS18.pdf"), width=8, height=10)
-(p1/p2/p3) | (p4/p5/p6)
+m <- ggplot() +
+  geom_sf(data = coast$osm_lines, inherit.aes = FALSE, color = "black",
+          size = .4, alpha = .8) +
+  geom_sf(data = rivers$osm_lines, inherit.aes = FALSE, color = "#a6daff",
+          size = .2, alpha = .8) +
+  coord_sf(xlim = c(-170.85, -170.56), ylim = c(-14.39, -14.225), expand = FALSE) +
+  theme_void()
+tutuila <- m +
+  geom_point(data=OIB,
+             mapping=aes(x=long, y=lat, shape=factor(Location), fill=factor(Location),
+                         color=factor(Location), group = Location), size=2.5) +
+  scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  theme(panel.border = element_rect(colour = NA, fill= NA, size=1),
+        panel.background = element_rect(colour = "black", fill= NA, size=1),
+        legend.title = element_blank(), legend.text = element_text(size = 10),
+        legend.position = c(.83,.32))
+
+pdf(here("analysis","supplementary-materials","FigS17.pdf"), width=8, height=5)
+tutuila
 dev.off()

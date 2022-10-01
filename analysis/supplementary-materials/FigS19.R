@@ -6,7 +6,7 @@ require(patchwork)
 georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
 pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
-#### Fig S18 ####
+#### Fig S19 ####
 OIB <- dbGetQuery(pofatu,
 "SELECT s.id AS sample_id, s.sample_category,
 s.location_subregion, s.site_name, s.sample_comment,
@@ -102,16 +102,11 @@ OIB <- OIB %>%
 OIB %>% dplyr::select(Sample, Location, Category)
 OIB[OIB == 0] <- NA # Replace 0 with NA
 
-s <- joined_data %>% dplyr::filter(Sample %in% c(
-  "E-11-08","T-12-06","T-12-07","T-12-08","T-12-09","T-12-10")) %>%
-  mutate(Location = case_when(
-    grepl("E-11-08", Sample) ~ "E-11-08",
-    grepl("T-12-06", Sample) ~ "T-12-06",
-    grepl("T-12-07", Sample) ~ "T-12-07",
-    grepl("T-12-08", Sample) ~ "T-12-08",
-    grepl("T-12-09", Sample) ~ "T-12-09",
-    grepl("T-12-10", Sample) ~ "T-12-10"))
 
+#### add samples ####
+
+
+#####################
 
 cols <- c("Tatagamatau-source"="#77246C","Tatagamatau-artefact"="#77246C",
           "Malaeloa-source"="#D694C9","Malaeloa-artefact"="#D694C9",

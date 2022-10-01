@@ -12,7 +12,6 @@ pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 dir.create(here("analysis","supplementary-materials","FigS13"))
 
 #### IAB ####
-
 #### E_11_03 ####
 IAB <- full_join(q2,q3) %>%
   dplyr::select(
@@ -154,7 +153,7 @@ E_11_03_spider <- d_spider %>%
   ggplot(aes(x=var, y=conc, shape=factor(Location), color=factor(Location),
              fill=factor(Location), group=Sample)) +
   geom_line(size=.5) + geom_point(size=2, stroke=.5) +
-  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
+  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=2, stroke=.5) +
   scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
   scale_fill_manual(values=cols) +
   theme_classic() + theme(axis.line=element_blank()) +
@@ -174,7 +173,7 @@ E_11_03_spider <- d_spider %>%
                       mid = unit(0, "cm"), short = unit(0, "cm"))+
   coord_cartesian(clip = "off")
 
-pdf(here("analysis","supplementary-materials","FigS13","FigS13-a.pdf"), width=3, height=2)
+pdf(here("analysis","supplementary-materials","FigS13","FigS13-a.pdf"), width=5, height=2)
 E_11_03_spider
 dev.off()
 
@@ -270,7 +269,7 @@ E_11_06_07_spider <- d_spider %>%
   ggplot(aes(x=var, y=conc, shape=factor(Location), color=factor(Location),
              fill=factor(Location), group=Sample)) +
   geom_line(size=.5) + geom_point(size=2, stroke=.5) +
-  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
+  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=2, stroke=.5) +
   scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
   scale_fill_manual(values=cols) +
   theme_classic() + theme(axis.line=element_blank()) +
@@ -281,7 +280,7 @@ E_11_06_07_spider <- d_spider %>%
         axis.text.y = element_text(hjust=1, margin = margin(r=5)),
         legend.title = element_blank(),legend.text = element_text(size = 5),
         legend.key.size = unit(.2, 'cm'),
-        legend.position = c(.75,.88), legend.direction = "vertical") +
+        legend.position = c(.74,.89), legend.direction = "vertical") +
   guides(color = guide_legend(override.aes = list(size = 1))) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) + # dodge = 2 to stagger
   scale_y_log10(breaks=c(1,10,100,1000), limits=c(.11,1000),
@@ -290,7 +289,7 @@ E_11_06_07_spider <- d_spider %>%
                       mid = unit(0, "cm"), short = unit(0, "cm"))+
   coord_cartesian(clip = "off")
 
-pdf(here("analysis","supplementary-materials","FigS13","FigS13-b.pdf"), width=3, height=2)
+pdf(here("analysis","supplementary-materials","FigS13","FigS13-b.pdf"), width=5, height=2)
 E_11_06_07_spider
 dev.off()
 
@@ -349,9 +348,63 @@ head(dist[order(dist$weight_mean),] %>%
        dplyr::select("Sample","Location","weight_mean"), 10)
 
 #### plot ####
+#### K_12_28 ####
+ranges_s_IAB[4,1:35]
+IAB <- dbGetQuery(georoc,
+                  "SELECT *
+FROM 'sample'
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+`SIO2(WT%)` > 52.1 AND `SIO2(WT%)` < 55.1 AND
+file_id= '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv'") %>%
+  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
+  mutate_at("LOCATION", str_replace,
+            "BISMARCK ARC - NEW BRITAIN ARC / BISMARCK ARC - ", "") %>%
+  rename(Location=LOCATION)%>%
+  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
+                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
+                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+IAB %>% group_by(Location) %>% tally()
+
+IAB <- IAB %>% dplyr::select(Sample,Location,Th,Nb,La,Nd,Sr,Zr,Eu)
+is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
+IAB[IAB == 0] <- NA # Replace 0 with NA
+IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
+
+s <- joined_data %>% filter(Sample %in% c("K-12-28")) %>%
+  mutate(Location = case_when(grepl("K-12-28", Sample) ~ "K-12-28")) %>%
+  dplyr::select(Sample,Location,Th,Nb,La,Nd,Sr,Zr,Eu)
+s[s == 0] <- NA # Replace 0 with NA
+s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
+
+res.pca <- prcomp(IAB[,3:9], scale = TRUE, center = TRUE) # Dimension reduction using PCA
+eig <- get_eig(res.pca)
+pred <- stats::predict(res.pca, s[,3:9])
+pred <- cbind(s[,1:2], pred)
+res.pca.df <- cbind(IAB[,1:2], (as.data.frame(res.pca$x)))
+d_pca <- full_join(res.pca.df, pred)
+
+dist <- data.frame(
+  Sample = c(d_pca[1:56,"Sample"]),
+  Location = c(d_pca[1:56,"Location"]),
+  PC1 = c(sqrt(((d_pca[57,"PC1"])-d_pca[1:56,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[57,"PC2"])-d_pca[1:56,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[57,"PC3"])-d_pca[1:56,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[57,"PC4"])-d_pca[1:56,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[57,"PC5"])-d_pca[1:56,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[57,"PC6"])-d_pca[1:56,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[57,"PC7"])-d_pca[1:56,"PC7"])^2))) %>%
+  mutate(weight_mean = (
+    (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
+      (PC6*eig[6,2])+(PC7*eig[7,2])) / (sum(eig[1:7,2])))
+
+head(dist[order(dist$weight_mean),] %>%
+       dplyr::select("Sample","Location","weight_mean"), 10)
+
+#### plot ####
 ranges_s_IAB[4,1:35]
 d <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+ "SELECT * FROM 'sample'
 WHERE id='13440-GN1/4' OR id='634326' OR
 id='634330' OR id='634323' OR id='634331'") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
@@ -407,7 +460,7 @@ K_12_28_spider <- d_spider %>%
   ggplot(aes(x=var, y=conc, shape=factor(Sample), color=factor(Sample),
              fill=factor(Sample), group=Sample)) +
   geom_line(size=.5) + geom_point(size=2, stroke=.5) +
-  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
+  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=2, stroke=.5) +
   scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
   scale_fill_manual(values=cols) +
   theme_classic() + theme(axis.line=element_blank()) +
@@ -428,7 +481,7 @@ K_12_28_spider <- d_spider %>%
   coord_cartesian(clip = "off")
 K_12_28_spider
 
-pdf(here("analysis","supplementary-materials","FigS13","FigS13-c.pdf"), width=3, height=2)
+pdf(here("analysis","supplementary-materials","FigS13","FigS13-c.pdf"), width=5, height=2)
 K_12_28_spider
 dev.off()
 
@@ -534,13 +587,13 @@ cols <- c("[KS094] Cebu (Philippines)"="#440154",
 
 K_12_29_spider <- d_spider %>%
   mutate(var = fct_relevel(var,
-                           "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr",
-                           "Nd","Sr","Sm","Zr","Ti","Eu","Gd","Tb",
-                           "Dy","Y","Er","Yb","Lu")) %>%
+                         "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr",
+                         "Nd","Sr","Sm","Zr","Ti","Eu","Gd","Tb",
+                         "Dy","Y","Er","Yb","Lu")) %>%
   ggplot(aes(x=var, y=conc, shape=factor(Location), color=factor(Location),
              fill=factor(Location), group=Sample)) +
   geom_line(size=.5) + geom_point(size=2, stroke=.5) +
-  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
+  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=2, stroke=.5) +
   scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
   scale_fill_manual(values=cols) +
   theme_classic() + theme(axis.line=element_blank()) +
@@ -561,7 +614,7 @@ K_12_29_spider <- d_spider %>%
   coord_cartesian(clip = "off")
 K_12_29_spider
 
-pdf(here("analysis","supplementary-materials","FigS13","FigS13-d.pdf"), width=3, height=2)
+pdf(here("analysis","supplementary-materials","FigS13","FigS13-d.pdf"), width=5, height=2)
 K_12_29_spider
 dev.off()
 
