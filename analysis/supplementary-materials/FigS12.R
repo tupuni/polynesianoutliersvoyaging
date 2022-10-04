@@ -58,7 +58,7 @@ p2 <- IAB %>%
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
         axis.title.y = element_blank(), axis.text.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1) #+
+        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1)
 S12a <- p1|p2
 
 #### Fig S12b ####
@@ -137,16 +137,19 @@ S12c <- p5|p6
 S12c
 
 #### Fig S12d ####
-IAB <- q9
+ranges_s_IAB[5,]
+IAB <- q9 %>% dplyr::filter(
+  MgO > 1.34 & MgO < 4.34)
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-29")) %>%
   mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29"))
+
 p7 <- IAB %>%
   ggplot(aes(x=Nb/La,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,1)) + scale_y_continuous(limits=c(100,500)) +
+  scale_x_continuous(limits=c(0,.5)) + scale_y_continuous(limits=c(90,500)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -164,7 +167,7 @@ p8 <- IAB %>%
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
         axis.title.y = element_blank(), axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1) #+
+        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1)
 S12d <- p7|p8
 S12d
 

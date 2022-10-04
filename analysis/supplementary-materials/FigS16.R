@@ -7,57 +7,34 @@ georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
 pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
 #### Fig S16a ####
+ranges_s_OIB[1:6,1:5]
 OIB1 <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
 WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
 ((`SIO2(WT%)` > 45.2 AND `SIO2(WT%)` < 48.2 AND
 `NA2O(WT%)` > 2.08 AND `NA2O(WT%)` < 5.08 AND
 `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.9 AND
-`RB(PPM)` > 18.3 AND `RB(PPM)` < 54.9 AND
-`BA(PPM)` > 160 AND `BA(PPM)` < 480 AND
-`TH(PPM)` > 1.95 AND `TH(PPM)` < 5.84 AND
-`SR(PPM)` > 352 AND `SR(PPM)` < 1056 AND
-`NB(PPM)` > 24.8 AND `NB(PPM)` < 74.5) OR
+`MGO(WT%)` > 3.08 AND `MGO(WT%)` < 6.08) OR
 (`SIO2(WT%)` > 44.3 AND `SIO2(WT%)` < 47.3 AND
 `NA2O(WT%)` > 2 AND `NA2O(WT%)` < 5 AND
 `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.82 AND
-`RB(PPM)` > 16.8 AND `RB(PPM)` < 50.4 AND
-`BA(PPM)` > 137 AND `BA(PPM)` < 413 AND
-`TH(PPM)` > 1.86 AND `TH(PPM)` < 5.60 AND
-`SR(PPM)` > 332 AND `SR(PPM)` < 996 AND
-`NB(PPM)` > 24.7 AND `NB(PPM)` < 74.1) OR
+`MGO(WT%)` > 3.52 AND `MGO(WT%)` < 6.52) OR
 (`SIO2(WT%)` > 43.5 AND `SIO2(WT%)` < 46.5 AND
 `NA2O(WT%)` > 1.9 AND `NA2O(WT%)` < 4.9 AND
 `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.78 AND
-`RB(PPM)` > 15.3 AND `RB(PPM)` < 46.05 AND
-`BA(PPM)` > 126 AND `BA(PPM)` < 378 AND
-`TH(PPM)` > 1.58 AND `TH(PPM)` < 4.74 AND
-`SR(PPM)` > 294 AND `SR(PPM)` < 882 AND
-`NB(PPM)` > 21 AND `NB(PPM)` < 63.1) OR
+`MGO(WT%)` > 3.79 AND `MGO(WT%)` < 6.79) OR
 (`SIO2(WT%)` > 45.9 AND `SIO2(WT%)` < 48.9 AND
 `NA2O(WT%)` > 2.18 AND `NA2O(WT%)` < 5.18 AND
 `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.99 AND
-`RB(PPM)` > 20.55 AND `RB(PPM)` < 61.65 AND
-`BA(PPM)` > 162 AND `BA(PPM)` < 488 AND
-`TH(PPM)` > 2.13 AND `TH(PPM)` < 6.39 AND
-`SR(PPM)` > 365 AND `SR(PPM)` < 1095 AND
-`NB(PPM)` > 24.3 AND `NB(PPM)` < 72.9) OR
+`MGO(WT%)` > 3.44 AND `MGO(WT%)` < 6.44) OR
 (`SIO2(WT%)` > 44.1 AND `SIO2(WT%)` < 47.1 AND
 `NA2O(WT%)` > 1.8 AND `NA2O(WT%)` < 4.8 AND
 `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.72 AND
-`RB(PPM)` > 15.6 AND `RB(PPM)` < 47 AND
-`BA(PPM)` > 128 AND `BA(PPM)` < 385 AND
-`TH(PPM)` > 1.58 AND `TH(PPM)` < 4.74 AND
-`SR(PPM)` > 296 AND `SR(PPM)` < 890 AND
-`NB(PPM)` > 20.4 AND `NB(PPM)` < 61.2) OR
+`MGO(WT%)` > 4.15 AND `MGO(WT%)` < 7.15) OR
 (`SIO2(WT%)` > 45.7 AND `SIO2(WT%)` < 48.7 AND
 `NA2O(WT%)` > 2.08 AND `NA2O(WT%)` < 5.08 AND
 `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.85 AND
-`RB(PPM)` > 18.2 AND `RB(PPM)` < 54.6 AND
-`BA(PPM)` > 143 AND `BA(PPM)` < 431 AND
-`TH(PPM)` > 1.84 AND `TH(PPM)` < 5.52 AND
-`SR(PPM)` > 370 AND `SR(PPM)` < 1110 AND
-`NB(PPM)` > 23.5 AND `NB(PPM)` < 70.5))") %>%
+`MGO(WT%)` > 3.10 AND `MGO(WT%)` < 6.10))") %>%
   dplyr::filter(grepl("SAMOAN", file_id)) %>%
   get_georoc_location() %>% filter(Location != "na") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
@@ -145,51 +122,27 @@ m.parameter IN ('SiO2 [%]', 'TiO2 [%]', 'Al2O3 [%]', 'Fe2O3 [%]', 'FeO [%]',
   dplyr::filter((SiO2 > 45.2 & SiO2 < 48.2 &
                    Na2O > 2.08 & Na2O < 5.08 &
                    K2O > 0 & K2O < 2.9 &
-                   Rb > 18.3 & Rb < 54.9 &
-                   Ba > 160 & Ba < 480 &
-                   Th > 1.95 & Th < 5.84 &
-                   Sr > 352 & Sr < 1056 &
-                   Nb > 24.8 & Nb < 74.5) |
+                   MgO > 3.08 & MgO < 6.08) |
                   (SiO2 > 44.3 & SiO2 < 47.3 &
                      Na2O > 2 & Na2O < 5 &
                      K2O > 0 & K2O < 2.82 &
-                     Rb > 16.8 & Rb < 50.4 &
-                     Ba > 137 & Ba < 413 &
-                     Th > 1.86 & Th < 5.60 &
-                     Sr > 332 & Sr < 996 &
-                     Nb > 24.7 & Nb < 74.1) |
+                     MgO > 3.52 & MgO < 6.52) |
                   (SiO2 > 43.5 & SiO2 < 46.5 &
                      Na2O > 1.9 & Na2O < 4.9 &
                      K2O > 0 & K2O < 2.78 &
-                     Rb > 15.3 & Rb < 46.05 &
-                     Ba > 126 & Ba < 378 &
-                     Th > 1.58 & Th < 4.74 &
-                     Sr > 294 & Sr < 882 &
-                     Nb > 21 & Nb < 63.1) |
+                     MgO > 3.79 & MgO < 6.79) |
                   (SiO2 > 45.9 & SiO2 < 48.9 &
                      Na2O > 2.18 & Na2O < 5.18 &
                      K2O > 0 & K2O < 2.99 &
-                     Rb > 20.55 & Rb < 61.65 &
-                     Ba > 162 & Ba < 488 &
-                     Th > 2.13 & Th < 6.39 &
-                     Sr > 365 & Sr < 1095 &
-                     Nb > 24.3 & Nb < 72.9) |
+                     MgO > 3.44 & MgO < 6.44) |
                   (SiO2 > 44.1 & SiO2 < 47.1 &
                      Na2O > 1.8 & Na2O < 4.8 &
                      K2O > 0 & K2O < 2.72 &
-                     Rb > 15.6 & Rb < 47 &
-                     Ba > 128 & Ba < 385 &
-                     Th > 1.58 & Th < 4.74 &
-                     Sr > 296 & Sr < 890 &
-                     Nb > 20.4 & Nb < 61.2) |
+                     MgO > 4.15 & MgO < 7.15) |
                   (SiO2 > 45.7 & SiO2 < 48.7 &
                      Na2O > 2.08 & Na2O < 5.08 &
                      K2O > 0 & K2O < 2.85 &
-                     Rb > 18.2 & Rb < 54.6 &
-                     Ba > 143 & Ba < 431 &
-                     Th > 1.84 & Th < 5.52 &
-                     Sr > 370 & Sr < 1110 &
-                     Nb > 23.5 & Nb < 70.5)) %>%
+                     MgO > 3.10 & MgO < 6.10)) %>%
   dplyr::mutate(Location = case_when(
     location_subregion=="TUTUILA" ~ "Tutuila",
     location_subregion=="SAVAI'I" ~ "Savai'i",
@@ -223,25 +176,26 @@ contour <- c("Savai'i"="black","Upolu"="black","Manua Islands"="black",
              "T-12-08"="black","T-12-09"="red","T-12-10"="black")
 
 p1 <- OIB %>%
-  ggplot(aes(x=Rb,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Rb,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(10,60)) + scale_y_continuous(limits=c(180,400)) +
+  scale_x_continuous(limits=c(10,60)) +
+  scale_y_continuous(limits=c(70,200)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.title.x = element_blank(),
         axis.text = element_text(size = 8), legend.position = "none", aspect.ratio=1)
 p2 <- OIB %>%
-  ggplot(aes(x=Ba,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Sr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(120,450)) +
-  scale_y_continuous(limits=c(180,400)) +
+  scale_x_continuous(limits=c(320,950)) +
+  scale_y_continuous(limits=c(70,200)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -249,7 +203,22 @@ p2 <- OIB %>%
         axis.title.y = element_blank(), axis.text.y = element_blank(),
         axis.title.x = element_blank(),
         axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1)
-S16a <- p1|p2
+p3 <- OIB %>%
+  ggplot(aes(x=Zr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
+  scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  #scale_x_continuous(limits=c(150,500)) +
+  scale_y_continuous(limits=c(70,200)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
+        axis.title.y = element_blank(), axis.text.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1)
+S16a <- p1|p2|p3
 S16a
 
 #### Fig S16b ####
@@ -280,33 +249,50 @@ cols <- c("Chuuk"="#6D58A5","Kosrae"="#8476B6","Ponape"="#341D59","K-12-24"="red
 shapes <- c("Chuuk"=23,"Kosrae"=22,"Ponape"=21,"K-12-24"=12)
 contour <- c("Chuuk"="black","Kosrae"="black","Ponape"="black","K-12-24"="red")
 
-p3 <- OIB %>%
-  ggplot(aes(x=Rb,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+p4 <- OIB %>%
+  ggplot(aes(x=Rb,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,55)) + scale_y_continuous(limits=c(250,550)) +
+  #scale_x_continuous(limits=c(0,55)) +
+  scale_y_continuous(limits=c(30,350)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
         axis.title.x = element_blank(), legend.position = "none", aspect.ratio=1)
-p4 <- OIB %>%
-  ggplot(aes(x=Ba,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+p5 <- OIB %>%
+  ggplot(aes(x=Sr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,750)) + scale_y_continuous(limits=c(250,550)) +
+  #scale_x_continuous(limits=c(0,750)) +
+  scale_y_continuous(limits=c(30,350)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
         axis.title.y = element_blank(), axis.text.y = element_blank(),
         axis.title.x = element_blank(),axis.ticks.y = element_blank(),
-        legend.position = "none", aspect.ratio=1) #+
-S16b <- p3|p4
+        legend.position = "none", aspect.ratio=1)
+p6 <- OIB %>%
+  ggplot(aes(x=Zr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
+  scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  #scale_x_continuous(limits=c(0,750)) +
+  scale_y_continuous(limits=c(30,350)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
+        axis.title.y = element_blank(), axis.text.y = element_blank(),
+        axis.title.x = element_blank(),axis.ticks.y = element_blank(),
+        legend.position = "none", aspect.ratio=1)
+S16b <- p4|p5|p6
 S16b
 
 #### Fig S16c ####
@@ -314,15 +300,25 @@ ranges_s_OIB[8,]
 OIB <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
 WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
+`SIO2(WT%)` > 43.1 AND `SIO2(WT%)` < 46.1 AND
 `NA2O(WT%)` > 0.89 AND `NA2O(WT%)` < 3.89 AND
-`K2O(WT%)` < 1.893 AND
-file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv'") %>%
+`K2O(WT%)` < 1.9 AND
+`MGO(WT%)` > 10.7 AND `MGO(WT%)` < 13.7 AND
+(file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part1.csv' OR
+file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv' OR
+file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv' OR
+file_id = '2022-06-WFJZKY_AUSTRAL-COOK_ISLANDS.csv')") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
   dplyr::mutate(Location = case_when(
-    grepl("PONAPE", LOCATION) ~ "Ponape",
-    grepl("KUSAIE", LOCATION) ~ "Kosrae",
-    grepl("KOSRAE", LOCATION) ~ "Kosrae",
-    grepl("CHUUK", LOCATION) ~ "Chuuk")) %>% dplyr::filter(Location != "NA") %>%
+    grepl("CAROLINE", LOCATION) ~ "Caroline",
+    grepl("AUSTRAL-COOK ISLANDS", LOCATION) ~ "Austral-Cook",
+    grepl("HAWAIIAN ISLANDS / HAWAII", LOCATION) ~ "Hawai'i",
+    grepl("HAWAIIAN ISLANDS / KAUAI", LOCATION) ~ "Kaua'i",
+    grepl("HAWAIIAN ISLANDS / MAUI", LOCATION) ~ "Maui",
+    grepl("HAWAIIAN ISLANDS / MOLOKAI", LOCATION) ~ "Moloka'i",
+    grepl("HAWAIIAN ISLANDS / NIIHAU", LOCATION) ~ "Ni'ihau",
+    grepl("HAWAIIAN ISLANDS / OAHU", LOCATION) ~ "O'ahu")) %>%
+  dplyr::filter(Location != "NA") %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
@@ -333,54 +329,80 @@ OIB[OIB == 0] <- NA # Replace 0 with NA
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
   mutate(Location = case_when(grepl("K-12-25", Sample) ~ "K-12-25"))
 
-cols <- c("Chuuk"="#6D58A5","Kosrae"="#8476B6","Ponape"="#341D59","K-12-25"="red")
-shapes <- c("Chuuk"=23,"Kosrae"=22,"Ponape"=21,"K-12-25"=13)
-contour <- c("Chuuk"="black","Kosrae"="black","Ponape"="black","K-12-25"="red")
+cols <- c("Hawai'i"="#EABD00","Maui"="#F4D037","Moloka'i"="#F4D037",
+          "O'ahu"="#F9E385","Kaua'i"="#F4E9BA","Ni'ihau"="#F4E9BA",
+          "Caroline"="#320A5A","Austral-Cook"="#BB3654","K-12-25"="red")
+shapes <- c("Hawai'i"=21,"Maui"=22,"Moloka'i"=23,"O'ahu"=24,"Kaua'i"=25,"Ni'ihau"=21,
+            "Caroline"=21,"Austral-Cook"=23,"K-12-25"=13)
+contour <- c("Hawai'i"="black","Maui"="black","Moloka'i"="black","O'ahu"="black",
+             "Kaua'i"="black","Ni'ihau"="black","Caroline"="black",
+             "Austral-Cook"="black","K-12-25"="red")
 
-p5 <- OIB %>%
-  ggplot(aes(x=Rb,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+p7 <- OIB %>%
+  ggplot(aes(x=Rb,y=U/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,55)) + scale_y_continuous(limits=c(100,550)) +
+  scale_x_continuous(limits=c(0,40)) +
+  scale_y_continuous(limits=c(0,1)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        axis.title.x = element_blank(), legend.position = "none", aspect.ratio=1)
-p6 <- OIB %>%
-  ggplot(aes(x=Ba,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+        axis.title.x = element_blank(),legend.position = "none", aspect.ratio=1) +
+  labs(x="Rb (ppm)")
+p8 <- OIB %>%
+  ggplot(aes(x=Sr,y=U/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,750)) + scale_y_continuous(limits=c(100,550)) +
+  #scale_x_continuous(limits=c(.1,2.3)) +
+  scale_y_continuous(limits=c(0,1)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
         axis.title.y = element_blank(), axis.text.y = element_blank(),
-        axis.title.x = element_blank(),axis.ticks.y = element_blank(),
-        legend.position = "none", aspect.ratio=1)
-S16c <- p5|p6
+        axis.ticks.y = element_blank(), legend.position = "none",
+        axis.title.x = element_blank(),aspect.ratio=1) +
+  labs(x="Sr (ppm)")
+p9 <- OIB %>%
+  ggplot(aes(x=Zr,y=U/Yb, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
+  scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(0,300)) +
+  scale_y_continuous(limits=c(0,1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
+        axis.title.y = element_blank(), axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(), legend.position = "none",
+        axis.title.x = element_blank(),aspect.ratio=1) +
+  labs(x="Zr (ppm)")
+S16c <- p7|p8|p9
 S16c
 
 #### Fig S16d ####
-
 ranges_s_OIB[9,]
 OIB <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
 WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
+`SIO2(WT%)` > 42.9 AND `SIO2(WT%)` < 45.9 AND
 `NA2O(WT%)` > 2.41 AND `NA2O(WT%)` < 5.41 AND
-`K2O(WT%)` < 2.351 AND
-file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv'") %>%
+`K2O(WT%)` < 2.35 AND
+(file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv')") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
   dplyr::mutate(Location = case_when(
     grepl("PONAPE", LOCATION) ~ "Ponape",
     grepl("KUSAIE", LOCATION) ~ "Kosrae",
     grepl("KOSRAE", LOCATION) ~ "Kosrae",
-    grepl("CHUUK", LOCATION) ~ "Chuuk")) %>% dplyr::filter(Location != "NA") %>%
+    grepl("CHUUK", LOCATION) ~ "Chuuk",
+    grepl("HAWAIIAN", LOCATION) ~ "Hawai'i")) %>% dplyr::filter(Location != "NA") %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
@@ -391,38 +413,57 @@ OIB[OIB == 0] <- NA # Replace 0 with NA
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-26")) %>%
   mutate(Location = case_when(grepl("K-12-26", Sample) ~ "K-12-26"))
 
-cols <- c("Chuuk"="#6D58A5","Kosrae"="#8476B6","Ponape"="#341D59","K-12-26"="red")
-shapes <- c("Chuuk"=23,"Kosrae"=22,"Ponape"=21,"K-12-26"=14)
-contour <- c("Chuuk"="black","Kosrae"="black","Ponape"="black","K-12-26"="red")
+cols <- c("Chuuk"="#6D58A5","Kosrae"="#8476B6","Ponape"="#341D59",
+          "Hawai'i"="#F4DD53","K-12-26"="red")
+shapes <- c("Chuuk"=23,"Kosrae"=22,"Ponape"=21,"Hawai'i"=25,"K-12-26"=14)
+contour <- c("Chuuk"="black","Kosrae"="black","Ponape"="black",
+             "Hawai'i"="black","K-12-26"="red")
 
-p7 <- OIB %>%
-  ggplot(aes(x=Rb,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+p10 <- OIB %>%
+  ggplot(aes(x=Rb,y=La/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,55)) + scale_y_continuous(limits=c(100,550)) +
+  #scale_x_continuous(limits=c(0,55)) +
+  #scale_y_continuous(limits=c(0,300)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
         legend.position = "none", aspect.ratio=1) +
   labs(x="Rb (ppm)")
-p8 <- OIB %>%
-  ggplot(aes(x=Ba,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+p11 <- OIB %>%
+  ggplot(aes(x=Sr,y=La/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,750)) + scale_y_continuous(limits=c(100,550)) +
+ # scale_x_continuous(limits=c(0,750)) +
+  #scale_y_continuous(limits=c(0,300)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
         axis.title.y = element_blank(), axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1) +
-  labs(x="Ba (ppm)")
-S16d <- p7|p8
+  labs(x="Sr (ppm)")
+p12 <- OIB %>%
+  ggplot(aes(x=Zr,y=La/Yb, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
+  scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  # scale_x_continuous(limits=c(0,750)) +
+  #scale_y_continuous(limits=c(0,300)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
+        axis.title.y = element_blank(), axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1) +
+  labs(x="Zr (ppm)")
+S16d <- p10|p11|p12
 S16d
 
 pdf(here("analysis","supplementary-materials","FigS16.pdf"), width=8, height=10)

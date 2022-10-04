@@ -253,7 +253,7 @@ FROM 'sample' WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
 file_id = '2022-06-PVFZCE_YAP_ARC.csv'")
 yap
 
-range <- ranges_s_IAB[5,]
+ranges_s_IAB[5,]
 q9 <- dbGetQuery(georoc,
 "SELECT *
 FROM 'sample'

@@ -425,7 +425,7 @@ dev.off()
 #### Fig 4d ####
 ## K1224 PCA 2
 OIB <- q15 %>% dplyr::select(
-  Sample,Location,TiO2,Al2O3,MgO,CaO,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Hf,Eu,Y,Yb)
+  Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
 is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
@@ -433,7 +433,7 @@ OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-24")) %>%
   mutate(Location = case_when(grepl("K-12-24", Sample) ~ "K-12-24")) %>%
   dplyr::select(
-    Sample,Location,TiO2,Al2O3,MgO,CaO,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Hf,Eu,Y,Yb)
+    Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
@@ -445,7 +445,7 @@ K1224_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-8, 5)) + scale_y_continuous(limits=c(-6, 4.2)) +
+  scale_x_continuous(limits=c(-7, 5)) + scale_y_continuous(limits=c(-6, 6)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -468,7 +468,7 @@ K1224_PCA_2b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-8, 5)) + scale_y_continuous(limits=c(-6, 4.2)) +
+  scale_x_continuous(limits=c(-7, 5)) + scale_y_continuous(limits=c(-6, 6)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -481,27 +481,27 @@ K1224_PCA_2b
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:111,"Sample"]),
-  Location = c(d_pca[1:111,"Location"]),
-  PC1 = c(sqrt(((d_pca[112,"PC1"])-d_pca[1:111,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[112,"PC2"])-d_pca[1:111,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[112,"PC3"])-d_pca[1:111,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[112,"PC4"])-d_pca[1:111,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[112,"PC5"])-d_pca[1:111,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[112,"PC6"])-d_pca[1:111,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[112,"PC7"])-d_pca[1:111,"PC7"])^2)),
-  PC8 = c(sqrt(((d_pca[112,"PC8"])-d_pca[1:111,"PC8"])^2)),
-  PC9 = c(sqrt(((d_pca[112,"PC9"])-d_pca[1:111,"PC9"])^2)),
-  PC10 = c(sqrt(((d_pca[112,"PC10"])-d_pca[1:111,"PC10"])^2)),
-  PC11 = c(sqrt(((d_pca[112,"PC11"])-d_pca[1:111,"PC11"])^2)),
-  PC12 = c(sqrt(((d_pca[112,"PC12"])-d_pca[1:111,"PC12"])^2)),
-  PC13 = c(sqrt(((d_pca[112,"PC13"])-d_pca[1:111,"PC13"])^2)),
-  PC14 = c(sqrt(((d_pca[112,"PC14"])-d_pca[1:111,"PC14"])^2)),
-  PC15 = c(sqrt(((d_pca[112,"PC15"])-d_pca[1:111,"PC15"])^2)),
-  PC16 = c(sqrt(((d_pca[112,"PC16"])-d_pca[1:111,"PC16"])^2)),
-  PC17 = c(sqrt(((d_pca[112,"PC17"])-d_pca[1:111,"PC17"])^2)),
-  PC18 = c(sqrt(((d_pca[112,"PC18"])-d_pca[1:111,"PC18"])^2)),
-  PC19 = c(sqrt(((d_pca[112,"PC19"])-d_pca[1:111,"PC19"])^2))) %>%
+  Sample = c(d_pca[1:75,"Sample"]),
+  Location = c(d_pca[1:75,"Location"]),
+  PC1 = c(sqrt(((d_pca[76,"PC1"])-d_pca[1:75,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[76,"PC2"])-d_pca[1:75,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[76,"PC3"])-d_pca[1:75,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[76,"PC4"])-d_pca[1:75,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[76,"PC5"])-d_pca[1:75,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[76,"PC6"])-d_pca[1:75,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[76,"PC7"])-d_pca[1:75,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[76,"PC8"])-d_pca[1:75,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[76,"PC9"])-d_pca[1:75,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[76,"PC10"])-d_pca[1:75,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[76,"PC11"])-d_pca[1:75,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[76,"PC12"])-d_pca[1:75,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[76,"PC13"])-d_pca[1:75,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[76,"PC14"])-d_pca[1:75,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[76,"PC15"])-d_pca[1:75,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[76,"PC16"])-d_pca[1:75,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[76,"PC17"])-d_pca[1:75,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[76,"PC18"])-d_pca[1:75,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[76,"PC19"])-d_pca[1:75,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
       (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
@@ -558,7 +558,7 @@ s <- joined_data %>%
   filter(Sample %in% c("K-12-25")) %>%
   mutate(Location = case_when(grepl("K-12-25", Sample) ~ "K-12-25")) %>%
   dplyr::select(Sample,Location,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
@@ -570,7 +570,7 @@ K1225_PCA_1a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-3.5, 3.5)) + scale_y_continuous(limits=c(-2, 2)) +
+  scale_x_continuous(limits=c(-3, 2.5)) + scale_y_continuous(limits=c(-2, 2)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -594,7 +594,7 @@ K1225_PCA_1b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-3.5, 3.5)) + scale_y_continuous(limits=c(-2, 2)) +
+  scale_x_continuous(limits=c(-3, 2.5)) + scale_y_continuous(limits=c(-2, 2)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -607,13 +607,13 @@ K1225_PCA_1b
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:94,"Sample"]),
-  Location = c(d_pca[1:94,"Location"]),
-  PC1 = c(sqrt(((median(d_pca[95,"PC1"]))-d_pca[1:94,"PC1"])^2)),
-  PC2 = c(sqrt(((median(d_pca[95,"PC2"]))-d_pca[1:94,"PC2"])^2)),
-  PC3 = c(sqrt(((median(d_pca[95,"PC3"]))-d_pca[1:94,"PC3"])^2)),
-  PC4 = c(sqrt(((median(d_pca[95,"PC4"]))-d_pca[1:94,"PC4"])^2)),
-  PC5 = c(sqrt(((median(d_pca[95,"PC5"]))-d_pca[1:94,"PC5"])^2))) %>%
+  Sample = c(d_pca[1:30,"Sample"]),
+  Location = c(d_pca[1:30,"Location"]),
+  PC1 = c(sqrt(((median(d_pca[31,"PC1"]))-d_pca[1:30,"PC1"])^2)),
+  PC2 = c(sqrt(((median(d_pca[31,"PC2"]))-d_pca[1:30,"PC2"])^2)),
+  PC3 = c(sqrt(((median(d_pca[31,"PC3"]))-d_pca[1:30,"PC3"])^2)),
+  PC4 = c(sqrt(((median(d_pca[31,"PC4"]))-d_pca[1:30,"PC4"])^2)),
+  PC5 = c(sqrt(((median(d_pca[31,"PC5"]))-d_pca[1:30,"PC5"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+
       (PC4*eig[4,2])+(PC5*eig[5,2])) / (sum(eig[1:5,2])))
@@ -658,6 +658,7 @@ dev.off()
 ## K1225 PCA 2
 OIB <- q17 %>% dplyr::select(
   Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
+
 is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
@@ -678,7 +679,7 @@ K1225_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-7, 9)) + scale_y_continuous(limits=c(-4, 4)) +
+  scale_x_continuous(limits=c(-8, 8)) + scale_y_continuous(limits=c(-4, 4)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -702,7 +703,7 @@ K1225_PCA_2b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-7, 9)) + scale_y_continuous(limits=c(-4, 4)) +
+  scale_x_continuous(limits=c(-8, 8)) + scale_y_continuous(limits=c(-4, 4)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -715,27 +716,27 @@ K1225_PCA_2b
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:29,"Sample"]),
-  Location = c(d_pca[1:29,"Location"]),
-  PC1 = c(sqrt(((d_pca[30,"PC1"])-d_pca[1:29,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[30,"PC2"])-d_pca[1:29,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[30,"PC3"])-d_pca[1:29,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[30,"PC4"])-d_pca[1:29,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[30,"PC5"])-d_pca[1:29,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[30,"PC6"])-d_pca[1:29,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[30,"PC7"])-d_pca[1:29,"PC7"])^2)),
-  PC8 = c(sqrt(((d_pca[30,"PC8"])-d_pca[1:29,"PC8"])^2)),
-  PC9 = c(sqrt(((d_pca[30,"PC9"])-d_pca[1:29,"PC9"])^2)),
-  PC10 = c(sqrt(((d_pca[30,"PC10"])-d_pca[1:29,"PC10"])^2)),
-  PC11 = c(sqrt(((d_pca[30,"PC11"])-d_pca[1:29,"PC11"])^2)),
-  PC12 = c(sqrt(((d_pca[30,"PC12"])-d_pca[1:29,"PC12"])^2)),
-  PC13 = c(sqrt(((d_pca[30,"PC13"])-d_pca[1:29,"PC13"])^2)),
-  PC14 = c(sqrt(((d_pca[30,"PC14"])-d_pca[1:29,"PC14"])^2)),
-  PC15 = c(sqrt(((d_pca[30,"PC15"])-d_pca[1:29,"PC15"])^2)),
-  PC16 = c(sqrt(((d_pca[30,"PC16"])-d_pca[1:29,"PC16"])^2)),
-  PC17 = c(sqrt(((d_pca[30,"PC17"])-d_pca[1:29,"PC17"])^2)),
-  PC18 = c(sqrt(((d_pca[30,"PC18"])-d_pca[1:29,"PC18"])^2)),
-  PC19 = c(sqrt(((d_pca[30,"PC19"])-d_pca[1:29,"PC19"])^2))) %>%
+  Sample = c(d_pca[1:79,"Sample"]),
+  Location = c(d_pca[1:79,"Location"]),
+  PC1 = c(sqrt(((d_pca[80,"PC1"])-d_pca[1:79,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[80,"PC2"])-d_pca[1:79,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[80,"PC3"])-d_pca[1:79,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[80,"PC4"])-d_pca[1:79,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[80,"PC5"])-d_pca[1:79,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[80,"PC6"])-d_pca[1:79,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[80,"PC7"])-d_pca[1:79,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[80,"PC8"])-d_pca[1:79,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[80,"PC9"])-d_pca[1:79,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[80,"PC10"])-d_pca[1:79,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[80,"PC11"])-d_pca[1:79,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[80,"PC12"])-d_pca[1:79,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[80,"PC13"])-d_pca[1:79,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[80,"PC14"])-d_pca[1:79,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[80,"PC15"])-d_pca[1:79,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[80,"PC16"])-d_pca[1:79,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[80,"PC17"])-d_pca[1:79,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[80,"PC18"])-d_pca[1:79,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[80,"PC19"])-d_pca[1:79,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
       (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
@@ -892,7 +893,8 @@ dev.off()
 #### Fig 4h ####
 ## K1226 PCA 2
 OIB <- q19 %>% dplyr::select(
-  Sample,Location,SiO2,K2O,Na2O,MgO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Eu,Y,Yb)
+  Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
+
 is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
@@ -901,8 +903,7 @@ s <- joined_data %>%
   dplyr::filter(Sample %in% c("K-12-26")) %>%
   mutate(Location = case_when(grepl("K-12-26", Sample) ~ "K-12-26")) %>%
   dplyr::select(
-    Sample,Location,SiO2,K2O,Na2O,MgO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Eu,Y,Yb)
-    #Sample,Location,SiO2,K2O,Na2O,MgO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Hf,Eu,Y,Yb)
+    Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
@@ -914,7 +915,7 @@ K1226_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-6, 5)) + scale_y_continuous(limits=c(-1.5, 2)) +
+  scale_x_continuous(limits=c(-7, 6)) + scale_y_continuous(limits=c(-4.4, 3.4)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -938,7 +939,7 @@ K1226_PCA_2b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-6, 5)) + scale_y_continuous(limits=c(-1.5, 2)) +
+  scale_x_continuous(limits=c(-7, 6)) + scale_y_continuous(limits=c(-4.4, 3.4)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -951,27 +952,27 @@ K1226_PCA_2b
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:34,"Sample"]),
-  Location = c(d_pca[1:34,"Location"]),
-  PC1 = c(sqrt(((d_pca[35,"PC1"])-d_pca[1:34,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[35,"PC2"])-d_pca[1:34,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[35,"PC3"])-d_pca[1:34,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[35,"PC4"])-d_pca[1:34,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[35,"PC5"])-d_pca[1:34,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[35,"PC6"])-d_pca[1:34,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[35,"PC7"])-d_pca[1:34,"PC7"])^2)),
-  PC8 = c(sqrt(((d_pca[35,"PC8"])-d_pca[1:34,"PC8"])^2)),
-  PC9 = c(sqrt(((d_pca[35,"PC9"])-d_pca[1:34,"PC9"])^2)),
-  PC10 = c(sqrt(((d_pca[35,"PC10"])-d_pca[1:34,"PC10"])^2)),
-  PC11 = c(sqrt(((d_pca[35,"PC11"])-d_pca[1:34,"PC11"])^2)),
-  PC12 = c(sqrt(((d_pca[35,"PC12"])-d_pca[1:34,"PC12"])^2)),
-  PC13 = c(sqrt(((d_pca[35,"PC13"])-d_pca[1:34,"PC13"])^2)),
-  PC14 = c(sqrt(((d_pca[35,"PC14"])-d_pca[1:34,"PC14"])^2)),
-  PC15 = c(sqrt(((d_pca[35,"PC15"])-d_pca[1:34,"PC15"])^2)),
-  PC16 = c(sqrt(((d_pca[35,"PC16"])-d_pca[1:34,"PC16"])^2)),
-  PC17 = c(sqrt(((d_pca[35,"PC17"])-d_pca[1:34,"PC17"])^2)),
-  PC18 = c(sqrt(((d_pca[35,"PC18"])-d_pca[1:34,"PC18"])^2)),
-  PC19 = c(sqrt(((d_pca[35,"PC19"])-d_pca[1:34,"PC19"])^2))) %>%
+  Sample = c(d_pca[1:42,"Sample"]),
+  Location = c(d_pca[1:42,"Location"]),
+  PC1 = c(sqrt(((d_pca[43,"PC1"])-d_pca[1:42,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[43,"PC2"])-d_pca[1:42,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[43,"PC3"])-d_pca[1:42,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[43,"PC4"])-d_pca[1:42,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[43,"PC5"])-d_pca[1:42,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[43,"PC6"])-d_pca[1:42,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[43,"PC7"])-d_pca[1:42,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[43,"PC8"])-d_pca[1:42,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[43,"PC9"])-d_pca[1:42,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[43,"PC10"])-d_pca[1:42,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[43,"PC11"])-d_pca[1:42,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[43,"PC12"])-d_pca[1:42,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[43,"PC13"])-d_pca[1:42,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[43,"PC14"])-d_pca[1:42,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[43,"PC15"])-d_pca[1:42,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[43,"PC16"])-d_pca[1:42,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[43,"PC17"])-d_pca[1:42,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[43,"PC18"])-d_pca[1:42,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[43,"PC19"])-d_pca[1:42,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
       (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+

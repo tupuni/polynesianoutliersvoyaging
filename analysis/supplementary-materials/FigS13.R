@@ -485,6 +485,25 @@ pdf(here("analysis","supplementary-materials","FigS13","FigS13-c.pdf"), width=5,
 K_12_28_spider
 dev.off()
 
+citation <- dbGetQuery(georoc,
+"SELECT sample_id, reference_id
+FROM 'citation'
+WHERE sample_id='13440-GN1/4' OR
+sample_id='634323' OR
+sample_id='634326' OR
+sample_id='634330' OR
+sample_id='634331'")
+citation
+reference <- dbGetQuery(georoc,
+"SELECT id, reference
+FROM 'reference'
+WHERE id='2703' OR
+id='2496' OR
+id='16728'") %>% rename(reference_id=id)
+reference
+cite <- full_join(citation,reference)
+cite
+
 #### K_12_29 ####
 ranges_s_IAB[5,1:35]
 IAB <- dbGetQuery(georoc,
@@ -617,5 +636,25 @@ K_12_29_spider
 pdf(here("analysis","supplementary-materials","FigS13","FigS13-d.pdf"), width=5, height=2)
 K_12_29_spider
 dev.off()
+
+
+citation <- dbGetQuery(georoc,
+"SELECT sample_id, reference_id
+FROM 'citation'
+WHERE sample_id='144138-KS094' OR
+sample_id='527523' OR
+sample_id='527524' OR
+sample_id='70512'")
+citation
+reference <- dbGetQuery(georoc,
+"SELECT id, reference
+FROM 'reference'
+WHERE id='24095' OR
+id='19607' OR
+id='4032' OR
+id='15303'") %>% rename(reference_id=id)
+reference
+cite <- full_join(citation,reference)
+cite
 
 
