@@ -27,157 +27,146 @@ contour <- c("Caroline islands"="black","Samoan islands"="black",
              "T-12-07"="red","T-12-08"="red","T-12-09"="red",
              "T-12-10"="red","K-12-24"="red","K-12-25"="red","K-12-26"="red")
 
-#### Fig 15a ####
+dir.create(here("analysis","supplementary-materials","FigS15"))
 
-#OIB <- full_join(q10,q11)
-OIB <- dbGetQuery(georoc,
+#### Fig S15 A ####
+OIB1 <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND' AND
-((PB206_PB204 > 18.658 AND PB206_PB204 < 19.034) OR
-(PB206_PB204 > 18.701 AND PB206_PB204 < 19.079) OR
-(PB206_PB204 > 18.722 AND PB206_PB204 < 19.100) OR
-(PB206_PB204 > 18.720 AND PB206_PB204 < 19.098) OR
-(PB206_PB204 > 18.736 AND PB206_PB204 < 19.114) OR
-(PB206_PB204 > 18.624 AND PB206_PB204 < 19))") %>%
-  get_georoc_location() %>% filter(Location != "na") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
+TECTONIC_SETTING='OCEAN ISLAND'") %>%
+  get_georoc_location() %>% filter(Location != "na") %>% rename_georoc() %>%
+  dplyr::select(Sample,Location,lat,long,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-OIB <- full_join(OIB,q11)
+OIB2 <- dbGetQuery(pofatu,
+"SELECT s.id AS sample_id, s.sample_category, s.location_region,
+s.location_subregion, s.location_latitude, s.location_longitude,
+max(CASE WHEN m.parameter='Nd143_Nd144' then m.value END) AS 'Nd143_Nd144',
+max(CASE WHEN m.parameter='Sr87_Sr86' then m.value END) AS 'Sr87_Sr86',
+max(CASE WHEN m.parameter='Pb206_Pb204' then m.value END) AS 'Pb206_Pb204',
+max(CASE WHEN m.parameter='Pb207_Pb204' then m.value END) AS 'Pb207_Pb204',
+max(CASE WHEN m.parameter='Pb208_Pb204' then m.value END) AS 'Pb208_Pb204'
+FROM 'samples.csv' AS s JOIN 'measurements.csv' AS m ON s.id=m.sample_id
+WHERE s.sample_category = 'SOURCE'
+AND m.parameter IN ('Nd143_Nd144', 'Sr87_Sr86','Pb206_Pb204', 'Pb207_Pb204',
+'Pb208_Pb204') GROUP BY sample_id") %>%
+  dplyr::mutate(Location = case_when(
+    location_region == "AUSTRAL" ~ "Austral-Cook chain",
+    location_region == "CAROLINE" ~ "Caroline islands",
+    location_region == "COOK ISLANDS" ~ "Austral-Cook chain",
+    location_region == "GAMBIER" ~ "Pitcairn-Gambier chain",
+    location_region == "HAWAI'I" ~ "Hawai'i islands",
+    location_region == "HENDERSON" ~ "Pitcairn-Gambier chain",
+    location_region == "MARQUESAS" ~ "Marquesas islands",
+    location_region == "PITCAIRN" ~ "Pitcairn-Gambier chain",
+    location_region == "SAMOA" ~ "Samoan islands",
+    location_region == "SOCIETY" ~ "Society islands",
+    TRUE ~ "na")) %>%
+  dplyr::rename(Sample=sample_id,lat=location_latitude,long=location_longitude) %>%
+  dplyr::filter(Location %in% c(
+    "Caroline islands","Samoan islands","Austral-Cook chain","Society islands",
+    "Hawai'i islands","Marquesas islands","Pitcairn-Gambier chain")) %>%
+  dplyr::select(Sample,Location,lat,long,Sr87_Sr86,Nd143_Nd144,
+                Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+OIB <- full_join(OIB1,OIB2)
 
 s <- joined_data %>% dplyr::filter(Sample %in% c(
-  "E-11-08","T-12-06","T-12-07","T-12-08","T-12-09","T-12-10")) %>%
+  "E-11-08","T-12-06","T-12-07","T-12-08","T-12-09","T-12-10",
+  "K-12-24","K-12-25","K-12-26")) %>%
   mutate(Location = case_when(
     grepl("E-11-08", Sample) ~ "E-11-08",
     grepl("T-12-06", Sample) ~ "T-12-06",
     grepl("T-12-07", Sample) ~ "T-12-07",
     grepl("T-12-08", Sample) ~ "T-12-08",
     grepl("T-12-09", Sample) ~ "T-12-09",
-    grepl("T-12-10", Sample) ~ "T-12-10"))
+    grepl("T-12-10", Sample) ~ "T-12-10",
+    grepl("K-12-24", Sample) ~ "K-12-24",
+    grepl("K-12-25", Sample) ~ "K-12-25",
+    grepl("K-12-26", Sample) ~ "K-12-26")) %>% dplyr::select(
+      Sample,Location,Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
-E_T <- OIB %>%
+A <- OIB %>%
   ggplot(aes(x=Pb206_Pb204,y=Pb208_Pb204, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_y_continuous(limits=c(38.1, 39.3)) +
+  scale_x_continuous(limits=c(17,20)) +
+  scale_y_continuous(position = "right", limits=c(37.7, 39.8)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 10),
-        axis.title.x = element_blank(),
+        axis.title = element_text(size = 18), axis.text = element_text(size = 10),
         legend.position = "none", aspect.ratio=1) +
   labs(x=expression({}^206*"Pb / "*{}^204*"Pb"),
        y=expression({}^208*"Pb / "*{}^204*"Pb"))
-E_T
-
-#### Fig 15b ####
-#OIB <- q14
-OIB <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND' AND
-(PB206_PB204 > 18.221 AND PB206_PB204 < 18.589)") %>%
-  get_georoc_location() %>% filter(Location != "na") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
-s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-24")) %>%
-  mutate(Location = case_when(grepl("K-12-24", Sample) ~ "K-12-24"))
-
-K_12_24 <- OIB %>%
-  ggplot(aes(x=Pb206_Pb204,y=Pb208_Pb204, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_y_continuous(limits=c(37.8, 39.2)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 10),
-        legend.position = "none", aspect.ratio=1) +
-  labs(x=expression({}^206*"Pb / "*{}^204*"Pb"),
-       y=expression({}^208*"Pb / "*{}^204*"Pb"))
-K_12_24
-
-#### Fig 15c ####
-
-#OIB <- q16
-OIB <- dbGetQuery(georoc,
-"SELECT *
-FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND' AND
-PB206_PB204 > 18.438 AND PB206_PB204 < 18.81") %>%
-  get_georoc_location() %>% filter(Location != "na") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
-s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
-  mutate(Location = case_when(grepl("K-12-25", Sample) ~ "K-12-25"))
-
-K_12_25 <- OIB %>%
-  ggplot(aes(x=Pb206_Pb204,y=Pb208_Pb204, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_y_continuous(limits=c(37.8, 39.2)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 10),
-        axis.title.x = element_blank(),
-        legend.position = "none", aspect.ratio=1) +
-  labs(x=expression({}^206*"Pb / "*{}^204*"Pb"),
-       y=expression({}^208*"Pb / "*{}^204*"Pb"))
-K_12_25
-
-#### Fig 15d ####
-#OIB <- q18
-q18 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND' AND
-(PB206_PB204 > 18.54 AND PB206_PB204 < 18.914)") %>%
-  get_georoc_location() %>% filter(Location != "na") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
-s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-26")) %>%
-  mutate(Location = case_when(grepl("K-12-26", Sample) ~ "K-12-26"))
-
-K_12_26 <- OIB %>%
-  ggplot(aes(x=Pb206_Pb204,y=Pb208_Pb204, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_y_continuous(limits=c(37.8, 39.2)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 10),
-        legend.position = "none", aspect.ratio=1) +
-  labs(x=expression({}^206*"Pb / "*{}^204*"Pb"),
-       y=expression({}^208*"Pb / "*{}^204*"Pb"))
-K_12_26
-
-
-pdf(here("analysis","supplementary-materials","FigS15.pdf"), width=8, height=8)
-(E_T/K_12_24)|(K_12_25/K_12_26)
+A
+pdf(here("analysis","supplementary-materials","FigS15","FigS15-A.pdf"), width=8, height=8)
+A
 dev.off()
+
+A_detail <- OIB %>%
+  ggplot(aes(x=Pb206_Pb204,y=Pb208_Pb204, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(position = "top", limits=c(18.1,19.25), expand=c(0,0)) +
+  scale_y_continuous(limits=c(38, 39.25), expand=c(0,0)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_blank(), axis.text = element_text(size = 10),
+        legend.position = "none", aspect.ratio=1)
+A_detail
+pdf(here("analysis","supplementary-materials","FigS15","FigS15-A_detail.pdf"), width=6, height=6)
+A_detail
+dev.off()
+
+
+B <- OIB %>%
+  ggplot(aes(x=Sr87_Sr86,y=Nd143_Nd144, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(.7027,.7065)) +
+  scale_y_continuous(limits=c(.5126, .5131)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_text(size = 18), axis.text = element_text(size = 10),
+        legend.position = "none", aspect.ratio=1) +
+  labs(x=expression({}^87*"Sr / "*{}^86*"Sr"),
+       y=expression({}^143*"Nd / "*{}^144*"Nd"))
+B
+pdf(here("analysis","supplementary-materials","FigS15","FigS15-B.pdf"), width=8, height=8)
+B
+dev.off()
+
+B_detail <- OIB %>%
+  ggplot(aes(x=Sr87_Sr86,y=Nd143_Nd144, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(position="top", limits=c(.703,.7056)) +
+  scale_y_continuous(position="right", limits=c(.5128, .51305)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_blank(), axis.text = element_text(size = 10),
+        legend.position = "none", aspect.ratio=1)
+B_detail
+pdf(here("analysis","supplementary-materials","FigS15","FigS15-B_detail.pdf"), width=6, height=6)
+B_detail
+dev.off()
+
+

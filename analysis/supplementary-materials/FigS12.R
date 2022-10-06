@@ -33,12 +33,13 @@ s <- joined_data %>%
   mutate(Location = case_when(grepl("E-11-03", Sample) ~ "E-11-03"))
 
 p1 <- IAB %>%
-  ggplot(aes(x=Nb/La,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Rb,y=U/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,1.5)) + scale_y_continuous(limits=c(0,500)) +
+  #scale_x_continuous(limits=c(0,.35)) +
+  scale_y_continuous(limits=c(0,12)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -46,129 +47,212 @@ p1 <- IAB %>%
         axis.text = element_text(size = 8),
         legend.position = "none", aspect.ratio=1)
 p2 <- IAB %>%
-  ggplot(aes(x=Ba/Yb,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Sr,y=U/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,1000)) + scale_y_continuous(limits=c(0,500)) +
+  #scale_x_continuous(limits=c(0,.35)) +
+  scale_y_continuous(limits=c(0,12)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        axis.title.y = element_blank(), axis.text.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1)
-S12a <- p1|p2
+        axis.title = element_blank(), axis.text = element_text(size = 8),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        legend.position = "none", aspect.ratio=1)
+p3 <- IAB %>%
+  ggplot(aes(x=Zr,y=U/Yb, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
+  scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(80,350)) +
+  scale_y_continuous(limits=c(0,12)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_blank(), axis.text = element_text(size = 8),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        legend.position = "none", aspect.ratio=1)
+S12a <- p1|p2|p3
+S12a
 
 #### Fig S12b ####
 IAB <- q5
 s <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-06","E-11-07")) %>%
   mutate(Location = case_when(
-    grepl("E-11-10", Sample) ~ "E-11-10",
-    grepl("E-11-11", Sample) ~ "E-11-11",
-    grepl("E-11-13", Sample) ~ "E-11-13",
-    grepl("E-11-16", Sample) ~ "E-11-16",
-    grepl("E-11-18", Sample) ~ "E-11-18",
+    grepl("E-11-10", Sample) ~ "Vanuatu Arc",
+    grepl("E-11-11", Sample) ~ "Vanuatu Arc",
+    grepl("E-11-13", Sample) ~ "Vanuatu Arc",
+    grepl("E-11-16", Sample) ~ "Vanuatu Arc",
+    grepl("E-11-18", Sample) ~ "Vanuatu Arc",
     grepl("E-11-06", Sample) ~ "E-11-06",
-    grepl("E-11-07", Sample) ~ "E-11-07"))
-p3 <- IAB %>%
-  ggplot(aes(x=Nb/La,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,1)) + scale_y_continuous(limits=c(0,1000)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        axis.title.x = element_blank(),
-        legend.position = "none", aspect.ratio=1)
+    grepl("E-11-07", Sample) ~ "E-11-07")) %>%
+  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
+                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
+                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+
+IAB <- full_join(IAB,s[3:7,])
+s <- s[1:2,]
+
 p4 <- IAB %>%
-  ggplot(aes(x=Ba/Yb,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Rb,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,500)) + scale_y_continuous(limits=c(0,1000)) +
+  scale_x_continuous(limits=c(0,55)) + scale_y_continuous(limits=c(0,400)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        axis.title.y = element_blank(), axis.text.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1) #+
-S12b <- p3|p4
+        axis.title = element_text(size = 14), axis.title.x = element_blank(),
+        axis.text = element_text(size = 8),
+        legend.position = "none", aspect.ratio=1)
+p5 <- IAB %>%
+  ggplot(aes(x=Sr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
+  scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(0,1500)) + scale_y_continuous(limits=c(0,400)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_blank(), axis.text = element_text(size = 8),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        legend.position = "none", aspect.ratio=1)
+p6 <- IAB %>%
+  ggplot(aes(x=Zr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
+  scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(0,150)) + scale_y_continuous(limits=c(0,400)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_blank(), axis.text = element_text(size = 8),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        legend.position = "none", aspect.ratio=1)
+S12b <- p4|p5|p6
+S12b
 
 #### Fig S12c ####
 IAB <- q7
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-28")) %>%
   mutate(Location = case_when(grepl("K-12-28", Sample) ~ "K-12-28"))
-p5 <- IAB %>%
-  ggplot(aes(x=Nb/La,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+
+p7 <- IAB %>%
+  ggplot(aes(x=Rb,y=U/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Bismarck Arc")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,1)) + scale_y_continuous(limits=c(0,500)) +
+  scale_x_continuous(limits=c(0,45)) + scale_y_continuous(limits=c(0,.8)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        axis.title.x = element_blank(),
+        axis.title = element_text(size = 14), axis.title.x = element_blank(),
+        axis.text = element_text(size = 8),
         legend.position = "none", aspect.ratio=1)
-p6 <- IAB %>%
-  ggplot(aes(x=Ba/Yb,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+p8 <- IAB %>%
+  ggplot(aes(x=Sr,y=U/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Bismarck Arc")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,300)) + scale_y_continuous(limits=c(0,500)) +
+  scale_x_continuous(limits=c(0,1000)) + scale_y_continuous(limits=c(0,.8)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        axis.title.y = element_blank(), axis.text.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1) #+
-S12c <- p5|p6
+        axis.title = element_blank(), axis.text = element_text(size = 8),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        legend.position = "none", aspect.ratio=1)
+p9 <- IAB %>%
+  ggplot(aes(x=Zr,y=U/Yb, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Bismarck Arc")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(0,150)) + scale_y_continuous(limits=c(0,.8)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_blank(), axis.text = element_text(size = 8),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        legend.position = "none", aspect.ratio=1)
+S12c <- p7|p8|p9
 S12c
 
 #### Fig S12d ####
-ranges_s_IAB[5,]
-IAB <- q9 %>% dplyr::filter(
-  MgO > 1.34 & MgO < 4.34)
-s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-29")) %>%
-  mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29"))
+IAB <- q9
+
+s <- joined_data %>% dplyr::filter(Sample %in% c(
+  "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","K-12-29")) %>%
+  mutate(Location = case_when(
+    grepl("E-11-10", Sample) ~ "Vanuatu Arc",
+    grepl("E-11-11", Sample) ~ "Vanuatu Arc",
+    grepl("E-11-13", Sample) ~ "Vanuatu Arc",
+    grepl("E-11-16", Sample) ~ "Vanuatu Arc",
+    grepl("E-11-18", Sample) ~ "Vanuatu Arc",
+    grepl("K-12-29", Sample) ~ "K-12-29")) %>%
+  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
+                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
+                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+IAB <- full_join(IAB,s[1:5,])
+s <- s[6,]
 
 p7 <- IAB %>%
-  ggplot(aes(x=Nb/La,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Rb,y=Th/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Vanuatu Arc")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,.5)) + scale_y_continuous(limits=c(90,500)) +
+  scale_x_continuous(limits=c(0,60)) + scale_y_continuous(limits=c(0,3)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        legend.position = "none", aspect.ratio=1)
+        legend.position = "none", aspect.ratio=1) +
+  labs(x="Rb (ppm)")
 p8 <- IAB %>%
-  ggplot(aes(x=Ba/Yb,y=Sr/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Sr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Vanuatu Arc")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,300)) + scale_y_continuous(limits=c(100,500)) +
+  scale_x_continuous(limits=c(0,1200)) + scale_y_continuous(limits=c(0,3)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
-        axis.title.y = element_blank(), axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1)
-S12d <- p7|p8
+        axis.text.y = element_blank(), axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(), legend.position = "none", aspect.ratio=1) +
+  labs(x="Sr (ppm)")
+p9 <- IAB %>%
+  ggplot(aes(x=Zr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(IAB, Location %in% c("Vanuatu Arc")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(0,150)) + scale_y_continuous(limits=c(0,3)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_text(size = 14), axis.text = element_text(size = 8),
+        axis.text.y = element_blank(), axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(), legend.position = "none", aspect.ratio=1) +
+  labs(x="Zr (ppm)")
+S12d <- p7|p8|p9
 S12d
 
 pdf(here("analysis","supplementary-materials","FigS12.pdf"), width=8, height=10)

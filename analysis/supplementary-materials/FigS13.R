@@ -11,11 +11,10 @@ pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
 dir.create(here("analysis","supplementary-materials","FigS13"))
 
-#### IAB ####
 #### E_11_03 ####
 IAB <- full_join(q2,q3) %>%
   dplyr::select(
-    Sample,Location,Cs,Rb,Ba,Nb,La,Zr,Ti)
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
 IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
@@ -24,34 +23,51 @@ s <- joined_data %>%
   filter(Sample %in% c("E-11-03")) %>%
   mutate(Location = case_when(grepl("E-11-03", Sample) ~ "E-11-03")) %>%
   dplyr::select(
-    Sample,Location,Cs,Rb,Ba,Nb,La,Zr,Ti)
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 
-res.pca <- prcomp(IAB[,3:9],  scale = TRUE, center = TRUE) # Dimension reduction using PCA
+res.pca <- prcomp(IAB[,3:21],  scale = TRUE, center = TRUE) # Dimension reduction using PCA
 eig <- get_eig(res.pca)
-pred <- stats::predict(res.pca, s[,3:9])
+pred <- stats::predict(res.pca, s[,3:21])
 pred <- cbind(s[,1:2], pred)
 res.pca.df <- cbind(IAB[,1:2], (as.data.frame(res.pca$x)))
 d_pca <- full_join(res.pca.df, pred)
 
+# PC values > distance to artefacts (individual or median of group)
+# distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:24,"Sample"]),
-  Location = c(d_pca[1:24,"Location"]),
-  PC1 = c(sqrt(((d_pca[25,"PC1"])-d_pca[1:24,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[25,"PC2"])-d_pca[1:24,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[25,"PC3"])-d_pca[1:24,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[25,"PC4"])-d_pca[1:24,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[25,"PC5"])-d_pca[1:24,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[25,"PC6"])-d_pca[1:24,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[25,"PC7"])-d_pca[1:24,"PC7"])^2))) %>%
+  Sample = c(d_pca[1:33,"Sample"]),
+  Location = c(d_pca[1:33,"Location"]),
+  PC1 = c(sqrt(((d_pca[39,"PC1"])-d_pca[1:33,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[39,"PC2"])-d_pca[1:33,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[39,"PC3"])-d_pca[1:33,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[39,"PC4"])-d_pca[1:33,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[39,"PC5"])-d_pca[1:33,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[39,"PC6"])-d_pca[1:33,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[39,"PC7"])-d_pca[1:33,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[39,"PC8"])-d_pca[1:33,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[39,"PC9"])-d_pca[1:33,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[39,"PC10"])-d_pca[1:33,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[39,"PC11"])-d_pca[1:33,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[39,"PC12"])-d_pca[1:33,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[39,"PC13"])-d_pca[1:33,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[39,"PC14"])-d_pca[1:33,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[39,"PC15"])-d_pca[1:33,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[39,"PC16"])-d_pca[1:33,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[39,"PC17"])-d_pca[1:33,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[39,"PC18"])-d_pca[1:33,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[39,"PC19"])-d_pca[1:33,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
-      (PC6*eig[6,2])+(PC7*eig[7,2])) / (sum(eig[1:7,2])))
-head(dist[order(dist$weight_mean),] %>% dplyr::select("Sample","Location","weight_mean"))
+      (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
+      (PC10*eig[10,2])+(PC11*eig[11,2])+(PC12*eig[12,2])+(PC13*eig[13,2])+
+      (PC14*eig[14,2])+(PC15*eig[15,2])+(PC16*eig[16,2])+(PC17*eig[17,2])+
+      (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
-#### plot ####
+head(arrange(dist,weight_mean))
+
 d <- dbGetQuery(pofatu,
-"SELECT s.id AS sample_id, s.location_region, s.location_subregion,
-s.location_latitude, s.location_longitude,
+"SELECT s.id AS sample_id, s.sample_category, s.location_region,
+s.location_subregion, s.location_latitude, s.location_longitude,
 max(CASE WHEN m.parameter='SiO2 [%]' then m.value END) AS 'SiO2 [%]',
 max(CASE WHEN m.parameter='TiO2 [%]' then m.value END) AS 'TiO2 [%]',
 max(CASE WHEN m.parameter='Al2O3 [%]' then m.value END) AS 'Al2O3 [%]',
@@ -99,31 +115,39 @@ max(CASE WHEN m.parameter='Ta [ppm]' then m.value END) AS 'Ta [ppm]',
 max(CASE WHEN m.parameter='Tl [ppm]' then m.value END) AS 'Tl [ppm]',
 max(CASE WHEN m.parameter='Pb [ppm]' then m.value END) AS 'Pb [ppm]',
 max(CASE WHEN m.parameter='Th [ppm]' then m.value END) AS 'Th [ppm]',
-max(CASE WHEN m.parameter='U [ppm]' then m.value END) AS 'U [ppm]'
+max(CASE WHEN m.parameter='U [ppm]' then m.value END) AS 'U [ppm]',
+max(CASE WHEN m.parameter='Nd143_Nd144' then m.value END) AS 'Nd143_Nd144',
+max(CASE WHEN m.parameter='Sr87_Sr86' then m.value END) AS 'Sr87_Sr86',
+max(CASE WHEN m.parameter='Pb206_Pb204' then m.value END) AS 'Pb206_Pb204',
+max(CASE WHEN m.parameter='Pb207_Pb204' then m.value END) AS 'Pb207_Pb204',
+max(CASE WHEN m.parameter='Pb208_Pb204' then m.value END) AS 'Pb208_Pb204'
 FROM 'samples.csv' AS s JOIN 'measurements.csv' AS m ON s.id=m.sample_id
-WHERE (sample_id = 'reepmeyer2008_ANU9005' OR
-sample_id = 'reepmeyer2008_ANU9014' OR
-sample_id = 'reepmeyer2008_ANU9007') AND
-m.parameter IN ('SiO2 [%]', 'TiO2 [%]', 'Al2O3 [%]', 'Fe2O3 [%]', 'FeO [%]',
-'MnO [%]', 'MgO [%]', 'CaO [%]', 'Na2O [%]', 'K2O [%]',
-'Li [ppm]', 'Sc [ppm]', 'Ti [ppm]', 'V [ppm]',
+WHERE (sample_id = 'reepmeyer2008_ANU9006' OR sample_id = 'reepmeyer2008_ANU9009'
+OR sample_id = 'reepmeyer2008_ANU9008' OR sample_id = 'reepmeyer2008_ANU9003') AND
+m.parameter IN ('SiO2 [%]', 'TiO2 [%]', 'Al2O3 [%]', 'MnO [%]', 'MgO [%]', 'Fe2O3 [%]', 'FeO [%]',
+'CaO [%]','Na2O [%]', 'K2O [%]', 'Li [ppm]', 'Sc [ppm]', 'Ti [ppm]', 'V [ppm]',
 'Cr [ppm]', 'Co [ppm]', 'Ni [ppm]', 'Cu [ppm]', 'Zn [ppm]', 'As [ppm]',
 'Rb [ppm]', 'Sr [ppm]', 'Y [ppm]', 'Zr [ppm]', 'Nb [ppm]', 'Cd [ppm]',
 'Cs [ppm]', 'Ba [ppm]', 'La [ppm]', 'Ce [ppm]', 'Pr [ppm]', 'Nd [ppm]',
 'Sm [ppm]', 'Eu [ppm]', 'Gd [ppm]', 'Tb [ppm]', 'Dy [ppm]', 'Ho [ppm]',
 'Er [ppm]', 'Tm [ppm]', 'Yb [ppm]', 'Lu [ppm]', 'Hf [ppm]', 'Ta [ppm]',
-'Pb [ppm]', 'Th [ppm]', 'U [ppm]') GROUP BY sample_id") %>%
-  rename_pofatu_elements() %>%
-  rename(Location=location_region, Island=location_subregion) %>%
-  Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>% dplyr::select(
-    Sample,Location,Island,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-    Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
+'Tl [ppm]', 'Pb [ppm]', 'Th [ppm]', 'U [ppm]', 'Nd143_Nd144', 'Sr87_Sr86',
+'Pb206_Pb204', 'Pb207_Pb204', 'Pb208_Pb204') GROUP BY sample_id") %>%
+  rename_pofatu_elements() %>% pofatu_location() %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
+  mutate(Location = case_when(
+    grepl("VANUATU", location_region) ~ "Vanuatu")) %>%
+  mutate(Island = case_when(
+    grepl("VANUA LAVA", location_subregion) ~ "Vanua Lava")) %>%
+  dplyr::select(Sample,Location,Island,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
+                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
 
 d_spider <- d %>%
   mutate(Location = case_when(
-    grepl("reepmeyer2008_ANU9005", Sample) ~ "[ANU9005] Vanua Lava (Vanuatu)",
-    grepl("reepmeyer2008_ANU9007", Sample) ~ "[ANU9007] Vanua Lava (Vanuatu)",
-    grepl("reepmeyer2008_ANU9014", Sample) ~ "[ANU9014] Vanua Lava (Vanuatu)")) %>%
+    grepl("reepmeyer2008_ANU9006", Sample) ~ "[ANU9006] Vanua Lava (Vanuatu)",
+    grepl("reepmeyer2008_ANU9009", Sample) ~ "[ANU9009] Vanua Lava (Vanuatu)",
+    grepl("reepmeyer2008_ANU9008", Sample) ~ "[ANU9008] Vanua Lava (Vanuatu)",
+    grepl("reepmeyer2008_ANU9003", Sample) ~ "[ANU9003] Vanua Lava (Vanuatu)")) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
@@ -136,14 +160,16 @@ s_spider <- joined_data %>% filter(Sample %in% c("E-11-03")) %>%
   normalize_to_pm()
 
 
-shapes <- c("[ANU9005] Vanua Lava (Vanuatu)"=0,
-            "[ANU9007] Vanua Lava (Vanuatu)"=1,
-            "[ANU9014] Vanua Lava (Vanuatu)"=5,
+shapes <- c("[ANU9006] Vanua Lava (Vanuatu)"=0,
+            "[ANU9009] Vanua Lava (Vanuatu)"=1,
+            "[ANU9008] Vanua Lava (Vanuatu)"=2,
+            "[ANU9003] Vanua Lava (Vanuatu)"=5,
             "E-11-03"=22)
-cols <- c("[ANU9005] Vanua Lava (Vanuatu)"="#7AD04F",
-            "[ANU9007] Vanua Lava (Vanuatu)"="#7AD04F",
-            "[ANU9014] Vanua Lava (Vanuatu)"="#7AD04F",
-            "E-11-03"="red")
+cols <- c("[ANU9006] Vanua Lava (Vanuatu)"="#7AD04F",
+          "[ANU9009] Vanua Lava (Vanuatu)"="#7AD04F",
+          "[ANU9008] Vanua Lava (Vanuatu)"="#7AD04F",
+          "[ANU9003] Vanua Lava (Vanuatu)"="#7AD04F",
+          "E-11-03"="red")
 
 E_11_03_spider <- d_spider %>%
   mutate(var = fct_relevel(var,
@@ -179,7 +205,7 @@ dev.off()
 
 
 #### E_11_06 & E_11_07 ####
-s <- joined_data %>% dplyr::filter(Sample %in% c(
+s <- joined_data %>% filter(Sample %in% c(
   "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-18dup",
   "E-11-19","E-11-06","E-11-07")) %>%
   mutate(
@@ -189,49 +215,74 @@ s <- joined_data %>% dplyr::filter(Sample %in% c(
       grepl("E-11-13", Sample) ~ "Vanuatu Arc",
       grepl("E-11-16", Sample) ~ "Vanuatu Arc",
       grepl("E-11-18", Sample) ~ "Vanuatu Arc",
+      grepl("E-11-18dup", Sample) ~ "Vanuatu Arc",
+      grepl("E-11-19", Sample) ~ "Vanuatu Arc",
       grepl("E-11-06", Sample) ~ "E-11-06",
-      grepl("E-11-07", Sample) ~ "E-11-07")) %>%
-  dplyr::select(Sample,Location,Cs,Rb,Ba,Nb,La,Zr,Ti)
+      grepl("E-11-07", Sample) ~ "E-11-07")) %>% dplyr::select(
+        Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
-s <- s[c("3","4","5","6","7","1","2"),]
 
-IAB <- q5 %>% dplyr::select(Sample,Location,Cs,Rb,Ba,Nb,La,Zr,Ti)
-IAB <- full_join(IAB,s[1:5,])
+IAB <- q5 %>% dplyr::select(
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+IAB <- full_join(IAB,s[3:7,])
+is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
 IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
 
-s <- s[6:7,]
+s <- s[1:2,]
 
-res.pca <- prcomp(IAB[,3:9],  scale = TRUE, center = TRUE) # Dimension reduction using PCA
+res.pca <- prcomp(IAB[,3:21], scale = TRUE, center = TRUE) # Dimension reduction using PCA
 eig <- get_eig(res.pca)
-pred <- stats::predict(res.pca, s[,3:9])
-pred <- cbind(s[,1:2], pred)
 res.pca.df <- cbind(IAB[,1:2], (as.data.frame(res.pca$x)))
+pred <- stats::predict(res.pca, s[,3:21])
+pred <- cbind(s[,1:2], pred)
 d_pca <- full_join(res.pca.df, pred)
 
+# PC values > distance to artefacts (individual or median of group)
+# distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:86,"Sample"]),
-  Location = c(d_pca[1:86,"Location"]),
-  PC1 = c(sqrt(((d_pca[87:88,"PC1"])-d_pca[1:86,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[87:88,"PC2"])-d_pca[1:86,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[87:88,"PC3"])-d_pca[1:86,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[87:88,"PC4"])-d_pca[1:86,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[87:88,"PC5"])-d_pca[1:86,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[87:88,"PC6"])-d_pca[1:86,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[87:88,"PC7"])-d_pca[1:86,"PC7"])^2))) %>%
+  Sample = c(d_pca[1:191,"Sample"]),
+  Location = c(d_pca[1:191,"Location"]),
+  PC1 = c(sqrt(((median(d_pca[192:193,"PC1"]))-d_pca[1:191,"PC1"])^2)),
+  PC2 = c(sqrt(((median(d_pca[192:193,"PC2"]))-d_pca[1:191,"PC2"])^2)),
+  PC3 = c(sqrt(((median(d_pca[192:193,"PC3"]))-d_pca[1:191,"PC3"])^2)),
+  PC4 = c(sqrt(((median(d_pca[192:193,"PC4"]))-d_pca[1:191,"PC4"])^2)),
+  PC5 = c(sqrt(((median(d_pca[192:193,"PC5"]))-d_pca[1:191,"PC5"])^2)),
+  PC6 = c(sqrt(((median(d_pca[192:193,"PC6"]))-d_pca[1:191,"PC6"])^2)),
+  PC7 = c(sqrt(((median(d_pca[192:193,"PC7"]))-d_pca[1:191,"PC7"])^2)),
+  PC8 = c(sqrt(((median(d_pca[192:193,"PC8"]))-d_pca[1:191,"PC8"])^2)),
+  PC9 = c(sqrt(((median(d_pca[192:193,"PC9"]))-d_pca[1:191,"PC9"])^2)),
+  PC10 = c(sqrt(((median(d_pca[192:193,"PC10"]))-d_pca[1:191,"PC10"])^2)),
+  PC11 = c(sqrt(((median(d_pca[192:193,"PC11"]))-d_pca[1:191,"PC11"])^2)),
+  PC12 = c(sqrt(((median(d_pca[192:193,"PC12"]))-d_pca[1:191,"PC12"])^2)),
+  PC13 = c(sqrt(((median(d_pca[192:193,"PC13"]))-d_pca[1:191,"PC13"])^2)),
+  PC14 = c(sqrt(((median(d_pca[192:193,"PC14"]))-d_pca[1:191,"PC14"])^2)),
+  PC15 = c(sqrt(((median(d_pca[192:193,"PC15"]))-d_pca[1:191,"PC15"])^2)),
+  PC16 = c(sqrt(((median(d_pca[192:193,"PC16"]))-d_pca[1:191,"PC16"])^2)),
+  PC17 = c(sqrt(((median(d_pca[192:193,"PC17"]))-d_pca[1:191,"PC17"])^2)),
+  PC18 = c(sqrt(((median(d_pca[192:193,"PC18"]))-d_pca[1:191,"PC18"])^2)),
+  PC19 = c(sqrt(((median(d_pca[192:193,"PC19"]))-d_pca[1:191,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
-      (PC6*eig[6,2])+(PC7*eig[7,2])) / (sum(eig[1:7,2])))
-head(dist[order(dist$weight_mean),] %>% dplyr::select("Sample","Location","weight_mean"))
+      (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
+      (PC10*eig[10,2])+(PC11*eig[11,2])+(PC12*eig[12,2])+(PC13*eig[13,2])+
+      (PC14*eig[14,2])+(PC15*eig[15,2])+(PC16*eig[16,2])+(PC17*eig[17,2])+
+      (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
-#### plot ####
+head(arrange(dist,weight_mean))
+
 d <- dbGetQuery(georoc,
-"SELECT * FROM 'sample' WHERE id='70518'") %>%
+"SELECT * FROM 'sample' WHERE id='1871808' OR id='115854-AMB 88'
+OR id='1141527' OR id='70517'") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   mutate(Location = case_when(
+    grepl("SULAWESI", file_id) ~ "Sulawesi",
     grepl("NEW_HEBRIDES_ARC", file_id) ~ "Vanuatu")) %>%
-  mutate(Island = case_when(grepl("AMBAE", LOCATION) ~ "Ambae")) %>%
+  mutate(Island = case_when(grepl("MANADO TUA", LOCATION) ~ "Manadotua",
+                            grepl("GAUA", LOCATION) ~ "Gaua",
+                            grepl("AMBRYM", LOCATION) ~ "Ambrym",
+                            grepl("AMBAE", LOCATION) ~ "Ambae")) %>%
   dplyr::select(Sample,Location,Island,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
     Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
 d_s <- joined_data %>% filter(Sample %in% c("E-11-11")) %>%
@@ -239,9 +290,14 @@ d_s <- joined_data %>% filter(Sample %in% c("E-11-11")) %>%
   mutate(Island = case_when(grepl("E-11-11", Sample) ~ "Emae")) %>%
   dplyr::select(Sample,Location,Island,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
+
+d[,c("Sample","Location","Island")]
 d_spider <- full_join(d,d_s) %>%
   mutate(Location = case_when(
-    grepl("70518", Sample) ~ "[70518] Ambae (Vanuatu)",
+    grepl("1141527", Sample) ~ "[1141527] Gaua (Vanuatu)",
+    grepl("115854-AMB 88", Sample) ~ "[AMB 88] Ambrym (Vanuatu)",
+    grepl("1871808", Sample) ~ "[1871808] Manadotua (Sulawesi)",
+    grepl("70517", Sample) ~ "[70517] Ambae (Vanuatu)",
     grepl("E-11-11", Sample) ~ "[E-11-11] Emae (Vanuatu)")) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
@@ -257,11 +313,21 @@ s_spider <- joined_data %>% filter(Sample %in% c("E-11-06","E-11-07")) %>%
   normalize_to_pm()
 
 
-shapes <- c("[E-11-11] Emae (Vanuatu)"=1,"E-11-06"=1,"E-11-07"=8)
-cols <- c("[E-11-11] Emae (Vanuatu)"="#7AD04F","E-11-06"="red","E-11-07"="red")
+shapes <- c("[E-11-11] Emae (Vanuatu)"=1,
+            "[1141527] Gaua (Vanuatu)"=0,
+            "[AMB 88] Ambrym (Vanuatu)"=2,
+            "[1871808] Manadotua (Sulawesi)"=3,
+            "[70517] Ambae (Vanuatu)"=5,
+            "E-11-06"=1,"E-11-07"=8)
+cols <- c("[E-11-11] Emae (Vanuatu)"="#7AD04F",
+          "[1141527] Gaua (Vanuatu)"="#7AD04F",
+          "[AMB 88] Ambrym (Vanuatu)"="#7AD04F",
+          "[1871808] Manadotua (Sulawesi)"="#345E8C",
+          "[70517] Ambae (Vanuatu)"="#7AD04F",
+          "E-11-06"="red","E-11-07"="red")
 
 E_11_06_07_spider <- d_spider %>%
-  dplyr::filter(Sample %in% "E-11-11") %>%
+  #dplyr::filter(Sample %in% "E-11-11") %>%
   mutate(var = fct_relevel(var,
                            "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr",
                            "Nd","Sr","Sm","Zr","Ti","Eu","Gd","Tb",
@@ -295,118 +361,61 @@ dev.off()
 
 
 #### K_12_28 ####
-ranges_s_IAB[4,1:35]
-IAB <- dbGetQuery(georoc,
-"SELECT *
-FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-`SIO2(WT%)` > 52.1 AND `SIO2(WT%)` < 55.1 AND
-file_id= '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv'") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  mutate_at("LOCATION", str_replace,
-            "BISMARCK ARC - NEW BRITAIN ARC / BISMARCK ARC - ", "") %>%
-  rename(Location=LOCATION)%>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-IAB %>% group_by(Location) %>% tally()
-
-IAB <- IAB %>% dplyr::select(Sample,Location,Th,Nb,La,Nd,Sr,Zr,Eu)
+IAB <- q7 %>% dplyr::select(
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
 IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
 
 s <- joined_data %>% filter(Sample %in% c("K-12-28")) %>%
   mutate(Location = case_when(grepl("K-12-28", Sample) ~ "K-12-28")) %>%
-  dplyr::select(Sample,Location,Th,Nb,La,Nd,Sr,Zr,Eu)
-s[s == 0] <- NA # Replace 0 with NA
-s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
+  dplyr::select(
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 
-res.pca <- prcomp(IAB[,3:9], scale = TRUE, center = TRUE) # Dimension reduction using PCA
+res.pca <- prcomp(IAB[,3:21], scale = TRUE, center = TRUE) # Dimension reduction using PCA
 eig <- get_eig(res.pca)
-pred <- stats::predict(res.pca, s[,3:9])
+pred <- stats::predict(res.pca, s[,3:21])
 pred <- cbind(s[,1:2], pred)
 res.pca.df <- cbind(IAB[,1:2], (as.data.frame(res.pca$x)))
 d_pca <- full_join(res.pca.df, pred)
 
+# PC values > distance to artefacts (individual or median of group)
+# distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:56,"Sample"]),
-  Location = c(d_pca[1:56,"Location"]),
-  PC1 = c(sqrt(((d_pca[57,"PC1"])-d_pca[1:56,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[57,"PC2"])-d_pca[1:56,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[57,"PC3"])-d_pca[1:56,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[57,"PC4"])-d_pca[1:56,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[57,"PC5"])-d_pca[1:56,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[57,"PC6"])-d_pca[1:56,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[57,"PC7"])-d_pca[1:56,"PC7"])^2))) %>%
+  Sample = c(d_pca[1:97,"Sample"]),
+  Location = c(d_pca[1:97,"Location"]),
+  PC1 = c(sqrt(((d_pca[98,"PC1"])-d_pca[1:97,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[98,"PC2"])-d_pca[1:97,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[98,"PC3"])-d_pca[1:97,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[98,"PC4"])-d_pca[1:97,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[98,"PC5"])-d_pca[1:97,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[98,"PC6"])-d_pca[1:97,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[98,"PC7"])-d_pca[1:97,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[98,"PC8"])-d_pca[1:97,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[98,"PC9"])-d_pca[1:97,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[98,"PC10"])-d_pca[1:97,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[98,"PC11"])-d_pca[1:97,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[98,"PC12"])-d_pca[1:97,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[98,"PC13"])-d_pca[1:97,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[98,"PC14"])-d_pca[1:97,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[98,"PC15"])-d_pca[1:97,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[98,"PC16"])-d_pca[1:97,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[98,"PC17"])-d_pca[1:97,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[98,"PC18"])-d_pca[1:97,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[98,"PC19"])-d_pca[1:97,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
-      (PC6*eig[6,2])+(PC7*eig[7,2])) / (sum(eig[1:7,2])))
+      (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
+      (PC10*eig[10,2])+(PC11*eig[11,2])+(PC12*eig[12,2])+(PC13*eig[13,2])+
+      (PC14*eig[14,2])+(PC15*eig[15,2])+(PC16*eig[16,2])+(PC17*eig[17,2])+
+      (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
-head(dist[order(dist$weight_mean),] %>%
-       dplyr::select("Sample","Location","weight_mean"), 10)
+head(arrange(dist,weight_mean))
 
-#### plot ####
-#### K_12_28 ####
-ranges_s_IAB[4,1:35]
-IAB <- dbGetQuery(georoc,
-                  "SELECT *
-FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-`SIO2(WT%)` > 52.1 AND `SIO2(WT%)` < 55.1 AND
-file_id= '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv'") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  mutate_at("LOCATION", str_replace,
-            "BISMARCK ARC - NEW BRITAIN ARC / BISMARCK ARC - ", "") %>%
-  rename(Location=LOCATION)%>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-IAB %>% group_by(Location) %>% tally()
-
-IAB <- IAB %>% dplyr::select(Sample,Location,Th,Nb,La,Nd,Sr,Zr,Eu)
-is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
-IAB[IAB == 0] <- NA # Replace 0 with NA
-IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
-
-s <- joined_data %>% filter(Sample %in% c("K-12-28")) %>%
-  mutate(Location = case_when(grepl("K-12-28", Sample) ~ "K-12-28")) %>%
-  dplyr::select(Sample,Location,Th,Nb,La,Nd,Sr,Zr,Eu)
-s[s == 0] <- NA # Replace 0 with NA
-s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
-
-res.pca <- prcomp(IAB[,3:9], scale = TRUE, center = TRUE) # Dimension reduction using PCA
-eig <- get_eig(res.pca)
-pred <- stats::predict(res.pca, s[,3:9])
-pred <- cbind(s[,1:2], pred)
-res.pca.df <- cbind(IAB[,1:2], (as.data.frame(res.pca$x)))
-d_pca <- full_join(res.pca.df, pred)
-
-dist <- data.frame(
-  Sample = c(d_pca[1:56,"Sample"]),
-  Location = c(d_pca[1:56,"Location"]),
-  PC1 = c(sqrt(((d_pca[57,"PC1"])-d_pca[1:56,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[57,"PC2"])-d_pca[1:56,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[57,"PC3"])-d_pca[1:56,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[57,"PC4"])-d_pca[1:56,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[57,"PC5"])-d_pca[1:56,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[57,"PC6"])-d_pca[1:56,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[57,"PC7"])-d_pca[1:56,"PC7"])^2))) %>%
-  mutate(weight_mean = (
-    (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
-      (PC6*eig[6,2])+(PC7*eig[7,2])) / (sum(eig[1:7,2])))
-
-head(dist[order(dist$weight_mean),] %>%
-       dplyr::select("Sample","Location","weight_mean"), 10)
-
-#### plot ####
-ranges_s_IAB[4,1:35]
 d <- dbGetQuery(georoc,
  "SELECT * FROM 'sample'
-WHERE id='13440-GN1/4' OR id='634326' OR
-id='634330' OR id='634323' OR id='634331'") %>%
+WHERE id='13423-E5/11' OR id='13426-F7/2' OR id='13436-2654A'
+OR id='13436-2649' OR id='13437-F5/2' OR id='634326'") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   mutate_at("LOCATION", str_replace,
             "BISMARCK ARC - NEW BRITAIN ARC / BISMARCK ARC - ", "") %>%
@@ -415,17 +424,21 @@ id='634330' OR id='634323' OR id='634331'") %>%
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-d[,1:2]
+d[,1:4]
 d_spider <- d %>%
   mutate(Location = case_when(
-    grepl("DAKATAUA", Location) ~ "Dakatau (New Britain)",
+    grepl("ULAWUN", Location) ~ "Ulawun volcano (New Britain)",
+    grepl("LOLOBAU", Location) ~ "Lolobau Is. (New Britain)",
+    grepl("SULU", Location) ~ "Sulu (New Britain)",
+    grepl("WULAI", Location) ~ "Wulai Is. (New Britain)",
     grepl("MANAM", Location) ~ "Manam Is. (New Britain)")) %>%
   mutate(Sample = case_when(
-    grepl("13440-GN1/4", Sample) ~ "[GN1/4] Dakatau (New Britain)",
-    grepl("634323", Sample) ~ "[634323] Manam Is. (New Britain)",
-    grepl("634326", Sample) ~ "[634326] Manam Is. (New Britain)",
-    grepl("634330", Sample) ~ "[634330] Manam Is. (New Britain)",
-    grepl("634331", Sample) ~ "[634331] Manam Is. (New Britain)")) %>%
+    grepl("13423-E5/11", Sample) ~ "[E5/11] Ulawun volcano (New Britain)",
+    grepl("13426-F7/2", Sample) ~ "[F7/2] Lolobau Is. (New Britain)",
+    grepl("13436-2649", Sample) ~ "[2649] Sulu (New Britain)",
+    grepl("13436-2654A", Sample) ~ "[2654A] Sulu (New Britain)",
+    grepl("13437-F5/2", Sample) ~ "[F5/2] Wulai Is.(New Britain)",
+    grepl("634326", Sample) ~ "[634326] Manam Is. (New Britain)")) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
@@ -439,17 +452,19 @@ s_spider <- joined_data %>% filter(Sample %in% c("K-12-28")) %>%
   normalize_to_pm()
 
 
-shapes <- c("[GN1/4] Dakatau (New Britain)"=0,
-            "[634323] Manam Is. (New Britain)"=1,
-            "[634326] Manam Is. (New Britain)"=2,
-            "[634330] Manam Is. (New Britain)"=5,
-            "[634331] Manam Is. (New Britain)"=6,
+shapes <- c("[2649] Sulu (New Britain)"=0,
+            "[2654A] Sulu (New Britain)"=1,
+            "[E5/11] Ulawun volcano (New Britain)"=3,
+            "[F7/2] Lolobau Is. (New Britain)"=5,
+            "[F5/2] Wulai Is.(New Britain)"=2,
+            "[634326] Manam Is. (New Britain)"=6,
             "K-12-28"=3)
-cols <- c("[GN1/4] Dakatau (New Britain)"="#25A782",
-          "[634323] Manam Is. (New Britain)"="#25A782",
+cols <- c("[2649] Sulu (New Britain)"="#25A782",
+          "[2654A] Sulu (New Britain)"="#25A782",
+          "[E5/11] Ulawun volcano (New Britain)"="#25A782",
+          "[F7/2] Lolobau Is. (New Britain)"="#25A782",
+          "[F5/2] Wulai Is.(New Britain)"="#25A782",
           "[634326] Manam Is. (New Britain)"="#25A782",
-          "[634330] Manam Is. (New Britain)"="#25A782",
-          "[634331] Manam Is. (New Britain)"="#25A782",
           "K-12-28"="red")
 
 K_12_28_spider <- d_spider %>%
@@ -488,102 +503,89 @@ dev.off()
 citation <- dbGetQuery(georoc,
 "SELECT sample_id, reference_id
 FROM 'citation'
-WHERE sample_id='13440-GN1/4' OR
-sample_id='634323' OR
-sample_id='634326' OR
-sample_id='634330' OR
-sample_id='634331'")
+WHERE sample_id='13423-E5/11' OR sample_id='13437-F5/2'
+OR sample_id='13436-2654A' OR sample_id='13436-2649'
+OR sample_id='13437-F5/2' OR sample_id='634326'")
 citation
 reference <- dbGetQuery(georoc,
 "SELECT id, reference
 FROM 'reference'
-WHERE id='2703' OR
-id='2496' OR
-id='16728'") %>% rename(reference_id=id)
+WHERE id='2703' OR id='2496' OR id='4590' OR id='6900' OR id='16728'") %>%
+  rename(reference_id=id)
 reference
 cite <- full_join(citation,reference)
 cite
 
 #### K_12_29 ####
-ranges_s_IAB[5,1:35]
-IAB <- dbGetQuery(georoc,
-"SELECT *
-FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-`SIO2(WT%)` > 48.2 AND `SIO2(WT%)` < 51.2 AND
-`K2O(WT%)` > 0.14 AND `K2O(WT%)` < 3.14 AND
-`RB(PPM)` > 4.85 AND `RB(PPM)` < 14.55 AND
-`NB(PPM)` > 0.665 AND `NB(PPM)` < 1.995 AND
-`SR(PPM)` > 269 AND `SR(PPM)` < 806 AND
-`SM(PPM)` > 1.635 AND `SM(PPM)` < 4.905 AND
-`YB(PPM)` > 1.05 AND `YB(PPM)` < 3.15 AND
-(file_id= '2022-06-PVFZCE_YAP_ARC.csv' OR
-file_id= '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv' OR
-file_id= '2022-06-PVFZCE_LUZON_ARC.csv' OR
-file_id= '2022-06-PVFZCE_NEW_HEBRIDES_ARC_VANUATU_ARCHIPELAGO.csv' OR
-file_id= '2022-06-PVFZCE_SULAWESI_ARC.csv')") %>%
-  get_georoc_location() %>% rename_georoc() %>%
-  Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-IAB %>% group_by(Location) %>% tally()
-
-IAB <- IAB %>% dplyr::select(Sample,Location,Cs,Rb,Nb,La,Nd,Sr,Zr)
+IAB <- q9 %>%  dplyr::select(
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
 IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
 
 s <- joined_data %>% filter(Sample %in% c("K-12-29")) %>%
   mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29")) %>%
-  dplyr::select(Sample,Location,Cs,Rb,Nb,La,Nd,Sr,Zr)
-s[s == 0] <- NA # Replace 0 with NA
-s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
+  dplyr::select(
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 
-res.pca <- prcomp(IAB[,3:9], scale = TRUE, center = TRUE) # Dimension reduction using PCA
+res.pca <- prcomp(IAB[,3:21], scale = TRUE, center = TRUE) # Dimension reduction using PCA
 eig <- get_eig(res.pca)
-pred <- stats::predict(res.pca, s[,3:9])
+pred <- stats::predict(res.pca, s[,3:21])
 pred <- cbind(s[,1:2], pred)
 res.pca.df <- cbind(IAB[,1:2], (as.data.frame(res.pca$x)))
 d_pca <- full_join(res.pca.df, pred)
 
+# PC values > distance to artefacts (individual or median of group)
+# distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:30,"Sample"]),
-  Location = c(d_pca[1:30,"Location"]),
-  PC1 = c(sqrt(((d_pca[31,"PC1"])-d_pca[1:30,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[31,"PC2"])-d_pca[1:30,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[31,"PC3"])-d_pca[1:30,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[31,"PC4"])-d_pca[1:30,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[31,"PC5"])-d_pca[1:30,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[31,"PC6"])-d_pca[1:30,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[31,"PC7"])-d_pca[1:30,"PC7"])^2))) %>%
+  Sample = c(d_pca[1:199,"Sample"]),
+  Location = c(d_pca[1:199,"Location"]),
+  PC1 = c(sqrt(((d_pca[200,"PC1"])-d_pca[1:199,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[200,"PC2"])-d_pca[1:199,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[200,"PC3"])-d_pca[1:199,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[200,"PC4"])-d_pca[1:199,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[200,"PC5"])-d_pca[1:199,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[200,"PC6"])-d_pca[1:199,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[200,"PC7"])-d_pca[1:199,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[200,"PC8"])-d_pca[1:199,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[200,"PC9"])-d_pca[1:199,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[200,"PC10"])-d_pca[1:199,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[200,"PC11"])-d_pca[1:199,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[200,"PC12"])-d_pca[1:199,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[200,"PC13"])-d_pca[1:199,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[200,"PC14"])-d_pca[1:199,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[200,"PC15"])-d_pca[1:199,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[200,"PC16"])-d_pca[1:199,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[200,"PC17"])-d_pca[1:199,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[200,"PC18"])-d_pca[1:199,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[200,"PC19"])-d_pca[1:199,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
-      (PC6*eig[6,2])+(PC7*eig[7,2])) / (sum(eig[1:7,2])))
+      (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
+      (PC10*eig[10,2])+(PC11*eig[11,2])+(PC12*eig[12,2])+(PC13*eig[13,2])+
+      (PC14*eig[14,2])+(PC15*eig[15,2])+(PC16*eig[16,2])+(PC17*eig[17,2])+
+      (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
-head(dist[order(dist$weight_mean),] %>%
-       dplyr::select("Sample","Location","weight_mean"), 10)
-
-#### plot ####
-ranges_s_IAB[4,1:35]
+head(arrange(dist,weight_mean))
 d <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
-WHERE id='144138-KS094' OR id='527524' OR
-id='70512' OR id='527523'") %>%
+WHERE id = '70512' OR id = '317050' OR id = '144138-KS094' OR id = '13306-VMAC6'
+OR id = '1871790' OR id = '13303-UA10'") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   rename(Location=LOCATION)%>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-d[,1:3]
+d[,1:4]
 d_spider <- d %>%
   mutate(Location = case_when(
+    grepl("70512", Sample) ~ "[70512] Vanua Lava (Vanuatu)",
+    grepl("317050", Sample) ~ "[317050_AK9] Kibobo Is. (Lau, Fiji)",
+    grepl("1871790", Sample) ~ "[1871790] Buhias Is. (Indonesia)",
     grepl("144138-KS094", Sample) ~ "[KS094] Cebu (Philippines)",
-    grepl("527523", Sample) ~ "[527523] (Palau)",
-    grepl("527524", Sample) ~ "[527524] (Palau)",
-    grepl("70512", Sample) ~ "[70512] Vanua Lava (Vanuatu)")) %>%
+    grepl("13306-VMAC6", Sample) ~ "[VMAC6] Vanua Lava (Vanuatu)",
+    grepl("13303-UA10", Sample) ~ "[UA10] Ureparapara (Vanuatu)")) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
@@ -595,15 +597,20 @@ s_spider <- joined_data %>% filter(Sample %in% c("K-12-29")) %>%
   normalize_to_pm()
 
 
-shapes <- c("[KS094] Cebu (Philippines)"=0,
-            "[527523] (Palau)"=1,"[527524] (Palau)"=2,
-            "[70512] Vanua Lava (Vanuatu)"=5,
+shapes <- c("[70512] Vanua Lava (Vanuatu)"=0,
+            "[VMAC6] Vanua Lava (Vanuatu)"=1,
+            "[UA10] Ureparapara (Vanuatu)"=5,
+            "[317050_AK9] Kibobo Is. (Lau, Fiji)"=3,
+            "[1871790] Buhias Is. (Indonesia)"=6,
+            "[KS094] Cebu (Philippines)"=2,
             "K-12-29"=4)
-cols <- c("[KS094] Cebu (Philippines)"="#440154",
-          "[527523] (Palau)"="#29778E","[527524] (Palau)"="#29778E",
-          "[70512] Vanua Lava (Vanuatu)"="#7AD04F",
+cols <- c("[70512] Vanua Lava (Vanuatu)"="#7AD04F",
+          "[VMAC6] Vanua Lava (Vanuatu)"="#7AD04F",
+          "[UA10] Ureparapara (Vanuatu)"="#7AD04F",
+          "[317050_AK9] Kibobo Is. (Lau, Fiji)"="#BADD26",
+          "[1871790] Buhias Is. (Indonesia)"="#345E8C",
+          "[KS094] Cebu (Philippines)"="#440154",
           "K-12-29"="red")
-
 K_12_29_spider <- d_spider %>%
   mutate(var = fct_relevel(var,
                          "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr",
@@ -637,22 +644,18 @@ pdf(here("analysis","supplementary-materials","FigS13","FigS13-d.pdf"), width=5,
 K_12_29_spider
 dev.off()
 
-
 citation <- dbGetQuery(georoc,
 "SELECT sample_id, reference_id
 FROM 'citation'
-WHERE sample_id='144138-KS094' OR
-sample_id='527523' OR
-sample_id='527524' OR
-sample_id='70512'")
+WHERE sample_id = '70512' OR sample_id = '317050'
+OR sample_id = '144138-KS094' OR sample_id = '13306-VMAC6'
+OR sample_id = '1871790' OR sample_id = '13303-UA10'")
 citation
 reference <- dbGetQuery(georoc,
 "SELECT id, reference
 FROM 'reference'
-WHERE id='24095' OR
-id='19607' OR
-id='4032' OR
-id='15303'") %>% rename(reference_id=id)
+WHERE id='24095' OR id='19607' OR id='10608' OR id='4032'
+OR id='16735' OR id='10898'") %>% rename(reference_id=id)
 reference
 cite <- full_join(citation,reference)
 cite

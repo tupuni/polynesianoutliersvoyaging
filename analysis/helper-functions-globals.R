@@ -186,7 +186,6 @@ get_georoc_location <- function(georoc_output) {
       Location = case_when(
         grepl("BANDA_ARC", file_id) ~ "Banda Arc",
         grepl("BISMARCK_ARC", file_id) ~ "Bismarck Arc",
-        grepl("HALMAHERA_ARC", file_id) ~ "Halmahera Arc",
         grepl("LUZON_ARC", file_id) ~ "Luzon Arc",
         grepl("MARIANA_ARC", file_id) ~ "Mariana Arc",
         grepl("NEW_CALEDONIA", file_id) ~ "New Caledonia",
@@ -219,7 +218,6 @@ georoc_archipelago_from_file_id <- function(georoc_output) {
       Archipelago = case_when(
         grepl("BANDA_ARC", file_id) ~ "banda arc",
         grepl("BISMARCK_ARC", file_id) ~ "bismarck arc",
-        grepl("HALMAHERA_ARC", file_id) ~ "halmahera arc",
         grepl("KERMADEC_ARC", file_id) ~ "kermadec arc",
         grepl("LUZON_ARC", file_id) ~ "luzon arc",
         grepl("MARIANA_ARC", file_id) ~ "mariana arc",

@@ -76,9 +76,6 @@ pred <- stats::predict(res.pca, s[,3:7])
 pred <- cbind(s[,1:2], pred)
 d_pca <- full_join(res.pca.df, pred)
 
-median(d_pca[142:147,"PC1"])
-median(d_pca[142:147,"PC2"])
-
 E_T_PCA_1b <- d_pca %>%
   ggplot(aes(x=PC1,y=PC2, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
@@ -170,8 +167,7 @@ dev.off()
 #### Fig 14b ####
 ## Emae_Taumako PCA 2
 OIB <- full_join(q12,q13) %>% dplyr::select(
-  Sample,Location,SiO2,TiO2,MgO,CaO,Na2O,K2O,
-  Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Hf,Eu,Y,Yb)
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
@@ -187,20 +183,19 @@ s <- joined_data %>% dplyr::filter(Sample %in% c(
     grepl("T-12-08", Sample) ~ "T-12-08",
     grepl("T-12-09", Sample) ~ "T-12-09",
     grepl("T-12-10", Sample) ~ "T-12-10")) %>% dplyr::select(
-      Sample,Location,SiO2,TiO2,MgO,CaO,Na2O,K2O,
-      Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Hf,Eu,Y,Yb)
+      Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
-res.pca <- prcomp(OIB[,5:23], scale = TRUE, center = TRUE) # Dimension reduction using PCA
+res.pca <- prcomp(OIB[,3:21], scale = TRUE, center = TRUE) # Dimension reduction using PCA
 eig <- get_eig(res.pca)
 E_T_PCA_2a <- fviz_pca_biplot(
   res.pca, label = "var", col.var = "black", alpha.var = .2,
   habillage = OIB$Location, fill.ind = OIB$Location,
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
-  scale_color_manual(values=cols) + scale_x_continuous(limits=c(-6, 9)) +
-  scale_y_continuous(limits=c(-4.5, 3.7), breaks=c(-3,0,3)) +
+  scale_color_manual(values=cols) +
+  scale_x_continuous(limits=c(-6, 6)) + scale_y_continuous(limits=c(-4.5, 4.5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -208,11 +203,11 @@ E_T_PCA_2a <- fviz_pca_biplot(
         legend.title = element_blank(), legend.text = element_text(size = 10),
         legend.key.size = unit(.2, 'cm'), legend.position = "none", aspect.ratio=1)
 E_T_PCA_2a
-pdf(here("analysis","supplementary-materials","FigS14","FigS14-b-PCA.pdf"), width=3.5, height=3.5)
+pdf(here("analysis","figures","Figure_4","Fig4-b-PCA.pdf"), width=3.5, height=3.5)
 E_T_PCA_2a
 dev.off()
 
-pred <- stats::predict(res.pca, s[,5:23])
+pred <- stats::predict(res.pca, s[,3:21])
 pred <- cbind(s[,1:2], pred)
 res.pca.df <- cbind(OIB[,1:2], (as.data.frame(res.pca$x)))
 d_pca <- full_join(res.pca.df, pred)
@@ -220,15 +215,14 @@ d_pca <- full_join(res.pca.df, pred)
 E_T_PCA_2b <- d_pca %>%
   ggplot(aes(x=PC1,y=PC2, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(aes(x=median(d_pca[82:87,"PC1"]),
-                 y=median(d_pca[82:87,"PC2"])), shape=3, color="red") +
+  geom_point(aes(x=median(d_pca[117:122,"PC1"]),
+                 y=median(d_pca[117:122,"PC2"])), shape=3, color="red") +
   geom_vline(aes(xintercept = 0), size=.25, linetype="dashed") +
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-6, 9)) +
-  scale_y_continuous(limits=c(-4.5, 3.7), breaks=c(-3,0,3)) +
-    theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+  scale_x_continuous(limits=c(-6, 6)) + scale_y_continuous(limits=c(-4.5, 4.5)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 9), axis.text = element_text(size = 8),
@@ -240,7 +234,7 @@ E_T_PCA_2b
 ## PCs : density plots
 PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[82:87,"PC1"], xend=d_pca[82:87,"PC1"],
+  annotate("segment", x=d_pca[117:122,"PC1"], xend=d_pca[117:122,"PC1"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -252,7 +246,7 @@ PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
   labs(y=paste0("PC1","\n","(",round(eig["Dim.1","variance.percent"], digits = 1),"%)"))
 PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[82:87,"PC2"], xend=d_pca[82:87,"PC2"],
+  annotate("segment", x=d_pca[117:122,"PC2"], xend=d_pca[117:122,"PC2"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -264,7 +258,7 @@ PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
   labs(y=paste0("PC2","\n","(",round(eig["Dim.2","variance.percent"], digits = 1),"%)"))
 PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[82:87,"PC3"], xend=d_pca[82:87,"PC3"],
+  annotate("segment", x=d_pca[117:122,"PC3"], xend=d_pca[117:122,"PC3"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -276,7 +270,7 @@ PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
   labs(y=paste0("PC3","\n","(",round(eig["Dim.3","variance.percent"], digits = 1),"%)"))
 PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[82:87,"PC4"], xend=d_pca[82:87,"PC4"],
+  annotate("segment", x=d_pca[117:122,"PC4"], xend=d_pca[117:122,"PC4"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -288,7 +282,7 @@ PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
   labs(y=paste0("PC4","\n","(",round(eig["Dim.4","variance.percent"], digits = 1),"%)"))
 PC5 <- ggplot(d_pca, aes(x = PC5, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[82:87,"PC5"], xend=d_pca[82:87,"PC5"],
+  annotate("segment", x=d_pca[117:122,"PC5"], xend=d_pca[117:122,"PC5"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -435,7 +429,7 @@ dev.off()
 #### Fig 14d ####
 ## K1224 PCA 2
 OIB <- q15 %>% dplyr::select(
-  Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
@@ -443,7 +437,7 @@ OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-24")) %>%
   mutate(Location = case_when(grepl("K-12-24", Sample) ~ "K-12-24")) %>%
   dplyr::select(
-    Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
@@ -455,13 +449,14 @@ K1224_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-7, 5)) + scale_y_continuous(limits=c(-6, 6)) +
+  scale_x_continuous(limits=c(-20, 8)) + scale_y_continuous(limits=c(-8, 5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 10), axis.text = element_text(size = 10),
         legend.title = element_blank(), legend.text = element_text(size = 10),
         legend.key.size = unit(.2, 'cm'), legend.position = "none", aspect.ratio=1)
+K1224_PCA_2a
 pdf(here("analysis","supplementary-materials","FigS14","FigS14-d-PCA.pdf"), width=3.5, height=3.5)
 K1224_PCA_2a
 dev.off()
@@ -478,7 +473,7 @@ K1224_PCA_2b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-7, 5)) + scale_y_continuous(limits=c(-6, 6)) +
+  scale_x_continuous(limits=c(-20, 8)) + scale_y_continuous(limits=c(-8, 5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -491,7 +486,7 @@ K1224_PCA_2b
 ## PCs : density plots
 PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[76,"PC1"], xend=d_pca[76,"PC1"],
+  annotate("segment", x=d_pca[500,"PC1"], xend=d_pca[500,"PC1"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -503,7 +498,7 @@ PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
   labs(y=paste0("PC1","\n","(",round(eig["Dim.1","variance.percent"], digits = 1),"%)"))
 PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[76,"PC2"], xend=d_pca[76,"PC2"],
+  annotate("segment", x=d_pca[500,"PC2"], xend=d_pca[500,"PC2"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -515,7 +510,7 @@ PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
   labs(y=paste0("PC2","\n","(",round(eig["Dim.2","variance.percent"], digits = 1),"%)"))
 PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[76,"PC3"], xend=d_pca[76,"PC3"],
+  annotate("segment", x=d_pca[500,"PC3"], xend=d_pca[500,"PC3"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -527,7 +522,7 @@ PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
   labs(y=paste0("PC3","\n","(",round(eig["Dim.3","variance.percent"], digits = 1),"%)"))
 PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[76,"PC4"], xend=d_pca[76,"PC4"],
+  annotate("segment", x=d_pca[500,"PC4"], xend=d_pca[500,"PC4"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -539,7 +534,7 @@ PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
   labs(y=paste0("PC4","\n","(",round(eig["Dim.4","variance.percent"], digits = 1),"%)"))
 PC5 <- ggplot(d_pca, aes(x = PC5, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[76,"PC5"], xend=d_pca[76,"PC5"],
+  annotate("segment", x=d_pca[500,"PC5"], xend=d_pca[500,"PC5"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -687,7 +682,7 @@ dev.off()
 #### Fig 14f ####
 ## K1225 PCA 2
 OIB <- q17 %>% dplyr::select(
-  Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
@@ -696,7 +691,7 @@ OIB %>% group_by(Location) %>% tally()
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
   mutate(Location = case_when(grepl("K-12-25", Sample) ~ "K-12-25")) %>%
   dplyr::select(
-    Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
@@ -708,7 +703,7 @@ K1225_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-8, 8)) + scale_y_continuous(limits=c(-4, 4)) +
+  scale_x_continuous(limits=c(-8, 8)) + scale_y_continuous(limits=c(-4.5, 3)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -732,7 +727,7 @@ K1225_PCA_2b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-8, 8)) + scale_y_continuous(limits=c(-4, 4)) +
+  scale_x_continuous(limits=c(-8, 8)) + scale_y_continuous(limits=c(-4.5, 3)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -742,10 +737,11 @@ K1225_PCA_2b <- d_pca %>%
        y=paste0("PC2 (",round(eig["Dim.2","variance.percent"], digits = 1),"%)"))
 K1225_PCA_2b
 
+
 ## PCs : density plots
 PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[80,"PC1"], xend=d_pca[80,"PC1"],
+  annotate("segment", x=d_pca[116,"PC1"], xend=d_pca[116,"PC1"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -757,7 +753,7 @@ PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
   labs(y=paste0("PC1","\n","(",round(eig["Dim.1","variance.percent"], digits = 1),"%)"))
 PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[80,"PC2"], xend=d_pca[80,"PC2"],
+  annotate("segment", x=d_pca[116,"PC2"], xend=d_pca[116,"PC2"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -769,7 +765,7 @@ PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
   labs(y=paste0("PC2","\n","(",round(eig["Dim.2","variance.percent"], digits = 1),"%)"))
 PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[80,"PC3"], xend=d_pca[80,"PC3"],
+  annotate("segment", x=d_pca[116,"PC3"], xend=d_pca[116,"PC3"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -781,7 +777,7 @@ PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
   labs(y=paste0("PC3","\n","(",round(eig["Dim.3","variance.percent"], digits = 1),"%)"))
 PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[80,"PC4"], xend=d_pca[80,"PC4"],
+  annotate("segment", x=d_pca[116,"PC4"], xend=d_pca[116,"PC4"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -793,7 +789,7 @@ PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
   labs(y=paste0("PC4","\n","(",round(eig["Dim.4","variance.percent"], digits = 1),"%)"))
 PC5 <- ggplot(d_pca, aes(x = PC5, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[80,"PC5"], xend=d_pca[80,"PC5"],
+  annotate("segment", x=d_pca[116,"PC5"], xend=d_pca[116,"PC5"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -941,7 +937,7 @@ dev.off()
 #### Fig 14h ####
 ## K1226 PCA 2
 OIB <- q19 %>% dplyr::select(
-  Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
@@ -950,7 +946,7 @@ s <- joined_data %>%
   dplyr::filter(Sample %in% c("K-12-26")) %>%
   mutate(Location = case_when(grepl("K-12-26", Sample) ~ "K-12-26")) %>%
   dplyr::select(
-    Sample,Location,SiO2,Al2O3,MgO,CaO,V,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Y,Yb,Pb)
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
@@ -962,7 +958,7 @@ K1226_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-7, 6)) + scale_y_continuous(limits=c(-4.4, 3.4)) +
+  scale_x_continuous(limits=c(-10, 8)) + scale_y_continuous(limits=c(-3, 6)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -986,7 +982,7 @@ K1226_PCA_2b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-7, 6)) + scale_y_continuous(limits=c(-4.4, 3.4)) +
+  scale_x_continuous(limits=c(-10, 8)) + scale_y_continuous(limits=c(-3, 6)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -999,7 +995,7 @@ K1226_PCA_2b
 ## PCs : density plots
 PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[43,"PC1"], xend=d_pca[43,"PC1"],
+  annotate("segment", x=d_pca[78,"PC1"], xend=d_pca[78,"PC1"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -1011,7 +1007,7 @@ PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
   labs(y=paste0("PC1","\n","(",round(eig["Dim.1","variance.percent"], digits = 1),"%)"))
 PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[43,"PC2"], xend=d_pca[43,"PC2"],
+  annotate("segment", x=d_pca[78,"PC2"], xend=d_pca[78,"PC2"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -1023,7 +1019,7 @@ PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
   labs(y=paste0("PC2","\n","(",round(eig["Dim.2","variance.percent"], digits = 1),"%)"))
 PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[43,"PC3"], xend=d_pca[43,"PC3"],
+  annotate("segment", x=d_pca[78,"PC3"], xend=d_pca[78,"PC3"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -1035,7 +1031,7 @@ PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
   labs(y=paste0("PC3","\n","(",round(eig["Dim.3","variance.percent"], digits = 1),"%)"))
 PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[43,"PC4"], xend=d_pca[43,"PC4"],
+  annotate("segment", x=d_pca[78,"PC4"], xend=d_pca[78,"PC4"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
@@ -1047,7 +1043,7 @@ PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
   labs(y=paste0("PC4","\n","(",round(eig["Dim.4","variance.percent"], digits = 1),"%)"))
 PC5 <- ggplot(d_pca, aes(x = PC5, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[43,"PC5"], xend=d_pca[43,"PC5"],
+  annotate("segment", x=d_pca[78,"PC5"], xend=d_pca[78,"PC5"],
            y=0, yend=Inf, col="red", size=.75) +
   scale_color_manual(values = cols) + scale_fill_manual(values = cols) +
   scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +

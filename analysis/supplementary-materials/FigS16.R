@@ -339,13 +339,13 @@ contour <- c("Hawai'i"="black","Maui"="black","Moloka'i"="black","O'ahu"="black"
              "Austral-Cook"="black","K-12-25"="red")
 
 p7 <- OIB %>%
-  ggplot(aes(x=Rb,y=U/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Rb,y=Th/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
   scale_x_continuous(limits=c(0,40)) +
-  scale_y_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,3.5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -353,13 +353,13 @@ p7 <- OIB %>%
         axis.title.x = element_blank(),legend.position = "none", aspect.ratio=1) +
   labs(x="Rb (ppm)")
 p8 <- OIB %>%
-  ggplot(aes(x=Sr,y=U/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Sr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
   #scale_x_continuous(limits=c(.1,2.3)) +
-  scale_y_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,3.5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -369,13 +369,13 @@ p8 <- OIB %>%
         axis.title.x = element_blank(),aspect.ratio=1) +
   labs(x="Sr (ppm)")
 p9 <- OIB %>%
-  ggplot(aes(x=Zr,y=U/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Zr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
   scale_x_continuous(limits=c(0,300)) +
-  scale_y_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,3.5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -395,7 +395,9 @@ WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
 `SIO2(WT%)` > 42.9 AND `SIO2(WT%)` < 45.9 AND
 `NA2O(WT%)` > 2.41 AND `NA2O(WT%)` < 5.41 AND
 `K2O(WT%)` < 2.35 AND
-(file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv')") %>%
+(file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part1.csv' OR
+file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv' OR
+file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv')") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
   dplyr::mutate(Location = case_when(
     grepl("PONAPE", LOCATION) ~ "Ponape",
@@ -420,13 +422,16 @@ contour <- c("Chuuk"="black","Kosrae"="black","Ponape"="black",
              "Hawai'i"="black","K-12-26"="red")
 
 p10 <- OIB %>%
-  ggplot(aes(x=Rb,y=La/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Rb,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Chuuk")), size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Kosrae")), size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Ponape")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
   #scale_x_continuous(limits=c(0,55)) +
-  #scale_y_continuous(limits=c(0,300)) +
+  scale_y_continuous(limits=c(0,400)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -434,13 +439,16 @@ p10 <- OIB %>%
         legend.position = "none", aspect.ratio=1) +
   labs(x="Rb (ppm)")
 p11 <- OIB %>%
-  ggplot(aes(x=Sr,y=La/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Sr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Chuuk")), size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Kosrae")), size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Ponape")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
  # scale_x_continuous(limits=c(0,750)) +
-  #scale_y_continuous(limits=c(0,300)) +
+  scale_y_continuous(limits=c(0,400)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -449,13 +457,16 @@ p11 <- OIB %>%
         axis.ticks.y = element_blank(),legend.position = "none", aspect.ratio=1) +
   labs(x="Sr (ppm)")
 p12 <- OIB %>%
-  ggplot(aes(x=Zr,y=La/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Zr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Chuuk")), size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Kosrae")), size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Ponape")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
   # scale_x_continuous(limits=c(0,750)) +
-  #scale_y_continuous(limits=c(0,300)) +
+  scale_y_continuous(limits=c(0,400)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),

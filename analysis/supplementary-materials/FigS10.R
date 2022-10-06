@@ -104,52 +104,6 @@ E_11_03_PCA_1b <- d_pca %>%
        y=paste0("PC2 (",round(eig["Dim.2","variance.percent"], digits = 1),"%)"))
 E_11_03_PCA_1b
 
-# PC values > distance to artefacts (individual or median of group)
-# distance within all PCs > weight mean distance
-dist <- data.frame(
-  Sample = c(d_pca[1:75,"Sample"]),
-  Location = c(d_pca[1:75,"Location"]),
-  PC1 = c(sqrt(((median(d_pca[76,"PC1"]))-d_pca[1:75,"PC1"])^2)),
-  PC2 = c(sqrt(((median(d_pca[76,"PC2"]))-d_pca[1:75,"PC2"])^2)),
-  PC3 = c(sqrt(((median(d_pca[76,"PC3"]))-d_pca[1:75,"PC3"])^2)),
-  PC4 = c(sqrt(((median(d_pca[76,"PC4"]))-d_pca[1:75,"PC4"])^2)),
-  PC5 = c(sqrt(((median(d_pca[76,"PC5"]))-d_pca[1:75,"PC5"])^2))) %>%
-  mutate(weight_mean = (
-    (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+
-      (PC4*eig[4,2])+(PC5*eig[5,2])) / (sum(eig[1:5,2])))
-
-# distances > distance index, from 1 (closer to artefact) to 5 (more distant)
-# 1= min > middle point between Min and 1st quartile
-# 2= middle point between Min and 1st quartile > 1st quartile
-# 3= 1st quartile > median
-# 4= median > 3rd quartile
-# 5= 3rd quartile > max
-summary_stat <- data.frame(unclass(summary(dist$weight_mean)), check.names = F)
-dist <- dist %>% mutate(
-  dist_cat = cut(
-    weight_mean,
-    breaks=c(0,
-             (summary_stat["1st Qu.",]-((summary_stat["1st Qu.",]-summary_stat["Min.",])/2)),
-             summary_stat["1st Qu.",],
-             summary_stat["Median",],
-             summary_stat["3rd Qu.",],
-             summary_stat["Max.",]),
-    labels=c('1','2','3','4','5')))
-
-distance_index <- ggplot(dist, aes(x = factor(dist_cat), fill=Location)) +
-  geom_bar(position="fill", alpha=.75) + scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  theme_void() + theme(
-    axis.title.x=element_text(size=9, vjust = -1.5),
-    axis.text.x=element_text(size=8, vjust = -.5),
-    axis.title.y=element_blank(),
-    axis.line.x=element_line(size=.25), axis.ticks.length.x=unit(.1,"cm"),
-    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none") +
-  labs(x=paste0("Distance index","\n","(Total variance)"))
-distance_index
-
-distance_index <- distance_index/plot_spacer() + plot_layout(heights = c(4,.1))
-
 PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
   geom_density_ridges(aes(color=Location, fill=Location), alpha=0.4, size=.25) +
   annotate("segment", x=d_pca[76,"PC1"], xend=d_pca[76,"PC1"],
