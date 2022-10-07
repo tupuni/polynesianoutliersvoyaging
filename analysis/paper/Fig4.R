@@ -11,21 +11,21 @@ pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
 shapes <- c("Caroline islands"=21,"Samoan islands"=24,"Austral-Cook chain"=23,
             "Society islands"=22,"Hawai'i islands"=25,"Marquesas islands"=21,
-            "Pitcairn-Gambier chain"=21,
+            "Pitcairn-Gambier chain"=21,"North Fiji Basin"=25,
             "E-11-08"=5,"E-11-08dup"=9,"T-12-06"=2,"T-12-06dup"=14,
             "T-12-07"=7,"T-12-08"=6,"T-12-09"=10,"T-12-10"=11,"K-12-24"=12,
             "K-12-25"=13,"K-12-26"=14)
 cols <- c("Caroline islands"="#320A5A","Samoan islands"="#781B6C",
           "Austral-Cook chain"="#BB3654","Society islands"="#EC6824",
           "Marquesas islands"="#FBB41A","Hawai'i islands"="#F4DD53",
-          "Pitcairn-Gambier chain"="#C96FB6",
+          "Pitcairn-Gambier chain"="#C96FB6","North Fiji Basin"="#B4C630",
           "E-11-08"="red","E-11-08dup"="red","T-12-06"="red","T-12-06dup"="red",
           "T-12-07"="red","T-12-08"="red","T-12-09"="red",
           "T-12-10"="red","K-12-24"="red","K-12-25"="red","K-12-26"="red")
 contour <- c("Caroline islands"="black","Samoan islands"="black",
              "Austral-Cook chain"="black","Society islands"="black",
              "Hawai'i islands"="black","Marquesas islands"="black",
-             "Pitcairn-Gambier chain"="black",
+             "Pitcairn-Gambier chain"="black","North Fiji Basin"="black",
              "E-11-08"="red","E-11-08dup"="red","T-12-06"="red","T-12-06dup"="red",
              "T-12-07"="red","T-12-08"="red","T-12-09"="red",
              "T-12-10"="red","K-12-24"="red","K-12-25"="red","K-12-26"="red")
@@ -548,7 +548,31 @@ dev.off()
 ## K1225 PCA 1
 OIB <- q16 %>% dplyr::select(
   Sample,Location,Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
+
+Fiji <- dbGetQuery(georoc,
+"SELECT * FROM 'sample'
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
+LATITUDE_MAX > -16 AND
+`SIO2(WT%)` > 43.1 AND `SIO2(WT%)` < 46.1 AND
+`NA2O(WT%)` > 0.89 AND `NA2O(WT%)` < 3.89 AND
+`K2O(WT%)` < 1.9 AND
+`MGO(WT%)` > 10.7 AND `MGO(WT%)` < 13.7") %>%
+  rename_georoc() %>% dplyr::mutate(Location = "North Fiji Basin") %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
+  dplyr::select(Sample,Location,
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+
+price2014 <- read.csv(here("analysis", "data", "raw_data", "price2014G3.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::mutate(Location = "North Fiji Basin") %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
+  dplyr::select(Sample,Location,
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+OIB <- full_join(OIB,Fiji)
+OIB <- full_join(OIB,price2014)
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
 
@@ -605,13 +629,13 @@ K1225_PCA_1b
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:30,"Sample"]),
-  Location = c(d_pca[1:30,"Location"]),
-  PC1 = c(sqrt(((median(d_pca[31,"PC1"]))-d_pca[1:30,"PC1"])^2)),
-  PC2 = c(sqrt(((median(d_pca[31,"PC2"]))-d_pca[1:30,"PC2"])^2)),
-  PC3 = c(sqrt(((median(d_pca[31,"PC3"]))-d_pca[1:30,"PC3"])^2)),
-  PC4 = c(sqrt(((median(d_pca[31,"PC4"]))-d_pca[1:30,"PC4"])^2)),
-  PC5 = c(sqrt(((median(d_pca[31,"PC5"]))-d_pca[1:30,"PC5"])^2))) %>%
+  Sample = c(d_pca[1:43,"Sample"]),
+  Location = c(d_pca[1:43,"Location"]),
+  PC1 = c(sqrt(((median(d_pca[44,"PC1"]))-d_pca[1:43,"PC1"])^2)),
+  PC2 = c(sqrt(((median(d_pca[44,"PC2"]))-d_pca[1:43,"PC2"])^2)),
+  PC3 = c(sqrt(((median(d_pca[44,"PC3"]))-d_pca[1:43,"PC3"])^2)),
+  PC4 = c(sqrt(((median(d_pca[44,"PC4"]))-d_pca[1:43,"PC4"])^2)),
+  PC5 = c(sqrt(((median(d_pca[44,"PC5"]))-d_pca[1:43,"PC5"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+
       (PC4*eig[4,2])+(PC5*eig[5,2])) / (sum(eig[1:5,2])))
@@ -656,6 +680,29 @@ dev.off()
 ## K1225 PCA 2
 OIB <- q17 %>% dplyr::select(
   Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+Fiji <- dbGetQuery(georoc,
+                   "SELECT * FROM 'sample'
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
+LATITUDE_MAX > -16 AND
+`SIO2(WT%)` > 43.1 AND `SIO2(WT%)` < 46.1 AND
+`NA2O(WT%)` > 0.89 AND `NA2O(WT%)` < 3.89 AND
+`K2O(WT%)` < 1.9 AND
+`MGO(WT%)` > 10.7 AND `MGO(WT%)` < 13.7") %>%
+  rename_georoc() %>% dplyr::mutate(Location = "North Fiji Basin") %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
+  dplyr::select(
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+price2014 <- read.csv(here("analysis", "data", "raw_data", "price2014G3.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::mutate(Location = "North Fiji Basin") %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
+  dplyr::select(
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+OIB <- full_join(OIB,Fiji)
+OIB <- full_join(OIB,price2014)
 is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
 OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
@@ -676,7 +723,7 @@ K1225_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-8, 8)) + scale_y_continuous(limits=c(-4.5, 3)) +
+  scale_x_continuous(limits=c(-8.5, 6)) + scale_y_continuous(limits=c(-4.5, 2)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -700,7 +747,7 @@ K1225_PCA_2b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-8, 8)) + scale_y_continuous(limits=c(-4.5, 3)) +
+  scale_x_continuous(limits=c(-8.5, 6)) + scale_y_continuous(limits=c(-4.5, 2)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -713,27 +760,27 @@ K1225_PCA_2b
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:115,"Sample"]),
-  Location = c(d_pca[1:115,"Location"]),
-  PC1 = c(sqrt(((d_pca[116,"PC1"])-d_pca[1:115,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[116,"PC2"])-d_pca[1:115,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[116,"PC3"])-d_pca[1:115,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[116,"PC4"])-d_pca[1:115,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[116,"PC5"])-d_pca[1:115,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[116,"PC6"])-d_pca[1:115,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[116,"PC7"])-d_pca[1:115,"PC7"])^2)),
-  PC8 = c(sqrt(((d_pca[116,"PC8"])-d_pca[1:115,"PC8"])^2)),
-  PC9 = c(sqrt(((d_pca[116,"PC9"])-d_pca[1:115,"PC9"])^2)),
-  PC10 = c(sqrt(((d_pca[116,"PC10"])-d_pca[1:115,"PC10"])^2)),
-  PC11 = c(sqrt(((d_pca[116,"PC11"])-d_pca[1:115,"PC11"])^2)),
-  PC12 = c(sqrt(((d_pca[116,"PC12"])-d_pca[1:115,"PC12"])^2)),
-  PC13 = c(sqrt(((d_pca[116,"PC13"])-d_pca[1:115,"PC13"])^2)),
-  PC14 = c(sqrt(((d_pca[116,"PC14"])-d_pca[1:115,"PC14"])^2)),
-  PC15 = c(sqrt(((d_pca[116,"PC15"])-d_pca[1:115,"PC15"])^2)),
-  PC16 = c(sqrt(((d_pca[116,"PC16"])-d_pca[1:115,"PC16"])^2)),
-  PC17 = c(sqrt(((d_pca[116,"PC17"])-d_pca[1:115,"PC17"])^2)),
-  PC18 = c(sqrt(((d_pca[116,"PC18"])-d_pca[1:115,"PC18"])^2)),
-  PC19 = c(sqrt(((d_pca[116,"PC19"])-d_pca[1:115,"PC19"])^2))) %>%
+  Sample = c(d_pca[1:129,"Sample"]),
+  Location = c(d_pca[1:129,"Location"]),
+  PC1 = c(sqrt(((d_pca[130,"PC1"])-d_pca[1:129,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[130,"PC2"])-d_pca[1:129,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[130,"PC3"])-d_pca[1:129,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[130,"PC4"])-d_pca[1:129,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[130,"PC5"])-d_pca[1:129,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[130,"PC6"])-d_pca[1:129,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[130,"PC7"])-d_pca[1:129,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[130,"PC8"])-d_pca[1:129,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[130,"PC9"])-d_pca[1:129,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[130,"PC10"])-d_pca[1:129,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[130,"PC11"])-d_pca[1:129,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[130,"PC12"])-d_pca[1:129,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[130,"PC13"])-d_pca[1:129,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[130,"PC14"])-d_pca[1:129,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[130,"PC15"])-d_pca[1:129,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[130,"PC16"])-d_pca[1:129,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[130,"PC17"])-d_pca[1:129,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[130,"PC18"])-d_pca[1:129,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[130,"PC19"])-d_pca[1:129,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
       (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+

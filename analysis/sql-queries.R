@@ -256,6 +256,7 @@ WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
 LATITUDE_MAX < 20 AND TECTONIC_SETTING='CONVERGENT MARGIN' AND
 `SIO2(WT%)` > 48.2 AND `SIO2(WT%)` < 51.2 AND
 `K2O(WT%)` > 0.14 AND `K2O(WT%)` < 3.14 AND
+`YB(PPM)` > 1.05 AND `YB(PPM)` < 3.15 AND
 (file_id= '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv' OR
 file_id= '2022-06-PVFZCE_LUZON_ARC.csv' OR
 file_id= '2022-06-PVFZCE_NEW_HEBRIDES_ARC_VANUATU_ARCHIPELAGO.csv' OR
@@ -621,8 +622,7 @@ q15 <- dbGetQuery(georoc,
 FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 TECTONIC_SETTING='OCEAN ISLAND' AND
-(`NA2O(WT%)` > 1.61 AND `NA2O(WT%)` < 4.61 AND
-`K2O(WT%)` < 2.91 AND
+(`K2O(WT%)` < 2.91 AND
 `NA2O(WT%)` > 1.61 AND `NA2O(WT%)` < 4.61 AND
 `MGO(WT%)` > 5.84 AND `MGO(WT%)` < 8.84 AND
 `YB(PPM)` > 1.26 AND `YB(PPM)` < 3.78) AND
@@ -643,8 +643,7 @@ ranges_s_OIB[8,]
 ranges_s_OIB[8,36:39] %>% round(digits = 6)
 ranges_s_OIB[8,40:45] %>% round(digits = 3)
 q16 <- dbGetQuery(georoc,
-"SELECT *
-FROM 'sample'
+"SELECT * FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 TECTONIC_SETTING='OCEAN ISLAND' AND
 (ND143_ND144 > 0.512396 AND ND143_ND144 < 0.513422 AND
@@ -659,6 +658,7 @@ PB208_PB204 > 38.274 AND PB208_PB204 < 39.048)") %>%
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 q16 %>% group_by(Location) %>% tally()
+
 
 joined_data[17,]
 ranges_s_OIB[8,1:35]

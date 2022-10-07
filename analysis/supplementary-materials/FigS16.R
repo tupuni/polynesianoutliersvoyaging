@@ -300,24 +300,14 @@ ranges_s_OIB[8,]
 OIB <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
 WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
+TECTONIC_SETTING='OCEAN ISLAND' AND
 `SIO2(WT%)` > 43.1 AND `SIO2(WT%)` < 46.1 AND
 `NA2O(WT%)` > 0.89 AND `NA2O(WT%)` < 3.89 AND
 `K2O(WT%)` < 1.9 AND
-`MGO(WT%)` > 10.7 AND `MGO(WT%)` < 13.7 AND
-(file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part1.csv' OR
-file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv' OR
-file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv' OR
-file_id = '2022-06-WFJZKY_AUSTRAL-COOK_ISLANDS.csv')") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
-  dplyr::mutate(Location = case_when(
-    grepl("CAROLINE", LOCATION) ~ "Caroline",
-    grepl("AUSTRAL-COOK ISLANDS", LOCATION) ~ "Austral-Cook",
-    grepl("HAWAIIAN ISLANDS / HAWAII", LOCATION) ~ "Hawai'i",
-    grepl("HAWAIIAN ISLANDS / KAUAI", LOCATION) ~ "Kaua'i",
-    grepl("HAWAIIAN ISLANDS / MAUI", LOCATION) ~ "Maui",
-    grepl("HAWAIIAN ISLANDS / MOLOKAI", LOCATION) ~ "Moloka'i",
-    grepl("HAWAIIAN ISLANDS / NIIHAU", LOCATION) ~ "Ni'ihau",
-    grepl("HAWAIIAN ISLANDS / OAHU", LOCATION) ~ "O'ahu")) %>%
+`MGO(WT%)` > 10.7 AND `MGO(WT%)` < 13.7") %>%
+  get_georoc_location() %>% filter(Location != "na") %>%
+  rename_georoc() %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
   dplyr::filter(Location != "NA") %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
@@ -326,26 +316,56 @@ file_id = '2022-06-WFJZKY_AUSTRAL-COOK_ISLANDS.csv')") %>%
 OIB %>% group_by(Location) %>% tally()
 OIB[OIB == 0] <- NA # Replace 0 with NA
 
+Fiji <- dbGetQuery(georoc,
+"SELECT * FROM 'sample'
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
+LATITUDE_MAX > -16 AND
+`SIO2(WT%)` > 43.1 AND `SIO2(WT%)` < 46.1 AND
+`NA2O(WT%)` > 0.89 AND `NA2O(WT%)` < 3.89 AND
+`K2O(WT%)` < 1.9 AND
+`MGO(WT%)` > 10.7 AND `MGO(WT%)` < 13.7") %>%
+  rename_georoc() %>% dplyr::mutate(Location = "North Fiji Basin") %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
+  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
+                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
+                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204) %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86)
+
+price2014 <- read.csv(here("analysis", "data", "raw_data", "price2014G3.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::mutate(Location = "North Fiji Basin") %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86)
+
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
   mutate(Location = case_when(grepl("K-12-25", Sample) ~ "K-12-25"))
 
-cols <- c("Hawai'i"="#EABD00","Maui"="#F4D037","Moloka'i"="#F4D037",
-          "O'ahu"="#F9E385","Kaua'i"="#F4E9BA","Ni'ihau"="#F4E9BA",
-          "Caroline"="#320A5A","Austral-Cook"="#BB3654","K-12-25"="red")
-shapes <- c("Hawai'i"=21,"Maui"=22,"Moloka'i"=23,"O'ahu"=24,"Kaua'i"=25,"Ni'ihau"=21,
-            "Caroline"=21,"Austral-Cook"=23,"K-12-25"=13)
-contour <- c("Hawai'i"="black","Maui"="black","Moloka'i"="black","O'ahu"="black",
-             "Kaua'i"="black","Ni'ihau"="black","Caroline"="black",
-             "Austral-Cook"="black","K-12-25"="red")
+shapes <- c("Caroline islands"=21,"Samoan islands"=24,"Austral-Cook chain"=23,
+            "Society islands"=22,"Hawai'i islands"=25,"Marquesas islands"=21,
+            "Pitcairn-Gambier chain"=21,"North Fiji Basin"=25,"K-12-25"=13)
+cols <- c("Caroline islands"="#320A5A","Samoan islands"="#781B6C",
+          "Austral-Cook chain"="#BB3654","Society islands"="#EC6824",
+          "Marquesas islands"="#FBB41A","Hawai'i islands"="#F4DD53",
+          "Pitcairn-Gambier chain"="#C96FB6","North Fiji Basin"="#B4C630",
+          "K-12-25"="red")
+contour <- c("Caroline islands"="black","Samoan islands"="black",
+             "Austral-Cook chain"="black","Society islands"="black",
+             "Hawai'i islands"="black","Marquesas islands"="black",
+             "Pitcairn-Gambier chain"="black","North Fiji Basin"="black",
+             "K-12-25"="red")
 
 p7 <- OIB %>%
-  ggplot(aes(x=Rb,y=Th/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Rb,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(data=Fiji, size=3, stroke=.25) +
+  geom_point(data=price2014, size=3, stroke=.25) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,40)) +
-  scale_y_continuous(limits=c(0,3.5)) +
+  scale_x_continuous(limits=c(0,30)) +
+  scale_y_continuous(limits=c(0,450)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -353,13 +373,15 @@ p7 <- OIB %>%
         axis.title.x = element_blank(),legend.position = "none", aspect.ratio=1) +
   labs(x="Rb (ppm)")
 p8 <- OIB %>%
-  ggplot(aes(x=Sr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Sr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(data=Fiji, size=3, stroke=.25) +
+  geom_point(data=price2014, size=3, stroke=.25) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  #scale_x_continuous(limits=c(.1,2.3)) +
-  scale_y_continuous(limits=c(0,3.5)) +
+  scale_x_continuous(limits=c(0,900)) +
+  scale_y_continuous(limits=c(0,450)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -369,13 +391,15 @@ p8 <- OIB %>%
         axis.title.x = element_blank(),aspect.ratio=1) +
   labs(x="Sr (ppm)")
 p9 <- OIB %>%
-  ggplot(aes(x=Zr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Zr,y=Ba/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
-  scale_shape_manual(values=shapes) +
+  geom_point(data=Fiji, size=3, stroke=.25) +
+  geom_point(data=price2014, size=3, stroke=.25) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,300)) +
-  scale_y_continuous(limits=c(0,3.5)) +
+  scale_x_continuous(limits=c(0,350)) +
+  scale_y_continuous(limits=c(0,450)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -384,6 +408,7 @@ p9 <- OIB %>%
         axis.ticks.y = element_blank(), legend.position = "none",
         axis.title.x = element_blank(),aspect.ratio=1) +
   labs(x="Zr (ppm)")
+
 S16c <- p7|p8|p9
 S16c
 

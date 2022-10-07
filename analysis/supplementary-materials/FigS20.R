@@ -1,6 +1,8 @@
 require(here)
 require(tidyverse)
 require(RSQLite)
+require(FactoMineR)
+require(factoextra)
 require(patchwork)
 
 georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
@@ -637,64 +639,78 @@ cite <- full_join(reference,citation)
 cite
 
 #### K_12_24 ####
-ranges_s_OIB[7,1:35]
-OIB <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND' AND
-`NA2O(WT%)` > 1.61 AND `NA2O(WT%)` < 4.61 AND
-`K2O(WT%)` > 0 AND `K2O(WT%)` < 2.91 AND
-file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv'") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::rename(Location=LOCATION) %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
-d <- OIB %>% dplyr::select(Sample,Location,Rb,Nb,La,Nd,Sr,Zr,Ti)
-is.na(d) <- sapply(d, is.infinite) #replace Inf by NA
-d[d == 0] <- NA # Replace 0 with NA
-d <- d[rowSums(is.na(d)) == 0,] # removes rows with missing info for PCA
+OIB <- q15 %>% dplyr::select(
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
+OIB[OIB == 0] <- NA # Replace 0 with NA
+OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
 
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-24")) %>%
   mutate(Location = case_when(grepl("K-12-24", Sample) ~ "K-12-24")) %>%
-  dplyr::select(Sample,Location,Rb,Nb,La,Nd,Sr,Zr,Ti)
+  dplyr::select(
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
-res.pca <- prcomp(d[,3:9], scale = TRUE, center = TRUE) # Dimension reduction using PCA
+res.pca <- prcomp(OIB[,3:21], scale = TRUE, center = TRUE) # Dimension reduction using PCA
 eig <- get_eig(res.pca)
-pred <- stats::predict(res.pca, s[,3:9])
+pred <- stats::predict(res.pca, s[,3:21])
 pred <- cbind(s[,1:2], pred)
-res.pca.df <- cbind(d[,1:2], (as.data.frame(res.pca$x)))
+res.pca.df <- cbind(OIB[,1:2], (as.data.frame(res.pca$x)))
 d_pca <- full_join(res.pca.df, pred)
 
+# PC values > distance to artefacts (individual or median of group)
+# distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:80,"Sample"]),
-  Location = c(d_pca[1:80,"Location"]),
-  PC1 = c(sqrt(((d_pca[81,"PC1"])-d_pca[1:80,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[81,"PC2"])-d_pca[1:80,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[81,"PC3"])-d_pca[1:80,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[81,"PC4"])-d_pca[1:80,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[81,"PC5"])-d_pca[1:80,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[81,"PC6"])-d_pca[1:80,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[81,"PC7"])-d_pca[1:80,"PC7"])^2))) %>%
+  Sample = c(d_pca[1:499,"Sample"]),
+  Location = c(d_pca[1:499,"Location"]),
+  PC1 = c(sqrt(((d_pca[500,"PC1"])-d_pca[1:499,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[500,"PC2"])-d_pca[1:499,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[500,"PC3"])-d_pca[1:499,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[500,"PC4"])-d_pca[1:499,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[500,"PC5"])-d_pca[1:499,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[500,"PC6"])-d_pca[1:499,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[500,"PC7"])-d_pca[1:499,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[500,"PC8"])-d_pca[1:499,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[500,"PC9"])-d_pca[1:499,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[500,"PC10"])-d_pca[1:499,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[500,"PC11"])-d_pca[1:499,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[500,"PC12"])-d_pca[1:499,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[500,"PC13"])-d_pca[1:499,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[500,"PC14"])-d_pca[1:499,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[500,"PC15"])-d_pca[1:499,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[500,"PC16"])-d_pca[1:499,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[500,"PC17"])-d_pca[1:499,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[500,"PC18"])-d_pca[1:499,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[500,"PC19"])-d_pca[1:499,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
-      (PC6*eig[6,2])+(PC7*eig[7,2])) / (sum(eig[1:7,2])))
+      (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
+      (PC10*eig[10,2])+(PC11*eig[11,2])+(PC12*eig[12,2])+(PC13*eig[13,2])+
+      (PC14*eig[14,2])+(PC15*eig[15,2])+(PC16*eig[16,2])+(PC17*eig[17,2])+
+      (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
 head(dist[order(dist$weight_mean),] %>%
        dplyr::select("Sample","Location","weight_mean"), 10)
 
 #### plot ####
-d_spider <- OIB %>%
-  dplyr::filter(Sample %in% c("34227","120903-KOS 13-4","1867349","1867355")) %>%
+d <- dbGetQuery(georoc,
+"SELECT * FROM 'sample'
+WHERE id='120903-KOS 13-4' OR id='1867354' OR
+id='1867352' OR id='1867350'") %>%
+  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
+  rename(Location=LOCATION)%>%
+  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
+                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
+                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+d
+d_spider <- d %>%
   mutate(Location = case_when(
-    grepl("34227", Sample) ~ "[34227] Kosrae (Caroline)",
-    grepl("120903-KOS 13-4", Sample) ~ "[13-4] Kosrae (Caroline)",
-    grepl("1867349", Sample) ~ "[1867349] Ponape (Caroline)",
-    grepl("1867355", Sample) ~ "[1867355] Ponape (Caroline)")) %>%
+    grepl("120903-KOS 13-4", Sample) ~ "[KOS 13-4] Kosrae (Caroline)",
+    grepl("1867354", Sample) ~ "[1867354] Ponape (Caroline)",
+    grepl("1867352", Sample) ~ "[1867352] Ponape (Caroline)",
+    grepl("1867350", Sample) ~ "[1867350] Ponape (Caroline)")) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
@@ -706,15 +722,15 @@ s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-24")) %>%
   normalize_to_pm()
 
 
-shapes <- c("[34227] Kosrae (Caroline)"=0,
-            "[13-4] Kosrae (Caroline)"=1,
-            "[1867349] Ponape (Caroline)"=2,
-            "[1867355] Ponape (Caroline)"=3,
+shapes <- c("[1867354] Ponape (Caroline)"=0,
+            "[1867352] Ponape (Caroline)"=1,
+            "[1867350] Ponape (Caroline)"=2,
+            "[KOS 13-4] Kosrae (Caroline)"=5,
             "K-12-24"=12)
-cols <- c("[34227] Kosrae (Caroline)"="#320A5A",
-          "[13-4] Kosrae (Caroline)"="#320A5A",
-          "[1867349] Ponape (Caroline)"="#320A5A",
-          "[1867355] Ponape (Caroline)"="#320A5A",
+cols <- c("[1867354] Ponape (Caroline)"="#320A5A",
+          "[1867352] Ponape (Caroline)"="#320A5A",
+          "[1867350] Ponape (Caroline)"="#320A5A",
+          "[KOS 13-4] Kosrae (Caroline)"="#320A5A",
           "K-12-24"="red")
 
 K_12_24_spider <- d_spider %>%
@@ -750,191 +766,135 @@ pdf(here("analysis","supplementary-materials","FigS20","FigS20-g.pdf"), width=3.
 K_12_24_spider
 dev.off()
 
-dplyr::filter(Sample %in% c("34227","120903-KOS 13-4","1867349","1867355")) %>%
-
 citation <- dbGetQuery(georoc,
 "SELECT sample_id, reference_id
 FROM 'citation'
-WHERE sample_id='34227' OR
-sample_id='120903-KOS 13-4' OR
-sample_id='1867349' OR
-sample_id='1867355'")
+WHERE sample_id='120903-KOS 13-4' OR
+sample_id='1867354' OR
+sample_id='1867352' OR
+sample_id='1867350'")
 citation
 reference <- dbGetQuery(georoc,
 "SELECT id, reference
 FROM 'reference'
 WHERE id='23592' OR
 id='21069' OR
-id='24239' OR
-id='767'") %>% rename(reference_id=id)
+id='24239'") %>% rename(reference_id=id)
 cite <- full_join(citation,reference)
 cite
 
 #### K_12_25 ####
-ranges_s_OIB[8,1:35]
-
-OIB1 <- dbGetQuery(pofatu,
-"SELECT s.id AS sample_id, s.sample_category, s.location_region,
-s.location_subregion, s.site_name, s.location_latitude, s.location_longitude,
-max(CASE WHEN m.parameter='SiO2 [%]' then m.value END) AS 'SiO2 [%]',
-max(CASE WHEN m.parameter='TiO2 [%]' then m.value END) AS 'TiO2 [%]',
-max(CASE WHEN m.parameter='Al2O3 [%]' then m.value END) AS 'Al2O3 [%]',
-max(CASE WHEN m.parameter='Fe2O3 [%]' then m.value END) AS 'Fe2O3 [%]',
-max(CASE WHEN m.parameter='FeO [%]' then m.value END) AS 'FeO [%]',
-max(CASE WHEN m.parameter='MnO [%]' then m.value END) AS 'MnO [%]',
-max(CASE WHEN m.parameter='MgO [%]' then m.value END) AS 'MgO [%]',
-max(CASE WHEN m.parameter='CaO [%]' then m.value END) AS 'CaO [%]',
-max(CASE WHEN m.parameter='Na2O [%]' then m.value END) AS 'Na2O [%]',
-max(CASE WHEN m.parameter='K2O [%]' then m.value END) AS 'K2O [%]',
-max(CASE WHEN m.parameter='Li [ppm]' then m.value END) AS 'Li [ppm]',
-max(CASE WHEN m.parameter='Sc [ppm]' then m.value END) AS 'Sc [ppm]',
-max(CASE WHEN m.parameter='Ti [ppm]' then m.value END) AS 'Ti [ppm]',
-max(CASE WHEN m.parameter='V [ppm]' then m.value END) AS 'V [ppm]',
-max(CASE WHEN m.parameter='Cr [ppm]' then m.value END) AS 'Cr [ppm]',
-max(CASE WHEN m.parameter='Co [ppm]' then m.value END) AS 'Co [ppm]',
-max(CASE WHEN m.parameter='Ni [ppm]' then m.value END) AS 'Ni [ppm]',
-max(CASE WHEN m.parameter='Cu [ppm]' then m.value END) AS 'Cu [ppm]',
-max(CASE WHEN m.parameter='Zn [ppm]' then m.value END) AS 'Zn [ppm]',
-max(CASE WHEN m.parameter='As [ppm]' then m.value END) AS 'As [ppm]',
-max(CASE WHEN m.parameter='Rb [ppm]' then m.value END) AS 'Rb [ppm]',
-max(CASE WHEN m.parameter='Sr [ppm]' then m.value END) AS 'Sr [ppm]',
-max(CASE WHEN m.parameter='Y [ppm]' then m.value END) AS 'Y [ppm]',
-max(CASE WHEN m.parameter='Zr [ppm]' then m.value END) AS 'Zr [ppm]',
-max(CASE WHEN m.parameter='Nb [ppm]' then m.value END) AS 'Nb [ppm]',
-max(CASE WHEN m.parameter='Cd [ppm]' then m.value END) AS 'Cd [ppm]',
-max(CASE WHEN m.parameter='Cs [ppm]' then m.value END) AS 'Cs [ppm]',
-max(CASE WHEN m.parameter='Ba [ppm]' then m.value END) AS 'Ba [ppm]',
-max(CASE WHEN m.parameter='La [ppm]' then m.value END) AS 'La [ppm]',
-max(CASE WHEN m.parameter='Ce [ppm]' then m.value END) AS 'Ce [ppm]',
-max(CASE WHEN m.parameter='Pr [ppm]' then m.value END) AS 'Pr [ppm]',
-max(CASE WHEN m.parameter='Nd [ppm]' then m.value END) AS 'Nd [ppm]',
-max(CASE WHEN m.parameter='Sm [ppm]' then m.value END) AS 'Sm [ppm]',
-max(CASE WHEN m.parameter='Eu [ppm]' then m.value END) AS 'Eu [ppm]',
-max(CASE WHEN m.parameter='Gd [ppm]' then m.value END) AS 'Gd [ppm]',
-max(CASE WHEN m.parameter='Tb [ppm]' then m.value END) AS 'Tb [ppm]',
-max(CASE WHEN m.parameter='Dy [ppm]' then m.value END) AS 'Dy [ppm]',
-max(CASE WHEN m.parameter='Ho [ppm]' then m.value END) AS 'Ho [ppm]',
-max(CASE WHEN m.parameter='Er [ppm]' then m.value END) AS 'Er [ppm]',
-max(CASE WHEN m.parameter='Tm [ppm]' then m.value END) AS 'Tm [ppm]',
-max(CASE WHEN m.parameter='Yb [ppm]' then m.value END) AS 'Yb [ppm]',
-max(CASE WHEN m.parameter='Lu [ppm]' then m.value END) AS 'Lu [ppm]',
-max(CASE WHEN m.parameter='Hf [ppm]' then m.value END) AS 'Hf [ppm]',
-max(CASE WHEN m.parameter='Ta [ppm]' then m.value END) AS 'Ta [ppm]',
-max(CASE WHEN m.parameter='Tl [ppm]' then m.value END) AS 'Tl [ppm]',
-max(CASE WHEN m.parameter='Pb [ppm]' then m.value END) AS 'Pb [ppm]',
-max(CASE WHEN m.parameter='Th [ppm]' then m.value END) AS 'Th [ppm]',
-max(CASE WHEN m.parameter='U [ppm]' then m.value END) AS 'U [ppm]',
-max(CASE WHEN m.parameter='Nd143_Nd144' then m.value END) AS 'Nd143_Nd144',
-max(CASE WHEN m.parameter='Sr87_Sr86' then m.value END) AS 'Sr87_Sr86',
-max(CASE WHEN m.parameter='Pb206_Pb204' then m.value END) AS 'Pb206_Pb204',
-max(CASE WHEN m.parameter='Pb207_Pb204' then m.value END) AS 'Pb207_Pb204',
-max(CASE WHEN m.parameter='Pb208_Pb204' then m.value END) AS 'Pb208_Pb204'
-FROM 'samples.csv' AS s JOIN 'measurements.csv' AS m ON s.id=m.sample_id
-WHERE s.sample_category = 'SOURCE' AND location_region LIKE '%HAWAI%' AND
-m.parameter IN ('SiO2 [%]', 'TiO2 [%]', 'Al2O3 [%]', 'Fe2O3 [%]', 'FeO [%]',
-'MnO [%]', 'MgO [%]', 'CaO [%]', 'Na2O [%]', 'K2O [%]',
-'Li [ppm]', 'Sc [ppm]', 'Ti [ppm]', 'V [ppm]',
-'Cr [ppm]', 'Co [ppm]', 'Ni [ppm]', 'Cu [ppm]', 'Zn [ppm]', 'As [ppm]',
-'Rb [ppm]', 'Sr [ppm]', 'Y [ppm]', 'Zr [ppm]', 'Nb [ppm]', 'Cd [ppm]',
-'Cs [ppm]', 'Ba [ppm]', 'La [ppm]', 'Ce [ppm]', 'Pr [ppm]', 'Nd [ppm]',
-'Sm [ppm]', 'Eu [ppm]', 'Gd [ppm]', 'Tb [ppm]', 'Dy [ppm]', 'Ho [ppm]',
-'Er [ppm]', 'Tm [ppm]', 'Yb [ppm]', 'Lu [ppm]', 'Hf [ppm]', 'Ta [ppm]',
-'Tl [ppm]', 'Pb [ppm]', 'Th [ppm]', 'U [ppm]', 'Nd143_Nd144', 'Sr87_Sr86',
-'Pb206_Pb204', 'Pb207_Pb204', 'Pb208_Pb204') GROUP BY sample_id") %>%
-rename_pofatu_elements() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::mutate(Location = case_when(
-    grepl("HAWAI'I", location_subregion) ~ "Hawai'i",
-    grepl("KAHO'OLAWE", location_subregion) ~ "Kaho'olawe",
-    grepl("KAUA'I", location_subregion) ~ "Kaua'i",
-    grepl("MAUI", location_subregion) ~ "Maui",
-    grepl("MOLOKAI", location_subregion) ~ "Moloka'i",
-    grepl("MOLOKA'I", location_subregion) ~ "Moloka'i",
-    grepl("LANA'I", location_subregion) ~ "Lana'i",
-    grepl("O'AHU", location_subregion) ~ "O'ahu")) %>%
-  dplyr::filter(Location != "NA") %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-OIB1 %>% group_by(Location) %>% tally()
-
-OIB2 <- dbGetQuery(georoc,
+OIB <- q17 %>% dplyr::select(
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+Fiji <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
-WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
+LATITUDE_MAX > -16 AND
 `SIO2(WT%)` > 43.1 AND `SIO2(WT%)` < 46.1 AND
 `NA2O(WT%)` > 0.89 AND `NA2O(WT%)` < 3.89 AND
 `K2O(WT%)` < 1.9 AND
-`MGO(WT%)` > 10.7 AND `MGO(WT%)` < 13.7 AND
-(file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part1.csv' OR
-file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv' OR
-file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv')") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
-  dplyr::mutate(Location = case_when(
-    grepl("CAROLINE", LOCATION) ~ "Caroline",
-    grepl("AUSTRAL-COOK ISLANDS", LOCATION) ~ "Austral-Cook",
-    grepl("HAWAIIAN ISLANDS / HAWAII", LOCATION) ~ "Hawai'i",
-    grepl("HAWAIIAN ISLANDS / KAUAI", LOCATION) ~ "Kaua'i",
-    grepl("HAWAIIAN ISLANDS / MAUI", LOCATION) ~ "Maui",
-    grepl("HAWAIIAN ISLANDS / MOLOKAI", LOCATION) ~ "Moloka'i",
-    grepl("HAWAIIAN ISLANDS / NIIHAU", LOCATION) ~ "Ni'ihau",
-    grepl("HAWAIIAN ISLANDS / OAHU", LOCATION) ~ "O'ahu")) %>%
-  dplyr::filter(Location != "NA") %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-OIB2 %>% group_by(Location) %>% tally()
-OIB <- full_join(OIB1,OIB2)
+`MGO(WT%)` > 10.7 AND `MGO(WT%)` < 13.7") %>%
+  rename_georoc() %>% dplyr::mutate(Location = "North Fiji Basin") %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
+  dplyr::select(
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+price2014 <- read.csv(here("analysis", "data", "raw_data", "price2014G3.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE)
+d_price2014 <- price2014 %>% Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::mutate(Location = "North Fiji Basin") %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
+  dplyr::select(
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+OIB <- full_join(OIB,Fiji)
+OIB <- full_join(OIB,d_price2014)
+is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
 OIB[OIB == 0] <- NA # Replace 0 with NA
-
-d <- OIB %>% dplyr::select(Sample,Location,Rb,La,Nd,Sr,Zr,Ti,Yb)
-is.na(d) <- sapply(d, is.infinite) #replace Inf by NA
-d[d == 0] <- NA # Replace 0 with NA
-d <- d[rowSums(is.na(d)) == 0,] # removes rows with missing info for PCA
+OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
+OIB %>% group_by(Location) %>% tally()
 
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
   mutate(Location = case_when(grepl("K-12-25", Sample) ~ "K-12-25")) %>%
-  dplyr::select(Sample,Location,Rb,La,Nd,Sr,Zr,Ti,Yb)
+  dplyr::select(
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
-res.pca <- prcomp(d[,3:9], scale = TRUE, center = TRUE) # Dimension reduction using PCA
+res.pca <- prcomp(OIB[,3:21], scale = TRUE, center = TRUE) # Dimension reduction using PCA
 eig <- get_eig(res.pca)
-pred <- stats::predict(res.pca, s[,3:9])
+pred <- stats::predict(res.pca, s[,3:21])
 pred <- cbind(s[,1:2], pred)
-res.pca.df <- cbind(d[,1:2], (as.data.frame(res.pca$x)))
+res.pca.df <- cbind(OIB[,1:2], (as.data.frame(res.pca$x)))
 d_pca <- full_join(res.pca.df, pred)
 
+# PC values > distance to artefacts (individual or median of group)
+# distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:82,"Sample"]),
-  Location = c(d_pca[1:82,"Location"]),
-  PC1 = c(sqrt(((d_pca[83,"PC1"])-d_pca[1:82,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[83,"PC2"])-d_pca[1:82,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[83,"PC3"])-d_pca[1:82,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[83,"PC4"])-d_pca[1:82,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[83,"PC5"])-d_pca[1:82,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[83,"PC6"])-d_pca[1:82,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[83,"PC7"])-d_pca[1:82,"PC7"])^2))) %>%
+  Sample = c(d_pca[1:91,"Sample"]),
+  Location = c(d_pca[1:91,"Location"]),
+  PC1 = c(sqrt(((d_pca[92,"PC1"])-d_pca[1:91,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[92,"PC2"])-d_pca[1:91,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[92,"PC3"])-d_pca[1:91,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[92,"PC4"])-d_pca[1:91,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[92,"PC5"])-d_pca[1:91,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[92,"PC6"])-d_pca[1:91,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[92,"PC7"])-d_pca[1:91,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[92,"PC8"])-d_pca[1:91,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[92,"PC9"])-d_pca[1:91,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[92,"PC10"])-d_pca[1:91,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[92,"PC11"])-d_pca[1:91,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[92,"PC12"])-d_pca[1:91,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[92,"PC13"])-d_pca[1:91,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[92,"PC14"])-d_pca[1:91,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[92,"PC15"])-d_pca[1:91,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[92,"PC16"])-d_pca[1:91,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[92,"PC17"])-d_pca[1:91,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[92,"PC18"])-d_pca[1:91,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[92,"PC19"])-d_pca[1:91,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
-      (PC6*eig[6,2])+(PC7*eig[7,2])) / (sum(eig[1:7,2])))
+      (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
+      (PC10*eig[10,2])+(PC11*eig[11,2])+(PC12*eig[12,2])+(PC13*eig[13,2])+
+      (PC14*eig[14,2])+(PC15*eig[15,2])+(PC16*eig[16,2])+(PC17*eig[17,2])+
+      (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
 head(dist[order(dist$weight_mean),] %>%
-       dplyr::select("Sample","Location","weight_mean"), 10)
+       dplyr::select("Sample","Location","weight_mean"), 20)
 
 #### plot ####
-d_spider <- OIB %>%
-  dplyr::filter(Sample %in% c("34330-71KAUH-2","370024","370018","370017","370023")) %>%
+d <- dbGetQuery(georoc,
+"SELECT * FROM 'sample'
+WHERE id='370016' OR id='370013' OR id='370021' OR
+id='370023' OR id='370018' OR id='370024'") %>%
+  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
+  rename(Location=LOCATION) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
+                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
+d[,1:2]
+
+d_spider <- d %>%
   mutate(Location = case_when(
-    grepl("34330-71KAUH-2", Sample) ~ "[71KAUH-2] Moloka'i (Hawai'i)",
-    grepl("370024", Sample) ~ "[370024] Ni'ihau (Hawai'i)",
+    grepl("370016", Sample) ~ "[370016] Ni'ihau (Hawai'i)",
+    grepl("370013", Sample) ~ "[370013] Ni'ihau (Hawai'i)",
+    grepl("370021", Sample) ~ "[370021] Ni'ihau (Hawai'i)",
+    grepl("370023", Sample) ~ "[370023] Ni'ihau (Hawai'i)",
     grepl("370018", Sample) ~ "[370018] Ni'ihau (Hawai'i)",
-    grepl("370017", Sample) ~ "[370017] Ni'ihau (Hawai'i)",
-    grepl("370023", Sample) ~ "[370023] Ni'ihau (Hawai'i)")) %>%
+    grepl("370024", Sample) ~ "[370024] Ni'ihau (Hawai'i)")) %>%
+  normalize_to_pm()
+d_spider[d_spider == 0] <- NA # Replace 0 with NA
+
+price2014 %>% dplyr::filter(Sample %in% c("s127-05g","s127-11g"))
+price2014_spider <- price2014 %>% Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::mutate(Location = "North Fiji Basin") %>%
+  dplyr::filter(Sample %in% c("s127-05g","s127-11g")) %>%
+  mutate(Location = case_when(
+    grepl("s127-05g", Sample) ~ "[s127-05g] 'Uvea (Wallis)",
+    grepl("s127-11g", Sample) ~ "[s127-11g] 'Uvea (Wallis)",
+    grepl("s142-1", Sample) ~ "s142-1")) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
-d_spider[d_spider == 0] <- NA # Replace 0 with NA
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
   mutate(Location = case_when(grepl("K-12-25", Sample) ~ "K-12-25")) %>%
@@ -942,17 +902,25 @@ s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
 
-shapes <- c("[71KAUH-2] Moloka'i (Hawai'i)"=0,
-            "[370024] Ni'ihau (Hawai'i)"=1,
-            "[370018] Ni'ihau (Hawai'i)"=2,
-            "[370017] Ni'ihau (Hawai'i)"=3,
-            "[370023] Ni'ihau (Hawai'i)"=5,
+shapes <- c("[s127-05g] 'Uvea (Wallis)"=8,
+            "[s127-11g] 'Uvea (Wallis)"=8,
+            "[s142-1] N Fiji"=8,
+            "[370016] Ni'ihau (Hawai'i)"=0,
+            "[370013] Ni'ihau (Hawai'i)"=1,
+            "[370021] Ni'ihau (Hawai'i)"=2,
+            "[370023] Ni'ihau (Hawai'i)"=3,
+            "[370018] Ni'ihau (Hawai'i)"=4,
+            "[370024] Ni'ihau (Hawai'i)"=5,
             "K-12-25"=13)
-cols <- c("[71KAUH-2] Moloka'i (Hawai'i)"="#F4DD53",
-          "[370024] Ni'ihau (Hawai'i)"="#F4DD53",
-          "[370018] Ni'ihau (Hawai'i)"="#F4DD53",
-          "[370017] Ni'ihau (Hawai'i)"="#F4DD53",
+cols <- c("[s127-05g] 'Uvea (Wallis)"="#B4C630",
+          "[s127-11g] 'Uvea (Wallis)"="#B4C630",
+          "[s142-1] N Fiji"="#B4C630",
+          "[370016] Ni'ihau (Hawai'i)"="#F4DD53",
+          "[370013] Ni'ihau (Hawai'i)"="#F4DD53",
+          "[370021] Ni'ihau (Hawai'i)"="#F4DD53",
           "[370023] Ni'ihau (Hawai'i)"="#F4DD53",
+          "[370018] Ni'ihau (Hawai'i)"="#F4DD53",
+          "[370024] Ni'ihau (Hawai'i)"="#F4DD53",
           "K-12-25"="red")
 
 K_12_25_spider <- d_spider %>%
@@ -964,6 +932,7 @@ K_12_25_spider <- d_spider %>%
              fill=factor(Location), group=Sample)) +
   geom_line(size=.5) + geom_point(size=2, stroke=.5) +
   geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
+  geom_line(data=price2014_spider, size=.5) + geom_point(data=price2014_spider, size=1, stroke=.5) +
   scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
   scale_fill_manual(values=cols) +
   theme_classic() + theme(axis.line=element_blank()) +
@@ -984,85 +953,259 @@ K_12_25_spider <- d_spider %>%
   coord_cartesian(clip = "off")
 K_12_25_spider
 
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-h.pdf"), width=3.5, height=2)
-K_12_25_spider
-dev.off()
-
 citation <- dbGetQuery(georoc,
 "SELECT sample_id, reference_id
 FROM 'citation'
-WHERE sample_id='34330-71KAUH-2' OR
-sample_id='370024' OR
-sample_id='370018' OR
-sample_id='370017' OR
-sample_id='370023'")
+WHERE sample_id='370017' OR
+sample_id='370023' OR
+sample_id='370009' OR
+sample_id='370016' OR
+sample_id='370021' OR
+sample_id='370024'")
 citation
 reference <- dbGetQuery(georoc,
-"SELECT id, reference
+                        "SELECT id, reference
 FROM 'reference'
-WHERE id='7517' OR id='668' OR id='12504'") %>% rename(reference_id=id)
+WHERE id='12504'") %>% rename(reference_id=id)
 cite <- full_join(citation,reference)
 cite
 
+#### fig min max ####
+C <- q17 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                             Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::filter(Location %in% c("Caroline islands")) %>% dplyr::na_if(0)
+C_minmax <- data.frame (Sample  = c("Caroline_min", "Caroline_max"),
+                        Location = c("Caroline islands", "Caroline islands"),
+                        Cs = c(min(C[,"Cs"],na.rm=TRUE),max(C[,"Cs"],na.rm=TRUE)),
+                        Rb = c(min(C[,"Rb"],na.rm=TRUE),max(C[,"Rb"],na.rm=TRUE)),
+                        Ba = c(min(C[,"Ba"],na.rm=TRUE),max(C[,"Ba"],na.rm=TRUE)),
+                        Th = c(min(C[,"Th"],na.rm=TRUE),max(C[,"Th"],na.rm=TRUE)),
+                        U = c(min(C[,"U"],na.rm=TRUE),max(C[,"U"],na.rm=TRUE)),
+                        Nb = c(min(C[,"Nb"],na.rm=TRUE),max(C[,"Nb"],na.rm=TRUE)),
+                        Ta = c(min(C[,"Ta"],na.rm=TRUE),max(C[,"Ta"],na.rm=TRUE)),
+                        La = c(min(C[,"La"],na.rm=TRUE),max(C[,"La"],na.rm=TRUE)),
+                        Ce = c(min(C[,"Ce"],na.rm=TRUE),max(C[,"Ce"],na.rm=TRUE)),
+                        Pr = c(min(C[,"Pr"],na.rm=TRUE),max(C[,"Pr"],na.rm=TRUE)),
+                        Nd = c(min(C[,"Nd"],na.rm=TRUE),max(C[,"Nd"],na.rm=TRUE)),
+                        Sr = c(min(C[,"Sr"],na.rm=TRUE),max(C[,"Sr"],na.rm=TRUE)),
+                        Sm = c(min(C[,"Sm"],na.rm=TRUE),max(C[,"Sm"],na.rm=TRUE)),
+                        Zr = c(min(C[,"Zr"],na.rm=TRUE),max(C[,"Zr"],na.rm=TRUE)),
+                        Ti = c(min(C[,"Ti"],na.rm=TRUE),max(C[,"Ti"],na.rm=TRUE)),
+                        Eu = c(min(C[,"Eu"],na.rm=TRUE),max(C[,"Eu"],na.rm=TRUE)),
+                        Gd = c(min(C[,"Gd"],na.rm=TRUE),max(C[,"Gd"],na.rm=TRUE)),
+                        Tb = c(min(C[,"Tb"],na.rm=TRUE),max(C[,"Tb"],na.rm=TRUE)),
+                        Dy = c(min(C[,"Dy"],na.rm=TRUE),max(C[,"Dy"],na.rm=TRUE)),
+                        Y = c(min(C[,"Y"],na.rm=TRUE),max(C[,"Y"],na.rm=TRUE)),
+                        Er = c(min(C[,"Er"],na.rm=TRUE),max(C[,"Er"],na.rm=TRUE)),
+                        Yb = c(min(C[,"Yb"],na.rm=TRUE),max(C[,"Yb"],na.rm=TRUE)),
+                        Lu = c(min(C[,"Lu"],na.rm=TRUE),max(C[,"Lu"],na.rm=TRUE)))
 
-#### K_12_26 ####
-ranges_s_OIB[9,1:35]
-OIB <- dbGetQuery(georoc,
+HW <- q17 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                            Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::filter(Location %in% c("Hawai'i islands")) %>% dplyr::na_if(0)
+HW_minmax <- data.frame (Sample  = c("Hawaii_min", "Hawaii_max"),
+                        Location = c("Hawai'i islands", "Hawai'i islands"),
+                        Cs = c(min(HW[,"Cs"],na.rm=TRUE),max(HW[,"Cs"],na.rm=TRUE)),
+                        Rb = c(min(HW[,"Rb"],na.rm=TRUE),max(HW[,"Rb"],na.rm=TRUE)),
+                        Ba = c(min(HW[,"Ba"],na.rm=TRUE),max(HW[,"Ba"],na.rm=TRUE)),
+                        Th = c(min(HW[,"Th"],na.rm=TRUE),max(HW[,"Th"],na.rm=TRUE)),
+                        U = c(min(HW[,"U"],na.rm=TRUE),max(HW[,"U"],na.rm=TRUE)),
+                        Nb = c(min(HW[,"Nb"],na.rm=TRUE),max(HW[,"Nb"],na.rm=TRUE)),
+                        Ta = c(min(HW[,"Ta"],na.rm=TRUE),max(HW[,"Ta"],na.rm=TRUE)),
+                        La = c(min(HW[,"La"],na.rm=TRUE),max(HW[,"La"],na.rm=TRUE)),
+                        Ce = c(min(HW[,"Ce"],na.rm=TRUE),max(HW[,"Ce"],na.rm=TRUE)),
+                        Pr = c(min(HW[,"Pr"],na.rm=TRUE),max(HW[,"Pr"],na.rm=TRUE)),
+                        Nd = c(min(HW[,"Nd"],na.rm=TRUE),max(HW[,"Nd"],na.rm=TRUE)),
+                        Sr = c(min(HW[,"Sr"],na.rm=TRUE),max(HW[,"Sr"],na.rm=TRUE)),
+                        Sm = c(min(HW[,"Sm"],na.rm=TRUE),max(HW[,"Sm"],na.rm=TRUE)),
+                        Zr = c(min(HW[,"Zr"],na.rm=TRUE),max(HW[,"Zr"],na.rm=TRUE)),
+                        Ti = c(min(HW[,"Ti"],na.rm=TRUE),max(HW[,"Ti"],na.rm=TRUE)),
+                        Eu = c(min(HW[,"Eu"],na.rm=TRUE),max(HW[,"Eu"],na.rm=TRUE)),
+                        Gd = c(min(HW[,"Gd"],na.rm=TRUE),max(HW[,"Gd"],na.rm=TRUE)),
+                        Tb = c(min(HW[,"Tb"],na.rm=TRUE),max(HW[,"Tb"],na.rm=TRUE)),
+                        Dy = c(min(HW[,"Dy"],na.rm=TRUE),max(HW[,"Dy"],na.rm=TRUE)),
+                        Y = c(min(HW[,"Y"],na.rm=TRUE),max(HW[,"Y"],na.rm=TRUE)),
+                        Er = c(min(HW[,"Er"],na.rm=TRUE),max(HW[,"Er"],na.rm=TRUE)),
+                        Yb = c(min(HW[,"Yb"],na.rm=TRUE),max(HW[,"Yb"],na.rm=TRUE)),
+                        Lu = c(min(HW[,"Lu"],na.rm=TRUE),max(HW[,"Lu"],na.rm=TRUE)))
+
+Fiji <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND' AND
-`K2O(WT%)` < 2.351 AND
-file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv'") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::rename(Location=LOCATION) %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
+`K2O(WT%)` < 2.91 AND
+`NA2O(WT%)` > 1.61 AND `NA2O(WT%)` < 4.61 AND
+`MGO(WT%)` > 5.84 AND `MGO(WT%)` < 8.84 AND
+`YB(PPM)` > 1.26 AND `YB(PPM)` < 3.78 AND
+LATITUDE_MAX > -16") %>%
+  rename_georoc() %>% dplyr::mutate(Location = "North Fiji Basin") %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
+                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
+price2014 <- read.csv(here("analysis", "data", "raw_data", "price2014G3.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE)
+d_price2014 <- price2014 %>% Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::mutate(Location = "North Fiji Basin") %>%
+  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
+                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
+NF <- full_join(Fiji,d_price2014) %>% dplyr::na_if(0)
 
-d <- OIB %>% dplyr::select(Sample,Location,Rb,La,Nd,Sr,Zr,Ti,Yb)
-is.na(d) <- sapply(d, is.infinite) #replace Inf by NA
-d[d == 0] <- NA # Replace 0 with NA
-d <- d[rowSums(is.na(d)) == 0,] # removes rows with missing info for PCA
+NF_minmax <- data.frame (Sample  = c("Fiji_min", "Fiji_max"),
+                         Location = c("North Fiji Basin", "North Fiji Basin"),
+                         Cs = c(min(NF[,"Cs"],na.rm=TRUE),max(NF[,"Cs"],na.rm=TRUE)),
+                         Rb = c(min(NF[,"Rb"],na.rm=TRUE),max(NF[,"Rb"],na.rm=TRUE)),
+                         Ba = c(min(NF[,"Ba"],na.rm=TRUE),max(NF[,"Ba"],na.rm=TRUE)),
+                         Th = c(min(NF[,"Th"],na.rm=TRUE),max(NF[,"Th"],na.rm=TRUE)),
+                         U = c(min(NF[,"U"],na.rm=TRUE),max(NF[,"U"],na.rm=TRUE)),
+                         Nb = c(min(NF[,"Nb"],na.rm=TRUE),max(NF[,"Nb"],na.rm=TRUE)),
+                         Ta = c(min(NF[,"Ta"],na.rm=TRUE),max(NF[,"Ta"],na.rm=TRUE)),
+                         La = c(min(NF[,"La"],na.rm=TRUE),max(NF[,"La"],na.rm=TRUE)),
+                         Ce = c(min(NF[,"Ce"],na.rm=TRUE),max(NF[,"Ce"],na.rm=TRUE)),
+                         Pr = c(min(NF[,"Pr"],na.rm=TRUE),max(NF[,"Pr"],na.rm=TRUE)),
+                         Nd = c(min(NF[,"Nd"],na.rm=TRUE),max(NF[,"Nd"],na.rm=TRUE)),
+                         Sr = c(min(NF[,"Sr"],na.rm=TRUE),max(NF[,"Sr"],na.rm=TRUE)),
+                         Sm = c(min(NF[,"Sm"],na.rm=TRUE),max(NF[,"Sm"],na.rm=TRUE)),
+                         Zr = c(min(NF[,"Zr"],na.rm=TRUE),max(NF[,"Zr"],na.rm=TRUE)),
+                         Ti = c(min(NF[,"Ti"],na.rm=TRUE),max(NF[,"Ti"],na.rm=TRUE)),
+                         Eu = c(min(NF[,"Eu"],na.rm=TRUE),max(NF[,"Eu"],na.rm=TRUE)),
+                         Gd = c(min(NF[,"Gd"],na.rm=TRUE),max(NF[,"Gd"],na.rm=TRUE)),
+                         Tb = c(min(NF[,"Tb"],na.rm=TRUE),max(NF[,"Tb"],na.rm=TRUE)),
+                         Dy = c(min(NF[,"Dy"],na.rm=TRUE),max(NF[,"Dy"],na.rm=TRUE)),
+                         Y = c(min(NF[,"Y"],na.rm=TRUE),max(NF[,"Y"],na.rm=TRUE)),
+                         Er = c(min(NF[,"Er"],na.rm=TRUE),max(NF[,"Er"],na.rm=TRUE)),
+                         Yb = c(min(NF[,"Yb"],na.rm=TRUE),max(NF[,"Yb"],na.rm=TRUE)),
+                         Lu = c(min(NF[,"Lu"],na.rm=TRUE),max(NF[,"Lu"],na.rm=TRUE)))
+d <- full_join(C_minmax,HW_minmax)
+d <- full_join(d,NF_minmax)
 
-s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-26")) %>%
+d_spider <- d %>% normalize_to_pm()
+
+s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
+  mutate(Location = case_when(grepl("K-12-25", Sample) ~ "K-12-25")) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
+                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  normalize_to_pm()
+
+shapes <- c("North Fiji Basin"=8, "Hawai'i islands"=5, "Caroline islands"=0,
+            "K-12-25"=13)
+cols <- c("North Fiji Basin"="#B4C630","Hawai'i islands"="#F4DD53",
+          "Caroline islands"="#320A5A", "K-12-25"="red")
+
+K_12_25_spider_minmax <- d_spider %>%
+  mutate(var = fct_relevel(var,
+                           "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr",
+                           "Nd","Sr","Sm","Zr","Ti","Eu","Gd","Tb",
+                           "Dy","Y","Er","Yb","Lu")) %>%
+  ggplot(aes(x=var, y=conc, shape=factor(Location), color=factor(Location),
+             fill=factor(Location), group=Sample)) +
+  geom_line(size=.5) +
+  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
+  scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
+  scale_fill_manual(values=cols) +
+  theme_classic() + theme(axis.line=element_blank()) +
+  theme(panel.border=element_rect(colour="black", fill=NA, size=.25),
+        axis.ticks.length.x = unit(-.15, "cm"), axis.text = element_text(size=8),
+        axis.ticks.x.top = element_line(size=.25),
+        axis.title = element_blank(), axis.ticks.y = element_blank(),
+        axis.text.y = element_text(hjust=1, margin = margin(r=5)),
+        legend.title = element_blank(),legend.text = element_text(size = 5),
+        legend.key.size = unit(.2, 'cm'),
+        legend.position = c(.7,.86), legend.direction = "vertical") +
+  guides(color = guide_legend(override.aes = list(size = 1))) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) + # dodge = 2 to stagger
+  scale_y_log10(breaks=c(1,10,100,1000), limits=c(.11,1000),
+                expand = c(0, 0), labels = scales::comma_format(big.mark = ""))+
+  annotation_logticks(sides="l", size = .25, outside = TRUE, long = unit(0.15, "cm"),
+                      mid = unit(0, "cm"), short = unit(0, "cm"))+
+  coord_cartesian(clip = "off")
+K_12_25_spider_minmax
+
+pdf(here("analysis","supplementary-materials","FigS20","FigS20-h.pdf"), width=3.5, height=2)
+K_12_25_spider_minmax
+dev.off()
+
+
+#### K_12_26 ####
+OIB <- q19 %>% dplyr::select(
+  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+is.na(OIB) <- sapply(OIB, is.infinite) #replace Inf by NA
+OIB[OIB == 0] <- NA # Replace 0 with NA
+OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
+
+s <- joined_data %>%
+  dplyr::filter(Sample %in% c("K-12-26")) %>%
   mutate(Location = case_when(grepl("K-12-26", Sample) ~ "K-12-26")) %>%
-  dplyr::select(Sample,Location,Rb,La,Nd,Sr,Zr,Ti,Yb)
+  dplyr::select(
+    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
-res.pca <- prcomp(d[,3:9], scale = TRUE, center = TRUE) # Dimension reduction using PCA
+res.pca <- prcomp(OIB[,3:21], scale = TRUE, center = TRUE) # Dimension reduction using PCA
 eig <- get_eig(res.pca)
-pred <- stats::predict(res.pca, s[,3:9])
+pred <- stats::predict(res.pca, s[,3:21])
 pred <- cbind(s[,1:2], pred)
-res.pca.df <- cbind(d[,1:2], (as.data.frame(res.pca$x)))
+res.pca.df <- cbind(OIB[,1:2], (as.data.frame(res.pca$x)))
 d_pca <- full_join(res.pca.df, pred)
 
+# PC values > distance to artefacts (individual or median of group)
+# distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:70,"Sample"]),
-  Location = c(d_pca[1:70,"Location"]),
-  PC1 = c(sqrt(((d_pca[71,"PC1"])-d_pca[1:70,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[71,"PC2"])-d_pca[1:70,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[71,"PC3"])-d_pca[1:70,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[71,"PC4"])-d_pca[1:70,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[71,"PC5"])-d_pca[1:70,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[71,"PC6"])-d_pca[1:70,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[71,"PC7"])-d_pca[1:70,"PC7"])^2))) %>%
+  Sample = c(d_pca[1:77,"Sample"]),
+  Location = c(d_pca[1:77,"Location"]),
+  PC1 = c(sqrt(((d_pca[78,"PC1"])-d_pca[1:77,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[78,"PC2"])-d_pca[1:77,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[78,"PC3"])-d_pca[1:77,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[78,"PC4"])-d_pca[1:77,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[78,"PC5"])-d_pca[1:77,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[78,"PC6"])-d_pca[1:77,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[78,"PC7"])-d_pca[1:77,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[78,"PC8"])-d_pca[1:77,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[78,"PC9"])-d_pca[1:77,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[78,"PC10"])-d_pca[1:77,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[78,"PC11"])-d_pca[1:77,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[78,"PC12"])-d_pca[1:77,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[78,"PC13"])-d_pca[1:77,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[78,"PC14"])-d_pca[1:77,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[78,"PC15"])-d_pca[1:77,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[78,"PC16"])-d_pca[1:77,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[78,"PC17"])-d_pca[1:77,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[78,"PC18"])-d_pca[1:77,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[78,"PC19"])-d_pca[1:77,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
-      (PC6*eig[6,2])+(PC7*eig[7,2])) / (sum(eig[1:7,2])))
+      (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
+      (PC10*eig[10,2])+(PC11*eig[11,2])+(PC12*eig[12,2])+(PC13*eig[13,2])+
+      (PC14*eig[14,2])+(PC15*eig[15,2])+(PC16*eig[16,2])+(PC17*eig[17,2])+
+      (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
 head(dist[order(dist$weight_mean),] %>%
        dplyr::select("Sample","Location","weight_mean"), 10)
 
 #### plot ####
-d_spider <- OIB %>%
-  dplyr::filter(Sample %in% c("1867336","1867337","1175189","1175187")) %>%
+d <- dbGetQuery(georoc,
+"SELECT * FROM 'sample'
+WHERE id='1956574' OR id='447-HK-11' OR id='1956571' OR
+id='1104168' OR id='1956569' OR id='313150' OR id='1956577' OR
+id='1104171' OR id='1867325' OR id='1867326'") %>%
+  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
+  rename(Location=LOCATION)%>%
+  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
+                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
+                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K)
+d[,1:2]
+
+d_spider <- d %>%
+  dplyr::filter(Sample %in% c("1867325","1867326","1956574","447-HK-11",
+                              "1956571","1104168")) %>%
   mutate(Location = case_when(
-    grepl("1867336", Sample) ~ "[1867336] Ponape (Caroline)",
-    grepl("1867337", Sample) ~ "[1867337] Ponape (Caroline)",
-    grepl("1175189", Sample) ~ "[1175189] Ponape (Caroline)",
-    grepl("1175187", Sample) ~ "[1175187] Ponape (Caroline)")) %>%
+    grepl("1867325", Sample) ~ "[1867325] Ponape (Caroline)",
+    grepl("1867326", Sample) ~ "[1867326] Ponape (Caroline)",
+    grepl("1956574", Sample) ~ "[1956574] Maui (Hawai'i)",
+    grepl("447-HK-11", Sample) ~ "[447-HK-11] Maui (Hawai'i)",
+    grepl("1956571", Sample) ~ "[1956571] Maui (Hawai'i)",
+    grepl("1104168", Sample) ~ "[1104168] Maui (Hawai'i)")) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
@@ -1075,16 +1218,20 @@ s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-26")) %>%
   normalize_to_pm()
 
 
-shapes <- c("[1867336] Ponape (Caroline)"=0,
-            "[1867337] Ponape (Caroline)"=1,
-            "[1175189] Ponape (Caroline)"=2,
-            "[1175187] Ponape (Caroline)"=5,
+shapes <- c("[1867325] Ponape (Caroline)"=0,
+            "[1867326] Ponape (Caroline)"=1,
+            "[1956574] Maui (Hawai'i)"=2,
+            "[447-HK-11] Maui (Hawai'i)"=3,
+            "[1956571] Maui (Hawai'i)"=4,
+            "[1104168] Maui (Hawai'i)"=5,
             "K-12-26"=14)
-cols <- c("[1867336] Ponape (Caroline)"="#320A5A",
-          "[1867337] Ponape (Caroline)"="#320A5A",
-          "[1175189] Ponape (Caroline)"="#320A5A",
-          "[1175187] Ponape (Caroline)"="#320A5A",
-          "K-12-26"="red")
+cols <- c("[1867325] Ponape (Caroline)"="#320A5A",
+            "[1867326] Ponape (Caroline)"="#320A5A",
+            "[1956574] Maui (Hawai'i)"="#F4DD53",
+            "[447-HK-11] Maui (Hawai'i)"="#F4DD53",
+            "[1956571] Maui (Hawai'i)"="#F4DD53",
+            "[1104168] Maui (Hawai'i)"="#F4DD53",
+            "K-12-26"="red")
 
 K_12_26_spider <- d_spider %>%
   mutate(var = fct_relevel(var,
@@ -1115,25 +1262,130 @@ K_12_26_spider <- d_spider %>%
   coord_cartesian(clip = "off")
 K_12_26_spider
 
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-i.pdf"), width=3.5, height=2)
-K_12_26_spider
-dev.off()
-
-dplyr::filter(Sample %in% c("1867336","1867337","1175189","1175187")) %>%
-
 citation <- dbGetQuery(georoc,
 "SELECT sample_id, reference_id
 FROM 'citation'
-WHERE sample_id='1867336' OR
-sample_id='1867337' OR
-sample_id='1175189' OR
-sample_id='1175187'")
-citation
+WHERE sample_id='1867325' OR
+sample_id='1867326' OR
+sample_id='1956574' OR
+sample_id='447-HK-11' OR
+sample_id='1956571' OR
+sample_id='1104168'")
+citation%>%group_by(reference_id)%>%tally()
 reference <- dbGetQuery(georoc,
 "SELECT id, reference
 FROM 'reference'
-WHERE id='21069' OR id='24239'") %>% rename(reference_id=id)
+WHERE id='83' OR
+id='317' OR
+id='1496' OR
+id='2661' OR
+id='20654' OR
+id='24239' OR
+id='24498'") %>% rename(reference_id=id)
 cite <- full_join(citation,reference)
 cite
 
 
+#### fig min max ####
+C <- q19 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::filter(Location %in% c("Caroline islands")) %>% dplyr::na_if(0)
+C_minmax <- data.frame (Sample  = c("Caroline_min", "Caroline_max"),
+                        Location = c("Caroline islands", "Caroline islands"),
+                        Cs = c(min(C[,"Cs"],na.rm=TRUE),max(C[,"Cs"],na.rm=TRUE)),
+                        Rb = c(min(C[,"Rb"],na.rm=TRUE),max(C[,"Rb"],na.rm=TRUE)),
+                        Ba = c(min(C[,"Ba"],na.rm=TRUE),max(C[,"Ba"],na.rm=TRUE)),
+                        Th = c(min(C[,"Th"],na.rm=TRUE),max(C[,"Th"],na.rm=TRUE)),
+                        U = c(min(C[,"U"],na.rm=TRUE),max(C[,"U"],na.rm=TRUE)),
+                        Nb = c(min(C[,"Nb"],na.rm=TRUE),max(C[,"Nb"],na.rm=TRUE)),
+                        Ta = c(min(C[,"Ta"],na.rm=TRUE),max(C[,"Ta"],na.rm=TRUE)),
+                        La = c(min(C[,"La"],na.rm=TRUE),max(C[,"La"],na.rm=TRUE)),
+                        Ce = c(min(C[,"Ce"],na.rm=TRUE),max(C[,"Ce"],na.rm=TRUE)),
+                        Pr = c(min(C[,"Pr"],na.rm=TRUE),max(C[,"Pr"],na.rm=TRUE)),
+                        Nd = c(min(C[,"Nd"],na.rm=TRUE),max(C[,"Nd"],na.rm=TRUE)),
+                        Sr = c(min(C[,"Sr"],na.rm=TRUE),max(C[,"Sr"],na.rm=TRUE)),
+                        Sm = c(min(C[,"Sm"],na.rm=TRUE),max(C[,"Sm"],na.rm=TRUE)),
+                        Zr = c(min(C[,"Zr"],na.rm=TRUE),max(C[,"Zr"],na.rm=TRUE)),
+                        Ti = c(min(C[,"Ti"],na.rm=TRUE),max(C[,"Ti"],na.rm=TRUE)),
+                        Eu = c(min(C[,"Eu"],na.rm=TRUE),max(C[,"Eu"],na.rm=TRUE)),
+                        Gd = c(min(C[,"Gd"],na.rm=TRUE),max(C[,"Gd"],na.rm=TRUE)),
+                        Tb = c(min(C[,"Tb"],na.rm=TRUE),max(C[,"Tb"],na.rm=TRUE)),
+                        Dy = c(min(C[,"Dy"],na.rm=TRUE),max(C[,"Dy"],na.rm=TRUE)),
+                        Y = c(min(C[,"Y"],na.rm=TRUE),max(C[,"Y"],na.rm=TRUE)),
+                        Er = c(min(C[,"Er"],na.rm=TRUE),max(C[,"Er"],na.rm=TRUE)),
+                        Yb = c(min(C[,"Yb"],na.rm=TRUE),max(C[,"Yb"],na.rm=TRUE)),
+                        Lu = c(min(C[,"Lu"],na.rm=TRUE),max(C[,"Lu"],na.rm=TRUE)))
+
+HW <- q19 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                            Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::filter(Location %in% c("Hawai'i islands")) %>% dplyr::na_if(0)
+HW_minmax <- data.frame (Sample  = c("Hawaii_min", "Hawaii_max"),
+                         Location = c("Hawai'i islands", "Hawai'i islands"),
+                         Cs = c(min(HW[,"Cs"],na.rm=TRUE),max(HW[,"Cs"],na.rm=TRUE)),
+                         Rb = c(min(HW[,"Rb"],na.rm=TRUE),max(HW[,"Rb"],na.rm=TRUE)),
+                         Ba = c(min(HW[,"Ba"],na.rm=TRUE),max(HW[,"Ba"],na.rm=TRUE)),
+                         Th = c(min(HW[,"Th"],na.rm=TRUE),max(HW[,"Th"],na.rm=TRUE)),
+                         U = c(min(HW[,"U"],na.rm=TRUE),max(HW[,"U"],na.rm=TRUE)),
+                         Nb = c(min(HW[,"Nb"],na.rm=TRUE),max(HW[,"Nb"],na.rm=TRUE)),
+                         Ta = c(min(HW[,"Ta"],na.rm=TRUE),max(HW[,"Ta"],na.rm=TRUE)),
+                         La = c(min(HW[,"La"],na.rm=TRUE),max(HW[,"La"],na.rm=TRUE)),
+                         Ce = c(min(HW[,"Ce"],na.rm=TRUE),max(HW[,"Ce"],na.rm=TRUE)),
+                         Pr = c(min(HW[,"Pr"],na.rm=TRUE),max(HW[,"Pr"],na.rm=TRUE)),
+                         Nd = c(min(HW[,"Nd"],na.rm=TRUE),max(HW[,"Nd"],na.rm=TRUE)),
+                         Sr = c(min(HW[,"Sr"],na.rm=TRUE),max(HW[,"Sr"],na.rm=TRUE)),
+                         Sm = c(min(HW[,"Sm"],na.rm=TRUE),max(HW[,"Sm"],na.rm=TRUE)),
+                         Zr = c(min(HW[,"Zr"],na.rm=TRUE),max(HW[,"Zr"],na.rm=TRUE)),
+                         Ti = c(min(HW[,"Ti"],na.rm=TRUE),max(HW[,"Ti"],na.rm=TRUE)),
+                         Eu = c(min(HW[,"Eu"],na.rm=TRUE),max(HW[,"Eu"],na.rm=TRUE)),
+                         Gd = c(min(HW[,"Gd"],na.rm=TRUE),max(HW[,"Gd"],na.rm=TRUE)),
+                         Tb = c(min(HW[,"Tb"],na.rm=TRUE),max(HW[,"Tb"],na.rm=TRUE)),
+                         Dy = c(min(HW[,"Dy"],na.rm=TRUE),max(HW[,"Dy"],na.rm=TRUE)),
+                         Y = c(min(HW[,"Y"],na.rm=TRUE),max(HW[,"Y"],na.rm=TRUE)),
+                         Er = c(min(HW[,"Er"],na.rm=TRUE),max(HW[,"Er"],na.rm=TRUE)),
+                         Yb = c(min(HW[,"Yb"],na.rm=TRUE),max(HW[,"Yb"],na.rm=TRUE)),
+                         Lu = c(min(HW[,"Lu"],na.rm=TRUE),max(HW[,"Lu"],na.rm=TRUE)))
+
+d <- full_join(C_minmax,HW_minmax)
+d_spider <- d %>% normalize_to_pm()
+
+s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-26")) %>%
+  mutate(Location = case_when(grepl("K-12-26", Sample) ~ "K-12-26")) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
+                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  normalize_to_pm()
+
+shapes <- c("Hawai'i islands"=5,"Caroline islands"=0,"K-12-26"=14)
+cols <- c("Hawai'i islands"="#F4DD53","Caroline islands"="#320A5A", "K-12-26"="red")
+
+K_12_26_spider_minmax <- d_spider %>%
+  mutate(var = fct_relevel(var,
+                           "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr",
+                           "Nd","Sr","Sm","Zr","Ti","Eu","Gd","Tb",
+                           "Dy","Y","Er","Yb","Lu")) %>%
+  ggplot(aes(x=var, y=conc, shape=factor(Location), color=factor(Location),
+             fill=factor(Location), group=Sample)) +
+  geom_line(size=.5) +
+  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
+  scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
+  scale_fill_manual(values=cols) +
+  theme_classic() + theme(axis.line=element_blank()) +
+  theme(panel.border=element_rect(colour="black", fill=NA, size=.25),
+        axis.ticks.length.x = unit(-.15, "cm"), axis.text = element_text(size=8),
+        axis.ticks.x.top = element_line(size=.25),
+        axis.title = element_blank(), axis.ticks.y = element_blank(),
+        axis.text.y = element_text(hjust=1, margin = margin(r=5)),
+        legend.title = element_blank(),legend.text = element_text(size = 5),
+        legend.key.size = unit(.2, 'cm'),
+        legend.position = c(.7,.86), legend.direction = "vertical") +
+  guides(color = guide_legend(override.aes = list(size = 1))) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) + # dodge = 2 to stagger
+  scale_y_log10(breaks=c(1,10,100,1000), limits=c(.11,1000),
+                expand = c(0, 0), labels = scales::comma_format(big.mark = ""))+
+  annotation_logticks(sides="l", size = .25, outside = TRUE, long = unit(0.15, "cm"),
+                      mid = unit(0, "cm"), short = unit(0, "cm"))+
+  coord_cartesian(clip = "off")
+K_12_26_spider_minmax
+
+pdf(here("analysis","supplementary-materials","FigS20","FigS20-i.pdf"), width=3.5, height=2)
+K_12_26_spider_minmax
+dev.off()

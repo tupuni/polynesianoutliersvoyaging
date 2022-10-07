@@ -195,6 +195,7 @@ get_georoc_location <- function(georoc_output) {
         grepl("SULAWESI_ARC", file_id) ~ "Sulawesi Arc",
         grepl("SUNDA_ARC", file_id) ~ "Sunda Arc",
         grepl("TONGA_ARC", file_id) ~ "Tonga-Fiji",
+        LOCATION == "TONGA ARC / WALLIS-FUTUNA ISLANDS / WALLIS (UVEA) ISLANDS" ~ "Uvea (Wallis)",
         grepl("YAP_ARC", file_id) ~ "Yap Arc",
         grepl("AUSTRAL-COOK_ISLANDS", file_id) & LONGITUDE_MIN > -155 ~ "Austral-Cook chain",
         grepl("AUSTRAL-COOK_ISLANDS", file_id) & LONGITUDE_MIN < -155 ~ "Austral-Cook chain",

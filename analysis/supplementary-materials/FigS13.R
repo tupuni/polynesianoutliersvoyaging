@@ -9,6 +9,27 @@ require(stats)
 georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
 pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
+
+shapes <- c("Luzon Arc"=21,"Sulawesi Arc"=22,"Sunda Arc"=23,"Banda Arc"=24,
+            "Yap Arc"=25,"Mariana Arc"=21,"Bismarck Arc"=22,"Solomon Arc"=23,
+            "Vanuatu Arc"=24,"Tonga-Fiji"=25,"New Zealand"=21,
+            "E-11-03"=0,"E-11-06"=1,"E-11-07"=8,"E-11-10"=0,"E-11-11"=1,
+            "E-11-13"=2,"E-11-16"=5,"E-11-18"=6,"E-11-19"=8,"K-12-28"=3,"K-12-29"=4)
+cols <- c("Luzon Arc"="#440154","Sulawesi Arc"="#345E8C","Sunda Arc"="#404386",
+          "Banda Arc"="#472374","Yap Arc"="#29778E","Mariana Arc"="#218F8B",
+          "Bismarck Arc"="#25A782","Solomon Arc"="#44BE6F","Vanuatu Arc"="#7AD04F",
+          "Tonga-Fiji"="#BADD26","New Zealand"="#FDE725",
+          "E-11-03"="red","E-11-06"="red","E-11-07"="red","E-11-10"="#7AD04F",
+          "E-11-11"="#7AD04F","E-11-13"="#7AD04F","E-11-16"="#7AD04F",
+          "E-11-18"="#7AD04F","E-11-19"="#7AD04F","K-12-28"="red","K-12-29"="red")
+contour <- c("Luzon Arc"="black","Sulawesi Arc"="black","Sunda Arc"="black",
+             "Banda Arc"="black","Yap Arc"="black","Mariana Arc"="black",
+             "Bismarck Arc"="black","Solomon Arc"="black","Vanuatu Arc"="black",
+             "Tonga-Fiji"="black","New Zealand"="black",
+             "E-11-03"="red","E-11-06"="red","E-11-07"="red","E-11-10"="#7AD04F",
+             "E-11-11"="#7AD04F","E-11-13"="#7AD04F","E-11-16"="#7AD04F",
+             "E-11-18"="#7AD04F","E-11-19"="#7AD04F","K-12-28"="red","K-12-29"="red")
+
 dir.create(here("analysis","supplementary-materials","FigS13"))
 
 #### E_11_03 ####
@@ -538,27 +559,27 @@ d_pca <- full_join(res.pca.df, pred)
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:199,"Sample"]),
-  Location = c(d_pca[1:199,"Location"]),
-  PC1 = c(sqrt(((d_pca[200,"PC1"])-d_pca[1:199,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[200,"PC2"])-d_pca[1:199,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[200,"PC3"])-d_pca[1:199,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[200,"PC4"])-d_pca[1:199,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[200,"PC5"])-d_pca[1:199,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[200,"PC6"])-d_pca[1:199,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[200,"PC7"])-d_pca[1:199,"PC7"])^2)),
-  PC8 = c(sqrt(((d_pca[200,"PC8"])-d_pca[1:199,"PC8"])^2)),
-  PC9 = c(sqrt(((d_pca[200,"PC9"])-d_pca[1:199,"PC9"])^2)),
-  PC10 = c(sqrt(((d_pca[200,"PC10"])-d_pca[1:199,"PC10"])^2)),
-  PC11 = c(sqrt(((d_pca[200,"PC11"])-d_pca[1:199,"PC11"])^2)),
-  PC12 = c(sqrt(((d_pca[200,"PC12"])-d_pca[1:199,"PC12"])^2)),
-  PC13 = c(sqrt(((d_pca[200,"PC13"])-d_pca[1:199,"PC13"])^2)),
-  PC14 = c(sqrt(((d_pca[200,"PC14"])-d_pca[1:199,"PC14"])^2)),
-  PC15 = c(sqrt(((d_pca[200,"PC15"])-d_pca[1:199,"PC15"])^2)),
-  PC16 = c(sqrt(((d_pca[200,"PC16"])-d_pca[1:199,"PC16"])^2)),
-  PC17 = c(sqrt(((d_pca[200,"PC17"])-d_pca[1:199,"PC17"])^2)),
-  PC18 = c(sqrt(((d_pca[200,"PC18"])-d_pca[1:199,"PC18"])^2)),
-  PC19 = c(sqrt(((d_pca[200,"PC19"])-d_pca[1:199,"PC19"])^2))) %>%
+  Sample = c(d_pca[1:28,"Sample"]),
+  Location = c(d_pca[1:28,"Location"]),
+  PC1 = c(sqrt(((d_pca[29,"PC1"])-d_pca[1:28,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[29,"PC2"])-d_pca[1:28,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[29,"PC3"])-d_pca[1:28,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[29,"PC4"])-d_pca[1:28,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[29,"PC5"])-d_pca[1:28,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[29,"PC6"])-d_pca[1:28,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[29,"PC7"])-d_pca[1:28,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[29,"PC8"])-d_pca[1:28,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[29,"PC9"])-d_pca[1:28,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[29,"PC10"])-d_pca[1:28,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[29,"PC11"])-d_pca[1:28,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[29,"PC12"])-d_pca[1:28,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[29,"PC13"])-d_pca[1:28,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[29,"PC14"])-d_pca[1:28,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[29,"PC15"])-d_pca[1:28,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[29,"PC16"])-d_pca[1:28,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[29,"PC17"])-d_pca[1:28,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[29,"PC18"])-d_pca[1:28,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[29,"PC19"])-d_pca[1:28,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
       (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+
@@ -566,10 +587,13 @@ dist <- data.frame(
       (PC14*eig[14,2])+(PC15*eig[15,2])+(PC16*eig[16,2])+(PC17*eig[17,2])+
       (PC18*eig[18,2])+(PC19*eig[19,2])) / (sum(eig[1:19,2])))
 
-head(arrange(dist,weight_mean))
+head(dist[order(dist$weight_mean),] %>%
+       dplyr::select("Sample","Location","weight_mean"), 10)
+
+### A MODIFIER
 d <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
-WHERE id = '70512' OR id = '317050' OR id = '144138-KS094' OR id = '13306-VMAC6'
+WHERE id = '1871790' OR id = '317050' OR id = '144138-KS094' OR id = '13306-VMAC6'
 OR id = '1871790' OR id = '13303-UA10'") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   rename(Location=LOCATION)%>%
@@ -640,10 +664,6 @@ K_12_29_spider <- d_spider %>%
   coord_cartesian(clip = "off")
 K_12_29_spider
 
-pdf(here("analysis","supplementary-materials","FigS13","FigS13-d.pdf"), width=5, height=2)
-K_12_29_spider
-dev.off()
-
 citation <- dbGetQuery(georoc,
 "SELECT sample_id, reference_id
 FROM 'citation'
@@ -659,5 +679,151 @@ OR id='16735' OR id='10898'") %>% rename(reference_id=id)
 reference
 cite <- full_join(citation,reference)
 cite
+
+
+#### fig min max ####
+V <- q9 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::filter(Location %in% c("Vanuatu Arc")) %>% dplyr::na_if(0)
+V_minmax <- data.frame (Sample  = c("Vanuatu_min", "Vanuatu_max"),
+                        Location = c("Vanuatu Arc", "Vanuatu Arc"),
+                        Cs = c(min(V[,"Cs"],na.rm=TRUE),max(V[,"Cs"],na.rm=TRUE)),
+                        Rb = c(min(V[,"Rb"],na.rm=TRUE),max(V[,"Rb"],na.rm=TRUE)),
+                        Ba = c(min(V[,"Ba"],na.rm=TRUE),max(V[,"Ba"],na.rm=TRUE)),
+                        Th = c(min(V[,"Th"],na.rm=TRUE),max(V[,"Th"],na.rm=TRUE)),
+                        U = c(min(V[,"U"],na.rm=TRUE),max(V[,"U"],na.rm=TRUE)),
+                        Nb = c(min(V[,"Nb"],na.rm=TRUE),max(V[,"Nb"],na.rm=TRUE)),
+                        Ta = c(min(V[,"Ta"],na.rm=TRUE),max(V[,"Ta"],na.rm=TRUE)),
+                        La = c(min(V[,"La"],na.rm=TRUE),max(V[,"La"],na.rm=TRUE)),
+                        Ce = c(min(V[,"Ce"],na.rm=TRUE),max(V[,"Ce"],na.rm=TRUE)),
+                        Pr = c(min(V[,"Pr"],na.rm=TRUE),max(V[,"Pr"],na.rm=TRUE)),
+                        Nd = c(min(V[,"Nd"],na.rm=TRUE),max(V[,"Nd"],na.rm=TRUE)),
+                        Sr = c(min(V[,"Sr"],na.rm=TRUE),max(V[,"Sr"],na.rm=TRUE)),
+                        Sm = c(min(V[,"Sm"],na.rm=TRUE),max(V[,"Sm"],na.rm=TRUE)),
+                        Zr = c(min(V[,"Zr"],na.rm=TRUE),max(V[,"Zr"],na.rm=TRUE)),
+                        Ti = c(min(V[,"Ti"],na.rm=TRUE),max(V[,"Ti"],na.rm=TRUE)),
+                        Eu = c(min(V[,"Eu"],na.rm=TRUE),max(V[,"Eu"],na.rm=TRUE)),
+                        Gd = c(min(V[,"Gd"],na.rm=TRUE),max(V[,"Gd"],na.rm=TRUE)),
+                        Tb = c(min(V[,"Tb"],na.rm=TRUE),max(V[,"Tb"],na.rm=TRUE)),
+                        Dy = c(min(V[,"Dy"],na.rm=TRUE),max(V[,"Dy"],na.rm=TRUE)),
+                        Y = c(min(V[,"Y"],na.rm=TRUE),max(V[,"Y"],na.rm=TRUE)),
+                        Er = c(min(V[,"Er"],na.rm=TRUE),max(V[,"Er"],na.rm=TRUE)),
+                        Yb = c(min(V[,"Yb"],na.rm=TRUE),max(V[,"Yb"],na.rm=TRUE)),
+                        Lu = c(min(V[,"Lu"],na.rm=TRUE),max(V[,"Lu"],na.rm=TRUE)))
+
+TF <- q9 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                          Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::filter(Location %in% c("Tonga-Fiji")) %>% dplyr::na_if(0)
+TF_minmax <- data.frame (Sample  = c("Tonga-Fiji_min", "Tonga-Fiji_max"),
+                        Location = c("Tonga-Fiji", "Tonga-Fiji"),
+                        Cs = c(min(TF[,"Cs"],na.rm=TRUE),max(TF[,"Cs"],na.rm=TRUE)),
+                        Rb = c(min(TF[,"Rb"],na.rm=TRUE),max(TF[,"Rb"],na.rm=TRUE)),
+                        Ba = c(min(TF[,"Ba"],na.rm=TRUE),max(TF[,"Ba"],na.rm=TRUE)),
+                        Th = c(min(TF[,"Th"],na.rm=TRUE),max(TF[,"Th"],na.rm=TRUE)),
+                        U = c(min(TF[,"U"],na.rm=TRUE),max(TF[,"U"],na.rm=TRUE)),
+                        Nb = c(min(TF[,"Nb"],na.rm=TRUE),max(TF[,"Nb"],na.rm=TRUE)),
+                        Ta = c(min(TF[,"Ta"],na.rm=TRUE),max(TF[,"Ta"],na.rm=TRUE)),
+                        La = c(min(TF[,"La"],na.rm=TRUE),max(TF[,"La"],na.rm=TRUE)),
+                        Ce = c(min(TF[,"Ce"],na.rm=TRUE),max(TF[,"Ce"],na.rm=TRUE)),
+                        Pr = c(min(TF[,"Pr"],na.rm=TRUE),max(TF[,"Pr"],na.rm=TRUE)),
+                        Nd = c(min(TF[,"Nd"],na.rm=TRUE),max(TF[,"Nd"],na.rm=TRUE)),
+                        Sr = c(min(TF[,"Sr"],na.rm=TRUE),max(TF[,"Sr"],na.rm=TRUE)),
+                        Sm = c(min(TF[,"Sm"],na.rm=TRUE),max(TF[,"Sm"],na.rm=TRUE)),
+                        Zr = c(min(TF[,"Zr"],na.rm=TRUE),max(TF[,"Zr"],na.rm=TRUE)),
+                        Ti = c(min(TF[,"Ti"],na.rm=TRUE),max(TF[,"Ti"],na.rm=TRUE)),
+                        Eu = c(min(TF[,"Eu"],na.rm=TRUE),max(TF[,"Eu"],na.rm=TRUE)),
+                        Gd = c(min(TF[,"Gd"],na.rm=TRUE),max(TF[,"Gd"],na.rm=TRUE)),
+                        Tb = c(min(TF[,"Tb"],na.rm=TRUE),max(TF[,"Tb"],na.rm=TRUE)),
+                        Dy = c(min(TF[,"Dy"],na.rm=TRUE),max(TF[,"Dy"],na.rm=TRUE)),
+                        Y = c(min(TF[,"Y"],na.rm=TRUE),max(TF[,"Y"],na.rm=TRUE)),
+                        Er = c(min(TF[,"Er"],na.rm=TRUE),max(TF[,"Er"],na.rm=TRUE)),
+                        Yb = c(min(TF[,"Yb"],na.rm=TRUE),max(TF[,"Yb"],na.rm=TRUE)),
+                        Lu = c(min(TF[,"Lu"],na.rm=TRUE),max(TF[,"Lu"],na.rm=TRUE)))
+
+L <- q9 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::filter(Location %in% c("Luzon Arc")) %>% dplyr::na_if(0)
+L_minmax <- data.frame (Sample  = c("Luzon_min", "Luzon_max"),
+                         Location = c("Luzon Arc", "Luzon Arc"),
+                         Cs = c(min(L[,"Cs"],na.rm=TRUE),max(L[,"Cs"],na.rm=TRUE)),
+                         Rb = c(min(L[,"Rb"],na.rm=TRUE),max(L[,"Rb"],na.rm=TRUE)),
+                         Ba = c(min(L[,"Ba"],na.rm=TRUE),max(L[,"Ba"],na.rm=TRUE)),
+                         Th = c(min(L[,"Th"],na.rm=TRUE),max(L[,"Th"],na.rm=TRUE)),
+                         U = c(min(L[,"U"],na.rm=TRUE),max(L[,"U"],na.rm=TRUE)),
+                         Nb = c(min(L[,"Nb"],na.rm=TRUE),max(L[,"Nb"],na.rm=TRUE)),
+                         Ta = c(min(L[,"Ta"],na.rm=TRUE),max(L[,"Ta"],na.rm=TRUE)),
+                         La = c(min(L[,"La"],na.rm=TRUE),max(L[,"La"],na.rm=TRUE)),
+                         Ce = c(min(L[,"Ce"],na.rm=TRUE),max(L[,"Ce"],na.rm=TRUE)),
+                         Pr = c(min(L[,"Pr"],na.rm=TRUE),max(L[,"Pr"],na.rm=TRUE)),
+                         Nd = c(min(L[,"Nd"],na.rm=TRUE),max(L[,"Nd"],na.rm=TRUE)),
+                         Sr = c(min(L[,"Sr"],na.rm=TRUE),max(L[,"Sr"],na.rm=TRUE)),
+                         Sm = c(min(L[,"Sm"],na.rm=TRUE),max(L[,"Sm"],na.rm=TRUE)),
+                         Zr = c(min(L[,"Zr"],na.rm=TRUE),max(L[,"Zr"],na.rm=TRUE)),
+                         Ti = c(min(L[,"Ti"],na.rm=TRUE),max(L[,"Ti"],na.rm=TRUE)),
+                         Eu = c(min(L[,"Eu"],na.rm=TRUE),max(L[,"Eu"],na.rm=TRUE)),
+                         Gd = c(min(L[,"Gd"],na.rm=TRUE),max(L[,"Gd"],na.rm=TRUE)),
+                         Tb = c(min(L[,"Tb"],na.rm=TRUE),max(L[,"Tb"],na.rm=TRUE)),
+                         Dy = c(min(L[,"Dy"],na.rm=TRUE),max(L[,"Dy"],na.rm=TRUE)),
+                         Y = c(min(L[,"Y"],na.rm=TRUE),max(L[,"Y"],na.rm=TRUE)),
+                         Er = c(min(L[,"Er"],na.rm=TRUE),max(L[,"Er"],na.rm=TRUE)),
+                         Yb = c(min(L[,"Yb"],na.rm=TRUE),max(L[,"Yb"],na.rm=TRUE)),
+                         Lu = c(min(L[,"Lu"],na.rm=TRUE),max(L[,"Lu"],na.rm=TRUE)))
+
+d <- full_join(V_minmax,TF_minmax)
+d <- full_join(d,L_minmax)
+d_spider <- d %>% normalize_to_pm()
+
+s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-29")) %>%
+  mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29")) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
+                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  normalize_to_pm()
+
+shapes <- c("Vanuatu Arc"=0,
+            "Tonga-Fiji"=1,
+            "Luzon Arc"=2,
+            "K-12-29"=4)
+cols <- c("Vanuatu Arc"="#7AD04F",
+          "Tonga-Fiji"="#BADD26",
+          "Luzon Arc"="#440154",
+          "K-12-29"="red")
+
+K_12_29_spider_minmax <- d_spider %>%
+  mutate(var = fct_relevel(var,
+                           "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr",
+                           "Nd","Sr","Sm","Zr","Ti","Eu","Gd","Tb",
+                           "Dy","Y","Er","Yb","Lu")) %>%
+  ggplot(aes(x=var, y=conc, shape=factor(Location), color=factor(Location),
+             fill=factor(Location), group=Sample)) +
+  geom_line(size=.5) +
+  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
+  scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
+  scale_fill_manual(values=cols) +
+  theme_classic() + theme(axis.line=element_blank()) +
+  theme(panel.border=element_rect(colour="black", fill=NA, size=.25),
+        axis.ticks.length.x = unit(-.15, "cm"), axis.text = element_text(size=8),
+        axis.ticks.x.top = element_line(size=.25),
+        axis.title = element_blank(), axis.ticks.y = element_blank(),
+        axis.text.y = element_text(hjust=1, margin = margin(r=5)),
+        legend.title = element_blank(),legend.text = element_text(size = 5),
+        legend.key.size = unit(.2, 'cm'),
+        legend.position = c(.7,.86), legend.direction = "vertical") +
+  guides(color = guide_legend(override.aes = list(size = 1))) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) + # dodge = 2 to stagger
+  scale_y_log10(breaks=c(1,10,100,1000), limits=c(.01,10000),
+                expand = c(0, 0), labels = scales::comma_format(big.mark = ""))+
+  annotation_logticks(sides="l", size = .25, outside = TRUE, long = unit(0.15, "cm"),
+                      mid = unit(0, "cm"), short = unit(0, "cm"))+
+  coord_cartesian(clip = "off")
+K_12_29_spider_minmax
+
+pdf(here("analysis","supplementary-materials","FigS20","FigS20-i.pdf"), width=3.5, height=2)
+K_12_26_spider_minmax
+dev.off()
+
+
+pdf(here("analysis","supplementary-materials","FigS13","FigS13-d.pdf"), width=5, height=2)
+K_12_29_spider
+dev.off()
 
 
