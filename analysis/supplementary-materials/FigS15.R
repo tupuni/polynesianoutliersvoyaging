@@ -8,7 +8,8 @@ pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
 shapes <- c("Caroline islands"=21,"Samoan islands"=24,"Austral-Cook chain"=23,
             "Society islands"=22,"Hawai'i islands"=25,"Marquesas islands"=21,
-            "Pitcairn-Gambier chain"=21,"North Fiji Basin"=25,
+            "Pitcairn-Gambier chain"=21,"North Fiji Basin"=25,"Rotuma"=21,
+            "Futuna"=22,"Cikobia"=23,
             "E-11-08"=5,"E-11-08dup"=9,"T-12-06"=2,"T-12-06dup"=14,
             "T-12-07"=7,"T-12-08"=6,"T-12-09"=10,"T-12-10"=11,"K-12-24"=12,
             "K-12-25"=13,"K-12-26"=14)
@@ -16,6 +17,7 @@ cols <- c("Caroline islands"="#320A5A","Samoan islands"="#781B6C",
           "Austral-Cook chain"="#BB3654","Society islands"="#EC6824",
           "Marquesas islands"="#FBB41A","Hawai'i islands"="#F4DD53",
           "Pitcairn-Gambier chain"="#C96FB6","North Fiji Basin"="#B4C630",
+          "Rotuma"="#6EA002","Futuna"="#6EA002","Cikobia"="#6EA002",
           "E-11-08"="red","E-11-08dup"="red","T-12-06"="red","T-12-06dup"="red",
           "T-12-07"="red","T-12-08"="red","T-12-09"="red",
           "T-12-10"="red","K-12-24"="red","K-12-25"="red","K-12-26"="red")
@@ -23,6 +25,7 @@ contour <- c("Caroline islands"="black","Samoan islands"="black",
              "Austral-Cook chain"="black","Society islands"="black",
              "Hawai'i islands"="black","Marquesas islands"="black",
              "Pitcairn-Gambier chain"="black","North Fiji Basin"="black",
+             "Rotuma"="black","Futuna"="black","Cikobia"="black",
              "E-11-08"="red","E-11-08dup"="red","T-12-06"="red","T-12-06dup"="red",
              "T-12-07"="red","T-12-08"="red","T-12-09"="red",
              "T-12-10"="red","K-12-24"="red","K-12-25"="red","K-12-26"="red")
@@ -87,6 +90,21 @@ price2014 <- read.csv(here("analysis", "data", "raw_data", "price2014G3.csv"),
                     header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
   dplyr::mutate(Location = "North Fiji Basin")
 
+price2017 <- read.csv(here("analysis", "data", "raw_data", "price2017G3.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
+  dplyr::mutate(Location = "North Fiji Basin")
+
+price2017 <- read.csv(here("analysis", "data", "raw_data", "price2017G3.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
+  dplyr::filter(grepl('Rotuma|Fiji|Yasawa|Cikobia|Futuna', Site)) %>%
+  dplyr::mutate(Location = case_when(
+    grepl("Rotuma", Site) ~ "Rotuma",
+    grepl("Futuna", Site) ~ "Futuna",
+    grepl("Cikobia", Site) ~ "Cikobia",
+    grepl("Yasawa", Site) ~ "North Fiji Basin",
+    grepl("Fiji", Site) ~ "North Fiji Basin"))
+
+
 s <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-08","T-12-06","T-12-07","T-12-08","T-12-09","T-12-10",
   "K-12-24","K-12-25","K-12-26")) %>%
@@ -106,9 +124,10 @@ A <- OIB %>%
   ggplot(aes(x=Pb206_Pb204,y=Pb208_Pb204, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) +
+  geom_point(data=price2014, size=3, stroke=.35) +
+  geom_point(data=price2017, size=3, stroke=.35) +
   geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
   geom_point(data=subset(OIB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
-  geom_point(data=price2014, size=3, stroke=.35) +
   geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
   scale_x_continuous(limits=c(17,20)) +
@@ -129,9 +148,10 @@ A_detail <- OIB %>%
   ggplot(aes(x=Pb206_Pb204,y=Pb208_Pb204, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) +
+  geom_point(data=price2014, size=3, stroke=.35) +
+  geom_point(data=price2017, size=3, stroke=.35) +
   geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
   geom_point(data=subset(OIB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
-  geom_point(data=price2014, size=3, stroke=.35) +
   geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
   scale_x_continuous(position = "top", limits=c(18.1,19.25), expand=c(0,0)) +
@@ -151,9 +171,10 @@ B <- OIB %>%
   ggplot(aes(x=Sr87_Sr86,y=Nd143_Nd144, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) +
+  geom_point(data=price2014, size=3, stroke=.35) +
+  geom_point(data=price2017, size=3, stroke=.35) +
   geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
   geom_point(data=subset(OIB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
-  geom_point(data=price2014, size=3, stroke=.35) +
   geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
   scale_x_continuous(limits=c(.7027,.7065)) +
@@ -174,9 +195,10 @@ B_detail <- OIB %>%
   ggplot(aes(x=Sr87_Sr86,y=Nd143_Nd144, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) +
+  geom_point(data=price2014, size=3, stroke=.35) +
+  geom_point(data=price2017, size=3, stroke=.35) +
   geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
   geom_point(data=subset(OIB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
-  geom_point(data=price2014, size=3, stroke=.35) +
   geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
   scale_x_continuous(position="top", limits=c(.703,.7056)) +
@@ -192,3 +214,27 @@ B_detail
 dev.off()
 
 
+C <- OIB %>%
+  ggplot(aes(x=Pb206_Pb204,y=Pb207_Pb204, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=price2014, size=3, stroke=.35) +
+  geom_point(data=price2017, size=3, stroke=.35) +
+  geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(17,20)) +
+  scale_y_continuous(position = "right", limits=c(15.4, 15.7)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_text(size = 18), axis.text = element_text(size = 10),
+        legend.position = "none", aspect.ratio=1) +
+  labs(x=expression({}^206*"Pb / "*{}^204*"Pb"),
+       y=expression({}^207*"Pb / "*{}^204*"Pb"))
+C
+pdf(here("analysis","supplementary-materials","FigS15","FigS15-C.pdf"), width=6, height=6)
+C
+dev.off()
+joined_data[20,]
