@@ -56,7 +56,7 @@ k2o_sio2 <- ggplot(data=df, mapping=aes(x=x, y=y)) + geom_blank() +
 
 #filter iab samples
 oxides_iab <- oxides %>%
-  filter(Sample %in% c(
+  dplyr::filter(Sample %in% c(
     "E-11-03", "E-11-06", "E-11-07", "E-11-10", "E-11-11", "E-11-13", "E-11-16",
     "E-11-18", "E-11-19", "K-12-28", "K-12-29"))
 #plot data

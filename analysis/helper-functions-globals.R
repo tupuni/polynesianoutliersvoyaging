@@ -24,7 +24,6 @@ samples <- inventory %>% dplyr::select(`Sample`,`Latitude`,`Longitude`) %>%
 oxides <- icpaes %>% slice(1:23) %>% dplyr::select(c(1:13))
 traces <- icpms %>% slice(1:23)
 isotopes <- mcicpms %>% slice(1:23)
-
 joined_data <- right_join(samples, oxides, by = c("Sample")) %>%
   right_join(., traces, by = c("Sample", "Type", "Location")) %>%
   right_join(., isotopes, by = c("Sample", "Type", "Location"))
@@ -46,12 +45,44 @@ K_from_K2O <- function(input) {
 }
 joined_data <- K_from_K2O(joined_data)
 
-# converts FeO% to Fe2O3%
+## converts FeO% to Fe2O3%
 Fe2O3_from_FeO <- function(input) {
   output <- input %>%
     mutate(Fe2O3 = ifelse(Fe2O3 %in% NA, FeO*1.1113, Fe2O3))
   return(output)
 }
+
+## get additional literature data
+price2014 <- read.csv(here("analysis", "data", "raw_data", "price2014G3.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::mutate(Location = case_when(
+    grepl("Wallis Island", Site) ~ "Uvea",
+    grepl("Fiji", Site) ~ "North Fiji Basin"))
+
+price2017 <- read.csv(here("analysis", "data", "raw_data", "price2017G3.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::filter(grepl('Rotuma|Fiji|Yasawa|Cikobia|Futuna', Site)) %>%
+  dplyr::mutate(Location = case_when(
+    grepl("Rotuma", Site) ~ "Rotuma",
+    grepl("Futuna", Site) ~ "Futuna",
+    grepl("Cikobia", Site) ~ "Cikobia",
+    grepl("Yasawa", Site) ~ "North Fiji Basin",
+    grepl("Fiji", Site) ~ "North Fiji Basin"))
+
+jeanvoine2021 <- read.csv(here("analysis", "data", "raw_data", "jeanvoine2021JP.csv"),
+                          header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::mutate(Location = case_when(grepl("Fatu Kapa", Site) ~ "Fatu Kapa"))
+
+zhang2020 <- read.csv(here("analysis", "data", "raw_data", "zhang2020CG.csv"),
+                      header=TRUE, sep=",", stringsAsFactors=FALSE) %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::mutate(Location = case_when(grepl("Caroline", Site) ~ "Caroline plateau"))
+
+
+
 
 ## ranges()
 summary(joined_data[,c(
@@ -143,16 +174,21 @@ path_to_pofatu <- "~/Documents/Github/pofatu-data/dist/pofatu.sqlite"
 
 ## normalize()
 ## normalizes trace element values to primitive mantle,
-## based on PM values from McDonough & Sun (1995)
+## based on PM values from McDonough & Sun (1989,1995)
+sun <- read.csv(here(
+  "analysis", "data", "raw_data", "sun_mcdonough.csv"),
+  header=TRUE, sep=",", stringsAsFactors=FALSE)
+
 normalize <- function(joined_data) {
   joined_data_normalized <- joined_data %>%
     dplyr::transmute(
-      Sample=Sample,Cs=Cs/0.032,Rb=Rb/0.635,Ba=Ba/6.989,
-      Th=Th/0.085,U=U/0.021,Nb=Nb/0.713,Ta=Ta/0.041,La=La/0.687,
-      Ce=Ce/1.775,Pr=Pr/0.276,Pb=Pb/0.185,Nd=Nd/1.354,Sr=Sr/21.1,
-      Sm=Sm/0.444,Zr=Zr/11.2,Hf=Hf/0.309,Ti=Ti/1300,Eu=Eu/0.168,
-      Gd=Gd/0.596,Tb=Tb/0.108,Dy=Dy/0.737,Ho=Ho/0.164,Y=Y/4.55,
-      Er=Er/0.48,Li=Li/1.6,Yb=Yb/0.493,Lu=Lu/0.074)
+      Sample=Sample,Cs=Cs/sun[2,"Cs"],Rb=Rb/sun[2,"Rb"],Ba=Ba/sun[2,"Ba"],
+      Th=Th/sun[2,"Th"],U=U/sun[2,"U"],Nb=Nb/sun[2,"Nb"],Ta=Ta/sun[2,"Ta"],
+      La=La/sun[2,"La"],Ce=Ce/sun[2,"Ce"],Pr=Pr/sun[2,"Pr"],Pb=Pb/sun[2,"Pb"],
+      Nd=Nd/sun[2,"Nd"],Sr=Sr/sun[2,"Sr"],Sm=Sm/sun[2,"Sm"],Zr=Zr/sun[2,"Zr"],
+      Hf=Hf/sun[2,"Hf"],Ti=Ti/sun[2,"Ti"],Eu=Eu/sun[2,"Eu"],Gd=Gd/sun[2,"Gd"],
+      Tb=Tb/sun[2,"Tb"],Dy=Dy/sun[2,"Dy"],Ho=Ho/sun[2,"Ho"],Y=Y/sun[2,"Y"],
+      Er=Er/sun[2,"Er"],Li=Li/sun[2,"Li"],Yb=Yb/sun[2,"Yb"],Lu=Lu/sun[2,"Lu"])
   return(joined_data_normalized)
 }
 joined_data_norm <- normalize(joined_data)

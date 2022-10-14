@@ -291,10 +291,8 @@ ranges_s_OIB[1:6,40:45] %>% round(digits = 3)
 q10 <- dbGetQuery(georoc,
 "SELECT *
 FROM 'sample'
-WHERE ((LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND') OR
-(file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16)) AND
+WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
+TECTONIC_SETTING='OCEAN ISLAND' AND
 ((ND143_ND144 > 0.512341 AND ND143_ND144 < 0.513367 AND
 SR87_SR86 > 0.704586 AND SR87_SR86 < 0.705996 AND
 PB206_PB204 > 18.658 AND PB206_PB204 < 19.034 AND
@@ -444,40 +442,50 @@ ranges_s_OIB[1:6,2:35]
 q12 <- dbGetQuery(georoc,
 "SELECT *
 FROM 'sample'
-WHERE ((LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND') OR
-(file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16)) AND
+WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
+TECTONIC_SETTING='OCEAN ISLAND' AND
 ((`SIO2(WT%)` > 45.2 AND `SIO2(WT%)` < 48.2 AND
-  `MGO(WT%)` > 3.08 AND `MGO(WT%)` < 6.08 AND
-  `NA2O(WT%)` > 2.08 AND `NA2O(WT%)` < 5.08 AND
-  `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.9 AND
-  `YB(PPM)` > 1.6 AND `YB(PPM)` < 4.8) OR
-  (`SIO2(WT%)` > 44.3 AND `SIO2(WT%)` < 47.3 AND
-    `MGO(WT%)` > 3.52 AND `MGO(WT%)` < 6.52 AND
-    `NA2O(WT%)` > 2 AND `NA2O(WT%)` < 5 AND
-    `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.82 AND
-    `YB(PPM)` > 1.62 AND `YB(PPM)` < 4.86) OR
-  (`SIO2(WT%)` > 43.5 AND `SIO2(WT%)` < 46.5 AND
-    `MGO(WT%)` > 3.79 AND `MGO(WT%)` < 6.79 AND
-    `NA2O(WT%)` > 1.9 AND `NA2O(WT%)` < 4.9 AND
-    `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.78 AND
-    `YB(PPM)` > 1.56 AND `YB(PPM)` < 4.68) OR
-  (`SIO2(WT%)` > 45.9 AND `SIO2(WT%)` < 48.9 AND
-    `MGO(WT%)` > 3.44 AND `MGO(WT%)` < 6.44 AND
-    `NA2O(WT%)` > 2.18 AND `NA2O(WT%)` < 5.18 AND
-    `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.99 AND
-    `YB(PPM)` > 1.49 AND `YB(PPM)` < 4.46) OR
-  (`SIO2(WT%)` > 44.1 AND `SIO2(WT%)` < 47.1 AND
-    `MGO(WT%)` > 4.15 AND `MGO(WT%)` < 7.15 AND
-    `NA2O(WT%)` > 1.8 AND `NA2O(WT%)` < 4.8 AND
-    `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.72 AND
-    `YB(PPM)` > 1.4 AND `YB(PPM)` < 4.19) OR
-  (`SIO2(WT%)` > 45.7 AND `SIO2(WT%)` < 48.7 AND
-    `MGO(WT%)` > 3.10 AND `MGO(WT%)` < 6.10 AND
-    `NA2O(WT%)` > 2.08 AND `NA2O(WT%)` < 5.08 AND
-    `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.85 AND
-    `YB(PPM)` > 1.57 AND `YB(PPM)` < 4.71)) AND
+`NA2O(WT%)` > 2.08 AND `NA2O(WT%)` < 5.08 AND
+`K2O(WT%)` > 0 AND `K2O(WT%)` < 2.9 AND
+`YB(PPM)` > 1.6 AND `YB(PPM)` < 4.8) OR
+(`SIO2(WT%)` > 44.3 AND `SIO2(WT%)` < 47.3 AND
+`NA2O(WT%)` > 2 AND `NA2O(WT%)` < 5 AND
+`K2O(WT%)` > 0 AND `K2O(WT%)` < 2.82 AND
+`YB(PPM)` > 1.62 AND `YB(PPM)` < 4.86) OR
+(`SIO2(WT%)` > 43.5 AND `SIO2(WT%)` < 46.5 AND
+`NA2O(WT%)` > 1.9 AND `NA2O(WT%)` < 4.9 AND
+`K2O(WT%)` > 0 AND `K2O(WT%)` < 2.78 AND
+`YB(PPM)` > 1.56 AND `YB(PPM)` < 4.68) OR
+(`SIO2(WT%)` > 45.9 AND `SIO2(WT%)` < 48.9 AND
+`NA2O(WT%)` > 2.18 AND `NA2O(WT%)` < 5.18 AND
+`K2O(WT%)` > 0 AND `K2O(WT%)` < 2.99 AND
+`YB(PPM)` > 1.49 AND `YB(PPM)` < 4.46) OR
+(`SIO2(WT%)` > 44.1 AND `SIO2(WT%)` < 47.1 AND
+`NA2O(WT%)` > 1.8 AND `NA2O(WT%)` < 4.8 AND
+`K2O(WT%)` > 0 AND `K2O(WT%)` < 2.72 AND
+`YB(PPM)` > 1.4 AND `YB(PPM)` < 4.19) OR
+(`SIO2(WT%)` > 45.7 AND `SIO2(WT%)` < 48.7 AND
+`NA2O(WT%)` > 2.08 AND `NA2O(WT%)` < 5.08 AND
+`K2O(WT%)` > 0 AND `K2O(WT%)` < 2.85 AND
+`YB(PPM)` > 1.57 AND `YB(PPM)` < 4.71)) AND
+((PB206_PB204 > 18.658 AND PB206_PB204 < 19.034 AND
+PB207_PB204 > 15.430 AND PB207_PB204 < 15.742 AND
+PB208_PB204 > 38.434 AND PB208_PB204 < 39.210) OR
+(PB206_PB204 > 18.701 AND PB206_PB204 < 19.079 AND
+PB207_PB204 > 15.431 AND PB207_PB204 < 15.743 AND
+PB208_PB204 > 38.482 AND PB208_PB204 < 39.260) OR
+(PB206_PB204 > 18.722 AND PB206_PB204 < 19.100 AND
+PB207_PB204 > 15.427 AND PB207_PB204 < 15.739 AND
+PB208_PB204 > 38.472 AND PB208_PB204 < 39.250) OR
+(PB206_PB204 > 18.720 AND PB206_PB204 < 19.098 AND
+PB207_PB204 > 15.445 AND PB207_PB204 < 15.757 AND
+PB208_PB204 > 38.505 AND PB208_PB204 < 39.283) OR
+(PB206_PB204 > 18.736 AND PB206_PB204 < 19.114 AND
+PB207_PB204 > 15.429 AND PB207_PB204 < 15.741 AND
+PB208_PB204 > 38.508 AND PB208_PB204 < 39.286) OR
+(PB206_PB204 > 18.624 AND PB206_PB204 < 19 AND
+PB207_PB204 > 15.425 AND PB207_PB204 < 15.737 AND
+PB208_PB204 > 38.362 AND PB208_PB204 < 39.138)) AND
 (file_id = '2022-06-WFJZKY_AUSTRAL-COOK_ISLANDS.csv' OR
 file_id = '2022-06-WFJZKY_MARQUESAS.csv' OR
 file_id = '2022-06-WFJZKY_SAMOAN_ISLANDS.csv' OR
@@ -568,35 +576,48 @@ m.parameter IN ('SiO2 [%]', 'TiO2 [%]', 'Al2O3 [%]', 'Fe2O3 [%]', 'FeO [%]',
     Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
     Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204) %>%
   dplyr::filter((SiO2 > 45.2 & SiO2 < 48.2 &
-                   MgO > 3.08 & MgO < 6.08 &
                    Na2O > 2.08 & Na2O < 5.08 &
                    K2O > 0 & K2O < 2.9 &
                    Yb > 1.6 & Yb < 4.8) |
                   (SiO2 > 44.3 & SiO2 < 47.3 &
-                     MgO > 3.52 & MgO < 6.52 &
                      Na2O > 2 & Na2O < 5 &
                      K2O > 0 & K2O < 2.82 &
                      Yb > 1.62 & Yb < 4.86) |
                   (SiO2 > 43.5 & SiO2 < 46.5 &
-                     MgO > 3.79 & MgO < 6.79 &
                      Na2O > 1.9 & Na2O < 4.9 &
                      K2O > 0 & K2O < 2.78 &
                      Yb > 1.56 & Yb < 4.68) |
                   (SiO2 > 45.9 & SiO2 < 48.9 &
-                     MgO > 3.44 & MgO < 6.44 &
                      Na2O > 2.18 & Na2O < 5.18 &
                      K2O > 0 & K2O < 2.99 &
                      Yb > 1.49 & Yb < 4.46) |
                   (SiO2 > 44.1 & SiO2 < 47.1 &
-                     MgO > 4.15 & MgO < 7.15 &
                      Na2O > 1.8 & Na2O < 4.8 &
                      K2O > 0 & K2O < 2.72 &
                      Yb > 1.4 & Yb < 4.19) |
                   (SiO2 > 45.7 & SiO2 < 48.7 &
-                     MgO > 3.10 & MgO < 6.10 &
                      Na2O > 2.08 & Na2O < 5.08 &
                      K2O > 0 & K2O < 2.85 &
-                     Yb > 1.57 & Yb < 4.71))
+                     Yb > 1.57 & Yb < 4.71)) %>%
+  dplyr::filter((Pb206_Pb204 > 18.658 & Pb206_Pb204 < 19.034 &
+                   Pb207_Pb204 > 15.430 & Pb207_Pb204 < 15.742 &
+                   Pb208_Pb204 > 38.434 & Pb208_Pb204 < 39.210) |
+                  (Pb206_Pb204 > 18.701 & Pb206_Pb204 < 19.079 &
+                     Pb207_Pb204 > 15.431 & Pb207_Pb204 < 15.743 &
+                     Pb208_Pb204 > 38.482 & Pb208_Pb204 < 39.260) |
+                  (Pb206_Pb204 > 18.722 & Pb206_Pb204 < 19.1 &
+                     Pb207_Pb204 > 15.427 & Pb207_Pb204 < 15.739 &
+                     Pb208_Pb204 > 38.472 & Pb208_Pb204 < 39.25) |
+                  (Pb206_Pb204 > 18.72 & Pb206_Pb204 < 19.098 &
+                     Pb207_Pb204 > 15.445 & Pb207_Pb204 < 15.757 &
+                     Pb208_Pb204 > 38.505 & Pb208_Pb204 < 39.283) |
+                  (Pb206_Pb204 > 18.736 & Pb206_Pb204 < 19.114 &
+                     Pb207_Pb204 > 15.429 & Pb207_Pb204 < 15.741 &
+                     Pb208_Pb204 > 38.508 & Pb208_Pb204 < 39.286) |
+                  (Pb206_Pb204 > 18.624 & Pb206_Pb204 < 19 &
+                     Pb207_Pb204 > 15.425 & Pb207_Pb204 < 15.737 &
+                     Pb208_Pb204 > 38.362 & Pb208_Pb204 < 39.138))
+
 #### K-12-24 ####
 ranges_s_OIB[7,]
 ranges_s_OIB[7,36:39] %>% round(digits = 6)
@@ -604,16 +625,13 @@ ranges_s_OIB[7,40:45] %>% round(digits = 3)
 q14 <- dbGetQuery(georoc,
 "SELECT *
 FROM 'sample'
-WHERE (((LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND') OR
-(ROCK_TYPE='VOL' AND
-file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16)) AND
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+TECTONIC_SETTING='OCEAN ISLAND' AND
 (ND143_ND144 > 0.512477 AND ND143_ND144 < 0.513503 AND
 SR87_SR86 > 0.702761 AND SR87_SR86 < 0.704167 AND
 PB206_PB204 > 18.221 AND PB206_PB204 < 18.589 AND
 PB207_PB204 > 15.372 AND PB207_PB204 < 15.682 AND
-PB208_PB204 > 37.927 AND PB208_PB204 < 38.693))") %>%
+PB208_PB204 > 37.927 AND PB208_PB204 < 38.693)") %>%
   get_georoc_location() %>% filter(Location != "na") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
@@ -627,17 +645,14 @@ ranges_s_OIB[7,1:35]
 q15 <- dbGetQuery(georoc,
 "SELECT *
 FROM 'sample'
-WHERE (((LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 (file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part1.csv' OR
 file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv' OR
-file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv')) OR
-(ROCK_TYPE='VOL' AND
-file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16)) AND
+file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv') AND
 (`K2O(WT%)` < 2.91 AND
 `NA2O(WT%)` > 1.61 AND `NA2O(WT%)` < 4.61 AND
 `MGO(WT%)` > 5.84 AND `MGO(WT%)` < 8.84 AND
-`YB(PPM)` > 1.26 AND `YB(PPM)` < 3.78))") %>%
+`YB(PPM)` > 1.26 AND `YB(PPM)` < 3.78)") %>%
   get_georoc_location() %>% filter(Location != "na") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
@@ -653,12 +668,9 @@ ranges_s_OIB[8,36:39] %>% round(digits = 6)
 ranges_s_OIB[8,40:45] %>% round(digits = 3)
 q16 <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
-WHERE (((LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND') OR
-(ROCK_TYPE='VOL' AND
-file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16)) AND
-ND143_ND144 > 0.512396 AND ND143_ND144 < 0.513422 AND
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+TECTONIC_SETTING='OCEAN ISLAND' AND
+(ND143_ND144 > 0.512396 AND ND143_ND144 < 0.513422 AND
 SR87_SR86 > 0.703423 AND SR87_SR86 < 0.704831 AND
 PB206_PB204 > 18.438 AND PB206_PB204 < 18.81 AND
 PB207_PB204 > 15.427 AND PB207_PB204 < 15.739 AND
@@ -671,21 +683,24 @@ PB208_PB204 > 38.274 AND PB208_PB204 < 39.048)") %>%
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 q16 %>% group_by(Location) %>% tally()
 
-
 joined_data[17,]
 ranges_s_OIB[8,1:35]
 q17 <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
-WHERE (((LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND') OR
-(ROCK_TYPE='VOL' AND
-file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16)) AND
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 `SIO2(WT%)` > 43.1 AND `SIO2(WT%)` < 46.1 AND
 `NA2O(WT%)` > 0.89 AND `NA2O(WT%)` < 3.89 AND
-`K2O(WT%)` < 1.9 AND
-`MGO(WT%)` > 10.7 AND `MGO(WT%)` < 13.7 AND
-`YB(PPM)` > 0.86 AND `YB(PPM)` < 2.58)") %>%
+`K2O(WT%)` < 1.893 AND
+`YB(PPM)` > 0.86 AND `YB(PPM)` < 2.58 AND
+PB206_PB204 > 18.438 AND PB206_PB204 < 18.81 AND
+PB207_PB204 > 15.427 AND PB207_PB204 < 15.739 AND
+PB208_PB204 > 38.274 AND PB208_PB204 < 39.048 AND
+(file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part1.csv' OR
+file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv' OR
+file_id = '2022-06-WFJZKY_AUSTRAL-COOK_ISLANDS.csv' OR
+file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv' OR
+file_id = '2022-06-WFJZKY_SOCIETY_ISLANDS.csv' OR
+file_id = '2022-06-WFJZKY_PITCAIRN-GAMBIER_CHAIN.csv')") %>%
   get_georoc_location() %>% filter(Location != "na") %>% rename_georoc() %>%
   Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
@@ -701,12 +716,9 @@ ranges_s_OIB[9,36:39] %>% round(digits = 6)
 ranges_s_OIB[9,40:45] %>% round(digits = 3)
 q18 <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
-WHERE (((LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND') OR
-(ROCK_TYPE='VOL' AND
-file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16)) AND
-ND143_ND144 > 0.51248 AND ND143_ND144 < 0.513506 AND
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+TECTONIC_SETTING='OCEAN ISLAND' AND
+(ND143_ND144 > 0.51248 AND ND143_ND144 < 0.513506 AND
 SR87_SR86 > 0.702897 AND SR87_SR86 < 0.704305 AND
 PB206_PB204 > 18.54 AND PB206_PB204 < 18.914 AND
 PB207_PB204 > 15.378 AND PB207_PB204 < 15.688 AND
@@ -722,17 +734,15 @@ q18 %>% group_by(Location) %>% tally()
 ranges_s_OIB[9,1:35]
 q19 <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
-WHERE ((LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+`SIO2(WT%)` > 42.9 AND `SIO2(WT%)` < 45.9 AND
+PB206_PB204 > 18.54 AND PB206_PB204 < 18.914 AND
+PB207_PB204 > 15.378 AND PB207_PB204 < 15.688 AND
+PB208_PB204 > 38.059 AND PB208_PB204 < 38.827 AND
 (file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv' OR
 file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part1.csv' OR
 file_id = '2022-06-WFJZKY_HAWAIIAN_ISLANDS_part2.csv' OR
-file_id = '2022-06-WFJZKY_SOCIETY_ISLANDS.csv')) OR
-(file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16)) AND
-(`SIO2(WT%)` > 42.9 AND `SIO2(WT%)` < 45.9 AND
-`NA2O(WT%)` > 2.41 AND `NA2O(WT%)` < 5.41 AND
-`K2O(WT%)` < 2.35 AND
-`YB(PPM)` > 1.26 AND `YB(PPM)` < 3.8)") %>%
+file_id = '2022-06-WFJZKY_SOCIETY_ISLANDS.csv')") %>%
   get_georoc_location() %>% dplyr::filter(Location != "na") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
@@ -743,11 +753,8 @@ q19 %>% group_by(Location) %>% tally()
 
 
 
-
-
-
 IAB_ref <- dbGetQuery(georoc,
-                      "SELECT sample_id, reference_id
+"SELECT sample_id, reference_id
 FROM 'citation'
 WHERE sample_id='1776564'")
 IAB_ref

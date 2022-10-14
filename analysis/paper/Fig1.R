@@ -54,9 +54,21 @@ d_map <- dbGetQuery(georoc,
                     "SELECT id, file_id, LOCATION, LATITUDE_MIN, LONGITUDE_MIN
                     FROM 'sample'
                     WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-                    PB206_PB204 > 1 AND PB207_PB204 > 1 AND PB208_PB204 > 1") %>%
+                    PB206_PB204 > 0 AND PB207_PB204 > 0 AND PB208_PB204 > 0 AND
+                    SR87_SR86 > 0 AND ND143_ND144 > 0") %>%
   dplyr::filter(!grepl("MURUROA|FANGATAUFA",LOCATION)) %>%
   get_georoc_location() %>% rename(lat=LATITUDE_MIN, long=LONGITUDE_MIN)
+d_map %>% group_by(file_id) %>% tally() %>% print(n=300)
+
+d_map <- dbGetQuery(georoc,
+                    "SELECT id, file_id, LOCATION, LATITUDE_MIN, LONGITUDE_MIN
+                    FROM 'sample'
+                    WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+                    PB206_PB204 > 0 AND PB207_PB204 > 0 AND PB208_PB204 > 0") %>%
+  dplyr::filter(!grepl("MURUROA|FANGATAUFA",LOCATION)) %>%
+  get_georoc_location() %>% rename(lat=LATITUDE_MIN, long=LONGITUDE_MIN)
+d_map %>% group_by(file_id) %>% tally() %>% print(n=150)
+
 d_map$long <- ifelse(d_map$long < -25, d_map$long + 360, d_map$long)
 d_map <- d_map %>% dplyr::filter(long > 95 & long < 255 & lat > -45.5 & lat < 22.5)
 

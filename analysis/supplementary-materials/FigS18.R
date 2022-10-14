@@ -142,20 +142,20 @@ p1 <- OIB %>%
         axis.text = element_text(size = 8), legend.position = "none", aspect.ratio=1) +
   labs(x=expression(paste(TiO[2]*" / Fe"[2]*"O"[3]))) +
   labs(y=expression(Al[2]*O[3]*~ "(wt%)"))
-p2 <-  OIB %>%
-  ggplot(aes(x=TiO2/Fe2O3,y=CaO, shape=factor(Location), fill=factor(Location),
+p2 <- OIB %>%
+  ggplot(aes(x=TiO2/Fe2O3,y=MgO, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(.23,.36)) + scale_y_continuous(limits=c(7,9.5)) +
+  scale_x_continuous(limits=c(.23,.36)) + scale_y_continuous(limits=c(4,7.5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.title.x = element_blank(),
         axis.text = element_text(size = 8), legend.position = "none", aspect.ratio=1) +
   labs(x=expression(paste(TiO[2]*" / Fe"[2]*"O"[3]))) +
-  labs(y=expression("CaO (wt%)"))
+  labs(y=expression("MgO (wt%)"))
 p3 <- OIB %>%
   ggplot(aes(x=TiO2/Fe2O3,y=Na2O+K2O, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
@@ -169,46 +169,46 @@ p3 <- OIB %>%
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
         legend.position = "none", aspect.ratio=1) +
   labs(x=expression(paste(TiO[2]*" / Fe"[2]*"O"[3]))) +
-  labs(y=expression(paste(Na[2]*"O + K"[2]*~"O")))
+  labs(y=expression(paste(Na[2]*"O + K"[2]*~"O (wt%)")))
 p4 <- OIB %>%
-  ggplot(aes(x=Rb,y=Sr, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Ti/Zr,y=Sr, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(19,60)) + scale_y_continuous(limits=c(450,800)) +
+  scale_x_continuous(limits=c(40,110)) + scale_y_continuous(limits=c(450,850)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.title.x = element_blank(),
         axis.text = element_text(size = 8), legend.position = "none", aspect.ratio=1) +
-  labs(x="Rb (ppm)",  y="Sr (ppm)")
+  labs(x="Ti / Zr", y="Sr (ppm)")
 p5 <- OIB %>%
-  ggplot(aes(x=Rb,y=Zr, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Ti/Zr,y=Rb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(19,60)) + scale_y_continuous(limits=c(280,430)) +
+  scale_x_continuous(limits=c(40,110)) + scale_y_continuous(limits=c(20,60)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.title.x = element_blank(),
         axis.text = element_text(size = 8), legend.position = "none", aspect.ratio=1) +
-  labs(x="Rb (ppm)", y="Zr (ppm)")
+  labs(x="Ti / Zr", y="Rb (ppm)")
 p6 <- OIB %>%
-  ggplot(aes(x=Rb,y=Y, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Ti/Zr,y=Nb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(19,60)) + scale_y_continuous(limits=c(30,55)) +
+  scale_x_continuous(limits=c(40,110)) + scale_y_continuous(limits=c(30,60)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_text(size = 14), axis.text = element_text(size = 8),
         legend.position = "none", aspect.ratio=1) +
-  labs(x="Rb (ppm)", y="Y (ppm)")
+  labs(x="Ti / Zr", y="Nb (ppm)")
 
 pdf(here("analysis","supplementary-materials","FigS18.pdf"), width=8, height=10)
 (p1/p2/p3) | (p4/p5/p6)

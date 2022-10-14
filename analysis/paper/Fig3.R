@@ -13,8 +13,8 @@ pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 shapes <- c("Luzon Arc"=21,"Sulawesi Arc"=22,"Sunda Arc"=23,"Banda Arc"=24,
             "Yap Arc"=25,"Mariana Arc"=21,"Bismarck Arc"=22,"Solomon Arc"=23,
             "Vanuatu Arc"=24,"Tonga-Fiji"=25,"New Zealand"=21,
-            "E-11-03"=0,"E-11-06"=1,"E-11-07"=8,"E-11-10"=0,"E-11-11"=1,
-            "E-11-13"=2,"E-11-16"=5,"E-11-18"=6,"E-11-19"=8,"K-12-28"=3,"K-12-29"=4)
+            "E-11-03"=0,"E-11-06"=1,"E-11-07"=8,"E-11-10"=24,"E-11-11"=24,
+            "E-11-13"=24,"E-11-16"=24,"E-11-18"=24,"E-11-19"=24,"K-12-28"=3,"K-12-29"=4)
 cols <- c("Luzon Arc"="#440154","Sulawesi Arc"="#345E8C","Sunda Arc"="#404386",
           "Banda Arc"="#472374","Yap Arc"="#29778E","Mariana Arc"="#218F8B",
           "Bismarck Arc"="#25A782","Solomon Arc"="#44BE6F","Vanuatu Arc"="#7AD04F",
@@ -26,9 +26,9 @@ contour <- c("Luzon Arc"="black","Sulawesi Arc"="black","Sunda Arc"="black",
              "Banda Arc"="black","Yap Arc"="black","Mariana Arc"="black",
              "Bismarck Arc"="black","Solomon Arc"="black","Vanuatu Arc"="black",
              "Tonga-Fiji"="black","New Zealand"="black",
-             "E-11-03"="red","E-11-06"="red","E-11-07"="red","E-11-10"="#7AD04F",
-             "E-11-11"="#7AD04F","E-11-13"="#7AD04F","E-11-16"="#7AD04F",
-             "E-11-18"="#7AD04F","E-11-19"="#7AD04F","K-12-28"="red","K-12-29"="red")
+             "E-11-03"="red","E-11-06"="red","E-11-07"="red","E-11-10"="black",
+             "E-11-11"="black","E-11-13"="black","E-11-16"="black",
+             "E-11-18"="black","E-11-19"="black","K-12-28"="red","K-12-29"="red")
 
 dir.create(here("analysis","figures","Figure_3"))
 
@@ -37,18 +37,10 @@ dir.create(here("analysis","figures","Figure_3"))
 q1 <- q1 %>% dplyr::select(
     Sample,Location,Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
 
-s <- joined_data %>% filter(Sample %in% c(
+s <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-18dup",
   "E-11-19","E-11-03")) %>%
-  mutate(Location = case_when(
-    grepl("E-11-10", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-11", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-13", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-16", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-18", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-18dup", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-19", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-03", Sample) ~ "E-11-03"))%>%
+  dplyr::mutate(Location = Sample)%>%
   dplyr::select(Sample,Location,
                 Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
 
@@ -165,8 +157,8 @@ IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
 
 s <- joined_data %>%
-  filter(Sample %in% c("E-11-03")) %>%
-  mutate(Location = case_when(grepl("E-11-03", Sample) ~ "E-11-03")) %>%
+  dplyr::filter(Sample %in% c("E-11-03")) %>%
+  dplyr::mutate(Location = Sample) %>%
   dplyr::select(
     Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 
@@ -283,21 +275,12 @@ dev.off()
 #### Fig 3c ####
 ## E_11_06 & E_11_07 PCA1
 s <- joined_data %>%
-  filter(Sample %in% c(
+  dplyr::filter(Sample %in% c(
     "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-18dup",
     "E-11-19","E-11-06","E-11-07")) %>%
-  mutate(
-    Location = case_when(
-      grepl("E-11-10", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-11", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-13", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-16", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-18", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-18dup", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-19", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-06", Sample) ~ "E-11-06",
-      grepl("E-11-07", Sample) ~ "E-11-07")) %>% dplyr::select(
-        Sample,Location, Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
+  dplyr::mutate(Location = Sample) %>%
+  dplyr::select(Sample,Location,
+                Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
 s <- s[c("3","4","5","6","7","8","9","1","2"),]
 
 IAB <- q4 %>% dplyr::select(
@@ -401,21 +384,12 @@ dev.off()
 
 #### Fig 3d ####
 ## E_11_06 & E_11_07 PCA2
-s <- joined_data %>% filter(Sample %in% c(
+s <- joined_data %>% dplyr::filter(Sample %in% c(
     "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-18dup",
     "E-11-19","E-11-06","E-11-07")) %>%
-  mutate(
-    Location = case_when(
-      grepl("E-11-10", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-11", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-13", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-16", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-18", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-18dup", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-19", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-06", Sample) ~ "E-11-06",
-      grepl("E-11-07", Sample) ~ "E-11-07")) %>% dplyr::select(
-        Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+  dplyr::mutate(Location = Sample) %>%
+  dplyr::select(Sample,Location,
+                SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
@@ -548,8 +522,8 @@ IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
 
 s <- joined_data %>%
-  filter(Sample %in% c("K-12-28")) %>%
-  mutate(Location = case_when(grepl("K-12-28", Sample) ~ "K-12-28")) %>%
+  dplyr::filter(Sample %in% c("K-12-28")) %>%
+  dplyr::mutate(Location = Sample) %>%
   dplyr::select(Sample,Location,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
@@ -654,8 +628,8 @@ is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
 IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
 
-s <- joined_data %>% filter(Sample %in% c("K-12-28")) %>%
-  mutate(Location = case_when(grepl("K-12-28", Sample) ~ "K-12-28")) %>%
+s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-28")) %>%
+  dplyr::mutate(Location = Sample) %>%
   dplyr::select(
     Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 
@@ -772,17 +746,22 @@ dev.off()
 
 #### Fig 3g ####
 ## K_12_29 PCA1
+s <- joined_data %>%
+  dplyr::filter(Sample %in% c(
+    "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-18dup","K-12-29")) %>%
+  dplyr::mutate(Location = Sample) %>% dplyr::select(
+        Sample,Location, Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
+s <- s[c("6","1","2","3","4","5","7"),]
+
 IAB <- q8 %>%
   dplyr::select(Sample,Location,
                 Nd143_Nd144,Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+IAB <- full_join(IAB,s[2:7,])
 is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
 IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
 
-s <- joined_data %>% filter(Sample %in% c("K-12-29")) %>%
-  mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29")) %>%
-  dplyr::select(Sample,Location,
-                Nd143_Nd144,Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+s <- s[1,]
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
@@ -792,7 +771,7 @@ K_12_29_PCA_1a <- fviz_pca_biplot(
   res.pca, label = "var", col.var = "black", alpha.var = .2,
   habillage = IAB$Location, fill.ind = IAB$Location,
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
-  scale_x_continuous(limits=c(-3.5, 3)) + scale_y_continuous(limits=c(-2.5, 2.8)) +
+  scale_x_continuous(limits=c(-3.5, 3.5)) + scale_y_continuous(limits=c(-2.5, 3.2)) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
@@ -817,7 +796,7 @@ K_12_29_PCA_1b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="longdash") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-3.5, 3)) + scale_y_continuous(limits=c(-2.5, 2.8)) +
+  scale_x_continuous(limits=c(-3.5, 3.5)) + scale_y_continuous(limits=c(-2.5, 3.2)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -827,17 +806,16 @@ K_12_29_PCA_1b <- d_pca %>%
        y=paste0("PC2 (",round(eig["Dim.2","variance.percent"], digits = 1),"%)"))
 K_12_29_PCA_1b
 
-
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:123,"Sample"]),
-  Location = c(d_pca[1:123,"Location"]),
-  PC1 = c(sqrt(((median(d_pca[124,"PC1"]))-d_pca[1:123,"PC1"])^2)),
-  PC2 = c(sqrt(((median(d_pca[124,"PC2"]))-d_pca[1:123,"PC2"])^2)),
-  PC3 = c(sqrt(((median(d_pca[124,"PC3"]))-d_pca[1:123,"PC3"])^2)),
-  PC4 = c(sqrt(((median(d_pca[124,"PC4"]))-d_pca[1:123,"PC4"])^2)),
-  PC5 = c(sqrt(((median(d_pca[124,"PC5"]))-d_pca[1:123,"PC5"])^2))) %>%
+  Sample = c(d_pca[1:128,"Sample"]),
+  Location = c(d_pca[1:128,"Location"]),
+  PC1 = c(sqrt(((median(d_pca[129,"PC1"]))-d_pca[1:128,"PC1"])^2)),
+  PC2 = c(sqrt(((median(d_pca[129,"PC2"]))-d_pca[1:128,"PC2"])^2)),
+  PC3 = c(sqrt(((median(d_pca[129,"PC3"]))-d_pca[1:128,"PC3"])^2)),
+  PC4 = c(sqrt(((median(d_pca[129,"PC4"]))-d_pca[1:128,"PC4"])^2)),
+  PC5 = c(sqrt(((median(d_pca[129,"PC5"]))-d_pca[1:128,"PC5"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+
       (PC4*eig[4,2])+(PC5*eig[5,2])) / (sum(eig[1:5,2])))
@@ -881,16 +859,24 @@ dev.off()
 
 #### Fig 3h ####
 ## K_12_29 PCA2
-IAB <- q9 %>%  dplyr::select(
-  Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+s <- joined_data %>%
+  dplyr::filter(Sample %in% c(
+    "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-18dup","K-12-29")) %>%
+  dplyr::mutate(Location = Sample) %>% dplyr::select(
+        Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+s <- s[c("6","1","2","3","4","5","7"),]
+
+IAB <- q9 %>%
+  dplyr::select(Sample,Location,
+                SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+IAB <- full_join(IAB,s[2:7,])
 is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
 IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
 
-s <- joined_data %>% filter(Sample %in% c("K-12-29")) %>%
-  mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29")) %>%
-  dplyr::select(
-    Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
+s <- s[1,]
+s[s == 0] <- NA # Replace 0 with NA
+s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
 
 res.pca <- prcomp(IAB[,3:21], scale = TRUE, center = TRUE) # Dimension reduction using PCA
 eig <- get_eig(res.pca)
@@ -900,7 +886,7 @@ K_12_29_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-5, 6)) + scale_y_continuous(limits=c(-5, 3.5)) +
+  scale_x_continuous(limits=c(-5, 7)) + scale_y_continuous(limits=c(-5.5, 4)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -924,7 +910,7 @@ K_12_29_PCA_2b <- d_pca %>%
   geom_hline(aes(yintercept = 0), size=.25, linetype="longdash") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-5, 6)) + scale_y_continuous(limits=c(-5, 3.5)) +
+  scale_x_continuous(limits=c(-5, 7)) + scale_y_continuous(limits=c(-5.5, 4)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -937,27 +923,27 @@ K_12_29_PCA_2b
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:173,"Sample"]),
-  Location = c(d_pca[1:173,"Location"]),
-  PC1 = c(sqrt(((d_pca[174,"PC1"])-d_pca[1:173,"PC1"])^2)),
-  PC2 = c(sqrt(((d_pca[174,"PC2"])-d_pca[1:173,"PC2"])^2)),
-  PC3 = c(sqrt(((d_pca[174,"PC3"])-d_pca[1:173,"PC3"])^2)),
-  PC4 = c(sqrt(((d_pca[174,"PC4"])-d_pca[1:173,"PC4"])^2)),
-  PC5 = c(sqrt(((d_pca[174,"PC5"])-d_pca[1:173,"PC5"])^2)),
-  PC6 = c(sqrt(((d_pca[174,"PC6"])-d_pca[1:173,"PC6"])^2)),
-  PC7 = c(sqrt(((d_pca[174,"PC7"])-d_pca[1:173,"PC7"])^2)),
-  PC8 = c(sqrt(((d_pca[174,"PC8"])-d_pca[1:173,"PC8"])^2)),
-  PC9 = c(sqrt(((d_pca[174,"PC9"])-d_pca[1:173,"PC9"])^2)),
-  PC10 = c(sqrt(((d_pca[174,"PC10"])-d_pca[1:173,"PC10"])^2)),
-  PC11 = c(sqrt(((d_pca[174,"PC11"])-d_pca[1:173,"PC11"])^2)),
-  PC12 = c(sqrt(((d_pca[174,"PC12"])-d_pca[1:173,"PC12"])^2)),
-  PC13 = c(sqrt(((d_pca[174,"PC13"])-d_pca[1:173,"PC13"])^2)),
-  PC14 = c(sqrt(((d_pca[174,"PC14"])-d_pca[1:173,"PC14"])^2)),
-  PC15 = c(sqrt(((d_pca[174,"PC15"])-d_pca[1:173,"PC15"])^2)),
-  PC16 = c(sqrt(((d_pca[174,"PC16"])-d_pca[1:173,"PC16"])^2)),
-  PC17 = c(sqrt(((d_pca[174,"PC17"])-d_pca[1:173,"PC17"])^2)),
-  PC18 = c(sqrt(((d_pca[174,"PC18"])-d_pca[1:173,"PC18"])^2)),
-  PC19 = c(sqrt(((d_pca[174,"PC19"])-d_pca[1:173,"PC19"])^2))) %>%
+  Sample = c(d_pca[1:178,"Sample"]),
+  Location = c(d_pca[1:178,"Location"]),
+  PC1 = c(sqrt(((d_pca[179,"PC1"])-d_pca[1:178,"PC1"])^2)),
+  PC2 = c(sqrt(((d_pca[179,"PC2"])-d_pca[1:178,"PC2"])^2)),
+  PC3 = c(sqrt(((d_pca[179,"PC3"])-d_pca[1:178,"PC3"])^2)),
+  PC4 = c(sqrt(((d_pca[179,"PC4"])-d_pca[1:178,"PC4"])^2)),
+  PC5 = c(sqrt(((d_pca[179,"PC5"])-d_pca[1:178,"PC5"])^2)),
+  PC6 = c(sqrt(((d_pca[179,"PC6"])-d_pca[1:178,"PC6"])^2)),
+  PC7 = c(sqrt(((d_pca[179,"PC7"])-d_pca[1:178,"PC7"])^2)),
+  PC8 = c(sqrt(((d_pca[179,"PC8"])-d_pca[1:178,"PC8"])^2)),
+  PC9 = c(sqrt(((d_pca[179,"PC9"])-d_pca[1:178,"PC9"])^2)),
+  PC10 = c(sqrt(((d_pca[179,"PC10"])-d_pca[1:178,"PC10"])^2)),
+  PC11 = c(sqrt(((d_pca[179,"PC11"])-d_pca[1:178,"PC11"])^2)),
+  PC12 = c(sqrt(((d_pca[179,"PC12"])-d_pca[1:178,"PC12"])^2)),
+  PC13 = c(sqrt(((d_pca[179,"PC13"])-d_pca[1:178,"PC13"])^2)),
+  PC14 = c(sqrt(((d_pca[179,"PC14"])-d_pca[1:178,"PC14"])^2)),
+  PC15 = c(sqrt(((d_pca[179,"PC15"])-d_pca[1:178,"PC15"])^2)),
+  PC16 = c(sqrt(((d_pca[179,"PC16"])-d_pca[1:178,"PC16"])^2)),
+  PC17 = c(sqrt(((d_pca[179,"PC17"])-d_pca[1:178,"PC17"])^2)),
+  PC18 = c(sqrt(((d_pca[179,"PC18"])-d_pca[1:178,"PC18"])^2)),
+  PC19 = c(sqrt(((d_pca[179,"PC19"])-d_pca[1:178,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
       (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+

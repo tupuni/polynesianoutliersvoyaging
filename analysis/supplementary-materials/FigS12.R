@@ -33,12 +33,12 @@ s <- joined_data %>%
   mutate(Location = case_when(grepl("E-11-03", Sample) ~ "E-11-03"))
 
 p1 <- IAB %>%
-  ggplot(aes(x=Rb,y=U/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Rb,y=Th/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  #scale_x_continuous(limits=c(0,.35)) +
+  scale_x_continuous(limits=c(30,170)) +
   scale_y_continuous(limits=c(0,12)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -47,7 +47,7 @@ p1 <- IAB %>%
         axis.text = element_text(size = 8),
         legend.position = "none", aspect.ratio=1)
 p2 <- IAB %>%
-  ggplot(aes(x=Sr,y=U/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Sr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
@@ -61,7 +61,7 @@ p2 <- IAB %>%
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         legend.position = "none", aspect.ratio=1)
 p3 <- IAB %>%
-  ggplot(aes(x=Zr,y=U/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Zr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
@@ -209,13 +209,13 @@ IAB <- full_join(IAB,s[1:5,])
 s <- s[6,]
 
 p7 <- IAB %>%
-  ggplot(aes(x=Rb,y=Th/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Rb,y=U/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) +
   geom_point(data=subset(IAB, Location %in% c("Vanuatu Arc")), size=3, stroke=.25) +
   geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,60)) + scale_y_continuous(limits=c(0,3)) +
+  scale_x_continuous(limits=c(0,60)) + scale_y_continuous(limits=c(0,1)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -223,13 +223,13 @@ p7 <- IAB %>%
         legend.position = "none", aspect.ratio=1) +
   labs(x="Rb (ppm)")
 p8 <- IAB %>%
-  ggplot(aes(x=Sr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Sr,y=U/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) +
   geom_point(data=subset(IAB, Location %in% c("Vanuatu Arc")), size=3, stroke=.25) +
   geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,1200)) + scale_y_continuous(limits=c(0,3)) +
+  scale_x_continuous(limits=c(0,1200)) + scale_y_continuous(limits=c(0,1)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -238,13 +238,13 @@ p8 <- IAB %>%
         axis.ticks.y = element_blank(), legend.position = "none", aspect.ratio=1) +
   labs(x="Sr (ppm)")
 p9 <- IAB %>%
-  ggplot(aes(x=Zr,y=Th/Yb, shape=factor(Location), fill=factor(Location),
+  ggplot(aes(x=Zr,y=U/Yb, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) +
   geom_point(data=subset(IAB, Location %in% c("Vanuatu Arc")), size=3, stroke=.25) +
   geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(0,150)) + scale_y_continuous(limits=c(0,3)) +
+  scale_x_continuous(limits=c(0,150)) + scale_y_continuous(limits=c(0,1)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
