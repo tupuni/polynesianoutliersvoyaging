@@ -223,51 +223,59 @@ OIB <- OIB[rowSums(is.na(OIB)) == 0,] # removes rows with missing info for PCA
 
 d <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
-WHERE file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv'") %>%
+WHERE (LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
+`CS(PPM)` > 0 AND `YB(PPM)` < 100 AND
+file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv')") %>%
   rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  mutate(Location = case_when(
-    grepl("120903-KOS 13-4", Sample) ~ "[KOS 13-4] Kosrae (Caroline)",
-    grepl("1867354", Sample) ~ "[1867354] Ponape (Caroline)",
-    grepl("1867352", Sample) ~ "[1867352] Ponape (Caroline)",
-    grepl("1867350", Sample) ~ "[1867350] Ponape (Caroline)",
-    grepl("PONAPE", LOCATION) ~ "Ponape",
+  dplyr::mutate(Location = case_when(
     grepl("KOSRAE", LOCATION) ~ "Kosrae",
-    grepl("CHUUK", LOCATION) ~ "Chuuk")) %>%
-  dplyr::select(Sample,Location,LOCATION,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
+    grepl("CHUUK", LOCATION) ~ "Chuuk",
+    grepl("PONAPE", LOCATION) ~ "Ponape")) %>%
+  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
-s <- joined_data %>% dplyr::mutate(Location=Sample)
+s <- joined_data %>% dplyr::mutate(Location=Sample) %>%
+  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
+                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
+                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
-shapes <- c("[1867354] Ponape (Caroline)"=0,
-            "[1867352] Ponape (Caroline)"=1,
-            "[1867350] Ponape (Caroline)"=2,
-            "[KOS 13-4] Kosrae (Caroline)"=5,
-            "Ponape"=8,"Kosrae"=3,"Chuuk"=4,
-            "K-12-24"=12)
-cols <- c("[1867354] Ponape (Caroline)"="#320A5A",
-          "[1867352] Ponape (Caroline)"="#320A5A",
-          "[1867350] Ponape (Caroline)"="#320A5A",
-          "[KOS 13-4] Kosrae (Caroline)"="#320A5A",
-          "Ponape"="#320A5A","Kosrae"="#320A5A","Chuuk"="#320A5A",
-          "K-12-24"="red")
+cols <- c("Chuuk"="#6D58A5","Kosrae"="#8476B6","Ponape"="#341D59","K-12-24"="red")
+shapes <- c("Chuuk"=23,"Kosrae"=22,"Ponape"=21, "K-12-24"=12)
+contour <- c("Chuuk"="black","Kosrae"="black","Ponape"="black","K-12-24"="red")
 
 K_12_24_TAS <- tas +
   geom_point(data=d,
-             aes(x=SiO2, y=Na2O+K2O, shape=factor(Location), color=factor(Location),
-                 group=Sample), size=1, stroke=.25) +
-  geom_point(data=s,aes(x=SiO2, y=Na2O+K2O, shape=factor(Location),
+             aes(x=SiO2, y=Na2O+K2O, shape=factor(Location), fill=factor(Location),
+                 color=factor(Location),group=Sample), size=1, stroke=.25) +
+  geom_point(data=s,aes(x=SiO2, y=Na2O+K2O, shape=factor(Location), fill=factor(Location),
                         color=factor(Location), group=Sample), size=1, stroke=.5) +
-  scale_shape_manual(values = shapes) + scale_color_manual(values = cols) +
-  scale_y_continuous(position = "right") +
+  scale_shape_manual(values = shapes) + scale_fill_manual(values = cols) +
+  scale_color_manual(values = contour) + scale_y_continuous(position = "right") +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5),
         panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.title = element_text(size = 9),
         axis.text = element_text(size = 7),
         legend.title = element_blank(), legend.text = element_text(size = 5),
-        legend.position=c(.2,.8), aspect.ratio=1)
+        legend.position=c(.1,.8), aspect.ratio=1)
 K_12_24_TAS
+
+
+d <- dbGetQuery(georoc,
+"SELECT * FROM 'sample'
+WHERE file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv'") %>%
+  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
+  mutate(Location = case_when(
+    grepl("1867354", Sample) ~ "[1867354] Ponape (Caroline)",
+    grepl("1867352", Sample) ~ "[1867352] Ponape (Caroline)",
+    grepl("1867350", Sample) ~ "[1867350] Ponape (Caroline)",
+    grepl("KOS 13-4", Sample) ~ "[KOS 13-4] Kosrae (Caroline)")) %>%
+  dplyr::select(Sample,Location,LOCATION,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
+                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
+                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
+                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
 d_spider <- d %>%
   dplyr::filter(Location %in% c("[1867354] Ponape (Caroline)",
@@ -283,7 +291,6 @@ s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-24")) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
-
 
 shapes <- c("[1867354] Ponape (Caroline)"=0,
             "[1867352] Ponape (Caroline)"=1,
@@ -302,11 +309,10 @@ K_12_24_spider <- d_spider %>%
                            "Nd","Sr","Sm","Zr","Ti","Eu","Gd","Tb",
                            "Dy","Y","Er","Yb","Lu")) %>%
   ggplot(aes(x=var, y=conc, shape=factor(Location), color=factor(Location),
-             fill=factor(Location), group=Sample)) +
+             group=Sample)) +
   geom_line(size=.5) + geom_point(size=2, stroke=.5) +
   geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
   scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
-  scale_fill_manual(values=cols) +
   theme_classic() + theme(axis.line=element_blank()) +
   theme(panel.border=element_rect(colour="black", fill=NA, size=.25),
         axis.ticks.length.x = unit(-.15, "cm"), axis.text = element_text(size=8),
