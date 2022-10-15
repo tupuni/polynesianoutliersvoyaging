@@ -116,55 +116,12 @@ A_detail <- OIB %>%
         axis.title = element_blank(), axis.text = element_text(size = 10),
         legend.position = "none", aspect.ratio=1)
 A_detail
-pdf(here("analysis","supplementary-materials","FigS15","FigS15-A_detail.pdf"), width=4, height=4)
+pdf(here("analysis","supplementary-materials","FigS15","FigS15-A_detail.pdf"), width=5, height=5)
 A_detail
 dev.off()
 
 #### Fig S15 B ####
 B <- OIB %>%
-  ggplot(aes(x=Pb208_Pb204, y=Pb207_Pb204, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) +
-  geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
-  geom_point(data=subset(OIB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
-  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(37.7, 40)) +
-  scale_y_continuous(position="right",limits=c(15.4,15.75)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 18), axis.text = element_text(size = 10),
-        legend.position = "none", aspect.ratio=1) +
-  labs(x=expression({}^208*"Pb / "*{}^204*"Pb"),
-       y=expression({}^207*"Pb / "*{}^204*"Pb"))
-B
-pdf(here("analysis","supplementary-materials","FigS15","FigS15-B.pdf"), width=8, height=8)
-B
-dev.off()
-
-B_detail <- OIB %>%
-  ggplot(aes(x=Pb208_Pb204,y=Pb207_Pb204, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) +
-  geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
-  geom_point(data=subset(OIB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
-  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(38, 39.25), expand=c(0,0)) +
-  scale_y_continuous(position = "right", limits=c(15.47, 15.63), expand=c(0,0)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_blank(), axis.text = element_text(size = 10),
-        legend.position = "none", aspect.ratio=1)
-B_detail
-pdf(here("analysis","supplementary-materials","FigS15","FigS15-B_detail.pdf"), width=5, height=5)
-B_detail
-dev.off()
-
-#### Fig S15 C ####
-C <- OIB %>%
   ggplot(aes(x=Sr87_Sr86,y=Nd143_Nd144, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) +
@@ -181,12 +138,12 @@ C <- OIB %>%
         legend.position = "none", aspect.ratio=1) +
   labs(x=expression({}^87*"Sr / "*{}^86*"Sr"),
        y=expression({}^143*"Nd / "*{}^144*"Nd"))
-C
-pdf(here("analysis","supplementary-materials","FigS15","FigS15-C.pdf"), width=8, height=8)
-C
+B
+pdf(here("analysis","supplementary-materials","FigS15","FigS15-B.pdf"), width=8, height=8)
+B
 dev.off()
 
-C_detail <- OIB %>%
+B_detail <- OIB %>%
   ggplot(aes(x=Sr87_Sr86,y=Nd143_Nd144, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
   geom_point(size=3, stroke=.25) +
@@ -201,8 +158,51 @@ C_detail <- OIB %>%
         panel.background = element_rect(fill = "white"), title = element_blank(),
         axis.title = element_blank(), axis.text = element_text(size = 10),
         legend.position = "none", aspect.ratio=1)
+B_detail
+pdf(here("analysis","supplementary-materials","FigS15","FigS15-B_detail.pdf"), width=5, height=5)
+B_detail
+dev.off()
+
+
+#### Fig S15 C ####
+C <- OIB %>%
+  ggplot(aes(x=Pb208_Pb204, y=Pb207_Pb204, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(37.7, 40)) +
+  scale_y_continuous(position="right",limits=c(15.4,15.75)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_text(size = 18), axis.text = element_text(size = 10),
+        legend.position = "none", aspect.ratio=1) +
+  labs(x=expression({}^208*"Pb / "*{}^204*"Pb"),
+       y=expression({}^207*"Pb / "*{}^204*"Pb"))
+C
+pdf(here("analysis","supplementary-materials","FigS15","FigS15-C.pdf"), width=8, height=8)
+C
+dev.off()
+
+C_detail <- OIB %>%
+  ggplot(aes(x=Pb208_Pb204,y=Pb207_Pb204, shape=factor(Location), fill=factor(Location),
+             color=factor(Location), group=Sample)) +
+  geom_point(size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Caroline islands")), size=3, stroke=.25) +
+  geom_point(data=subset(OIB, Location %in% c("Samoan islands")), size=3, stroke=.25) +
+  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
+  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
+  scale_x_continuous(limits=c(38, 39.25), expand=c(0,0)) +
+  scale_y_continuous(position = "right", limits=c(15.47, 15.63), expand=c(0,0)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white"), title = element_blank(),
+        axis.title = element_blank(), axis.text = element_text(size = 10),
+        legend.position = "none", aspect.ratio=1)
 C_detail
 pdf(here("analysis","supplementary-materials","FigS15","FigS15-C_detail.pdf"), width=5, height=5)
 C_detail
 dev.off()
-
