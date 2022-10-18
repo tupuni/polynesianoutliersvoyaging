@@ -3,14 +3,12 @@ require(tidyverse)
 require(RSQLite)
 require(patchwork)
 
-georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
-pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
-
 shapes <- c("Luzon Arc"=21,"Sulawesi Arc"=22,"Sunda Arc"=23,"Banda Arc"=24,
             "Yap Arc"=25,"Mariana Arc"=21,"Bismarck Arc"=22,"Solomon Arc"=23,
             "Vanuatu Arc"=24,"Tonga-Fiji"=25,"New Zealand"=21,
-            "E-11-03"=0,"E-11-06"=1,"E-11-07"=8,"E-11-10"=0,"E-11-11"=1,
-            "E-11-13"=2,"E-11-16"=5,"E-11-18"=6,"E-11-19"=8,"K-12-28"=3,"K-12-29"=4)
+            "E-11-03"=0,"E-11-06"=1,"E-11-07"=8,"E-11-10"=24,"E-11-11"=24,
+            "E-11-13"=24,"E-11-16"=24,"E-11-18"=24,"E-11-19"=24,
+            "K-12-28"=3,"K-12-29"=4)
 cols <- c("Luzon Arc"="#440154","Sulawesi Arc"="#345E8C","Sunda Arc"="#404386",
           "Banda Arc"="#472374","Yap Arc"="#29778E","Mariana Arc"="#218F8B",
           "Bismarck Arc"="#25A782","Solomon Arc"="#44BE6F","Vanuatu Arc"="#7AD04F",
@@ -22,15 +20,15 @@ contour <- c("Luzon Arc"="black","Sulawesi Arc"="black","Sunda Arc"="black",
              "Banda Arc"="black","Yap Arc"="black","Mariana Arc"="black",
              "Bismarck Arc"="black","Solomon Arc"="black","Vanuatu Arc"="black",
              "Tonga-Fiji"="black","New Zealand"="black",
-             "E-11-03"="red","E-11-06"="red","E-11-07"="red","E-11-10"="#7AD04F",
-             "E-11-11"="#7AD04F","E-11-13"="#7AD04F","E-11-16"="#7AD04F",
-             "E-11-18"="#7AD04F","E-11-19"="#7AD04F","K-12-28"="red","K-12-29"="red")
+             "E-11-03"="red","E-11-06"="red","E-11-07"="red","E-11-10"="black",
+             "E-11-11"="black","E-11-13"="black","E-11-16"="black",
+             "E-11-18"="black","E-11-19"="black","K-12-28"="red","K-12-29"="red")
 
 #### Fig S12a ####
 IAB <- full_join(q2,q3)
 s <- joined_data %>%
-  filter(Sample %in% c("E-11-03")) %>%
-  mutate(Location = case_when(grepl("E-11-03", Sample) ~ "E-11-03"))
+  dplyr::filter(Sample %in% c("E-11-03")) %>%
+  dplyr::mutate(Location = Sample)
 
 p1 <- IAB %>%
   ggplot(aes(x=Rb,y=Th/Yb, shape=factor(Location), fill=factor(Location),
@@ -81,19 +79,11 @@ S12a
 IAB <- q5
 s <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-06","E-11-07")) %>%
-  mutate(Location = case_when(
-    grepl("E-11-10", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-11", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-13", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-16", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-18", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-06", Sample) ~ "E-11-06",
-    grepl("E-11-07", Sample) ~ "E-11-07")) %>%
+  dplyr::mutate(Location = Sample) %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
 IAB <- full_join(IAB,s[3:7,])
 s <- s[1:2,]
 
@@ -142,7 +132,7 @@ S12b
 #### Fig S12c ####
 IAB <- q7
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-28")) %>%
-  mutate(Location = case_when(grepl("K-12-28", Sample) ~ "K-12-28"))
+  dplyr::mutate(Location = Sample)
 
 p7 <- IAB %>%
   ggplot(aes(x=Rb,y=U/Yb, shape=factor(Location), fill=factor(Location),
@@ -191,22 +181,12 @@ S12c
 
 #### Fig S12d ####
 IAB <- q9
-
-s <- joined_data %>% dplyr::filter(Sample %in% c(
-  "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","K-12-29")) %>%
-  mutate(Location = case_when(
-    grepl("E-11-10", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-11", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-13", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-16", Sample) ~ "Vanuatu Arc",
-    grepl("E-11-18", Sample) ~ "Vanuatu Arc",
-    grepl("K-12-29", Sample) ~ "K-12-29")) %>%
+s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-29")) %>%
+  mutate(Location = Sample) %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-IAB <- full_join(IAB,s[1:5,])
-s <- s[6,]
 
 p7 <- IAB %>%
   ggplot(aes(x=Rb,y=U/Yb, shape=factor(Location), fill=factor(Location),

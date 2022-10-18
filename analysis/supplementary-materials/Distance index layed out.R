@@ -35,23 +35,20 @@ dir.create(here("analysis","supplementary-materials","Distance index"))
 ## example = E_11_03 PCA1
 q1 <- q1 %>% dplyr::select(
   Sample,Location,Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
-
-s <- joined_data %>% dplyr::filter(Sample %in% c("E-11-03")) %>%
-  dplyr::mutate(Location = Sample)%>%
-  dplyr::select(Sample,Location,
-                Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
 s_d <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-18dup")) %>%
   dplyr::mutate(Location = "Vanuatu Arc")%>%
   dplyr::select(Sample,Location,
                 Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
-
 IAB <- full_join(q1,s_d)
-
 is.na(IAB) <- sapply(IAB, is.infinite) #replace Inf by NA
 IAB[IAB == 0] <- NA # Replace 0 with NA
 IAB <- IAB[rowSums(is.na(IAB)) == 0,] # removes rows with missing info for PCA
 
+s <- joined_data %>% dplyr::filter(Sample %in% c("E-11-03")) %>%
+  dplyr::mutate(Location = Sample)%>%
+  dplyr::select(Sample,Location,
+                Sr87_Sr86,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204,Nd143_Nd144)
 is.na(s) <- sapply(s, is.infinite) #replace Inf by NA
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
@@ -164,16 +161,77 @@ pdf(here("analysis","supplementary-materials",
 (E_11_03_PCA_1b | PCs) + plot_layout(widths = c(3.5, 2.5))
 dev.off()
 
+
+### general distribution density PCs
+PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
+  geom_density_ridges(alpha=0.4, size=.25) +
+  annotate("segment", x=d_pca[77,"PC1"], xend=d_pca[77,"PC1"],
+           y=0, yend=Inf, col="red", size=.75) +
+  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
+  theme_void() + theme(
+    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
+    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
+    axis.ticks.length.x=unit(.05,"cm"),
+    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
+PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
+  geom_density_ridges(alpha=0.4, size=.25) +
+  annotate("segment", x=d_pca[77,"PC2"], xend=d_pca[77,"PC2"],
+           y=0, yend=Inf, col="red", size=.75) +
+  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
+  theme_void() + theme(
+    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
+    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
+    axis.ticks.length.x=unit(.05,"cm"),
+    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
+PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
+  geom_density_ridges(alpha=0.4, size=.25) +
+  annotate("segment", x=d_pca[77,"PC3"], xend=d_pca[77,"PC3"],
+           y=0, yend=Inf, col="red", size=.75) +
+  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
+  theme_void() + theme(
+    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
+    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
+    axis.ticks.length.x=unit(.05,"cm"),
+    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
+PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
+  geom_density_ridges(alpha=0.4, size=.25) +
+  annotate("segment", x=d_pca[77,"PC4"], xend=d_pca[77,"PC4"],
+           y=0, yend=Inf, col="red", size=.75) +
+  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
+  theme_void() + theme(
+    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
+    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
+    axis.ticks.length.x=unit(.05,"cm"),
+    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
+PC5 <- ggplot(d_pca, aes(x = PC5, y = 0)) +
+  geom_density_ridges(alpha=0.4, size=.25) +
+  annotate("segment", x=d_pca[77,"PC5"], xend=d_pca[77,"PC5"],
+           y=0, yend=Inf, col="red", size=.75) +
+  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
+  theme_void() + theme(
+    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
+    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
+    axis.ticks.length.x=unit(.05,"cm"),
+    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
+
+PC1/PC2/PC3/PC4/PC5 & theme(plot.margin = unit(c(5,0,5,10), "pt"))
+
+pdf(here("analysis","supplementary-materials",
+         "Distance index","PCs_general-distribution.pdf"), width=2.5, height=3.5)
+PC1/PC2/PC3/PC4/PC5 & theme(plot.margin = unit(c(5,0,5,10), "pt"))
+dev.off()
+
+
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:75,"Sample"]),
-  Location = c(d_pca[1:75,"Location"]),
-  PC1 = c(sqrt(((median(d_pca[76,"PC1"]))-d_pca[1:75,"PC1"])^2)),
-  PC2 = c(sqrt(((median(d_pca[76,"PC2"]))-d_pca[1:75,"PC2"])^2)),
-  PC3 = c(sqrt(((median(d_pca[76,"PC3"]))-d_pca[1:75,"PC3"])^2)),
-  PC4 = c(sqrt(((median(d_pca[76,"PC4"]))-d_pca[1:75,"PC4"])^2)),
-  PC5 = c(sqrt(((median(d_pca[76,"PC5"]))-d_pca[1:75,"PC5"])^2))) %>%
+  Sample = c(d_pca[1:76,"Sample"]),
+  Location = c(d_pca[1:76,"Location"]),
+  PC1 = c(sqrt(((median(d_pca[77,"PC1"]))-d_pca[1:76,"PC1"])^2)),
+  PC2 = c(sqrt(((median(d_pca[77,"PC2"]))-d_pca[1:76,"PC2"])^2)),
+  PC3 = c(sqrt(((median(d_pca[77,"PC3"]))-d_pca[1:76,"PC3"])^2)),
+  PC4 = c(sqrt(((median(d_pca[77,"PC4"]))-d_pca[1:76,"PC4"])^2)),
+  PC5 = c(sqrt(((median(d_pca[77,"PC5"]))-d_pca[1:76,"PC5"])^2))) %>%
   dplyr::mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+
       (PC4*eig[4,2])+(PC5*eig[5,2])) / (sum(eig[1:5,2])))
@@ -195,6 +253,9 @@ dist <- dist %>% mutate(
              summary_stat["3rd Qu.",],
              summary_stat["Max.",]),
     labels=c('1','2','3','4','5')))
+
+head(arrange(dist,weight_mean))
+d_pca %>% dplyr::filter(Sample %in% c("253633","1704719","70530"))
 
 # biplot distance versus distance index
 dist_to_distindex <- ggplot(dist,
@@ -324,120 +385,3 @@ pdf(here("analysis","supplementary-materials",
          "Distance index","PCs.pdf"), width=2.5, height=3.5)
 E_11_03_PCA1_PC1/E_11_03_PCA1_PC2/E_11_03_PCA1_PC3/E_11_03_PCA1_PC4/E_11_03_PCA1_PC5
 dev.off()
-
-
-### general distribution density PCs
-PC1 <- ggplot(d_pca, aes(x = PC1, y = 0)) +
-  geom_density_ridges(alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[77,"PC1"], xend=d_pca[77,"PC1"],
-           y=0, yend=Inf, col="red", size=.75) +
-  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
-  theme_void() + theme(
-    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
-    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
-    axis.ticks.length.x=unit(.05,"cm"),
-    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
-PC2 <- ggplot(d_pca, aes(x = PC2, y = 0)) +
-  geom_density_ridges(alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[77,"PC2"], xend=d_pca[77,"PC2"],
-           y=0, yend=Inf, col="red", size=.75) +
-  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
-  theme_void() + theme(
-    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
-    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
-    axis.ticks.length.x=unit(.05,"cm"),
-    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
-PC3 <- ggplot(d_pca, aes(x = PC3, y = 0)) +
-  geom_density_ridges(alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[77,"PC3"], xend=d_pca[77,"PC3"],
-           y=0, yend=Inf, col="red", size=.75) +
-  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
-  theme_void() + theme(
-    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
-    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
-    axis.ticks.length.x=unit(.05,"cm"),
-    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
-PC4 <- ggplot(d_pca, aes(x = PC4, y = 0)) +
-  geom_density_ridges(alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[77,"PC4"], xend=d_pca[77,"PC4"],
-           y=0, yend=Inf, col="red", size=.75) +
-  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
-  theme_void() + theme(
-    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
-    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
-    axis.ticks.length.x=unit(.05,"cm"),
-    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
-PC5 <- ggplot(d_pca, aes(x = PC5, y = 0)) +
-  geom_density_ridges(alpha=0.4, size=.25) +
-  annotate("segment", x=d_pca[77,"PC5"], xend=d_pca[77,"PC5"],
-           y=0, yend=Inf, col="red", size=.75) +
-  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
-  theme_void() + theme(
-    axis.title.y=element_text(size=7, margin=margin(r=0), hjust = 0),
-    axis.text.x=element_text(size=6), axis.line.x=element_line(size=.25),
-    axis.ticks.length.x=unit(.05,"cm"),
-    axis.ticks.x=element_line(size=.25, color="black"), legend.position="none")
-
-PC1/PC2/PC3/PC4/PC5 & theme(plot.margin = unit(c(5,0,5,10), "pt"))
-
-pdf(here("analysis","supplementary-materials",
-         "Distance index","PCs_general-distribution.pdf"), width=2.5, height=3.5)
-PC1/PC2/PC3/PC4/PC5 & theme(plot.margin = unit(c(5,0,5,10), "pt"))
-dev.off()
-
-
-summary_stat <- data.frame(unclass(summary(d_pca$PC1)), check.names = F)
-dist_PC1 <- d_pca %>% dplyr::mutate(
-  dist_PC1 = cut(
-    PC1,
-    breaks=c(0,
-             (summary_stat["1st Qu.",]-((summary_stat["1st Qu.",]-summary_stat["Min.",])/2)),
-             summary_stat["1st Qu.",],summary_stat["Median",],
-             summary_stat["3rd Qu.",],summary_stat["Max.",]),
-    labels=c('1','2','3','4','5')))
-dist_PC1 %>% dplyr::filter(Sample %in% "E-11-16")
-summary_stat <- data.frame(unclass(summary(dist$PC2)), check.names = F)
-dist_PC2 <- dist %>% dplyr::mutate(
-    dist_PC2 = cut(
-      PC2,
-      breaks=c(0,
-               (summary_stat["1st Qu.",]-((summary_stat["1st Qu.",]-summary_stat["Min.",])/2)),
-               summary_stat["1st Qu.",],summary_stat["Median",],
-               summary_stat["3rd Qu.",],summary_stat["Max.",]),
-      labels=c('1','2','3','4','5')))
-dist_PC2 %>% dplyr::filter(Sample %in% "E-11-16")
-summary_stat <- data.frame(unclass(summary(dist$PC3)), check.names = F)
-dist_PC3 <- dist %>%
-  dplyr::mutate(
-    dist_PC3 = cut(
-      PC3,
-      breaks=c(0,
-               (summary_stat["1st Qu.",]-((summary_stat["1st Qu.",]-summary_stat["Min.",])/2)),
-               summary_stat["1st Qu.",],summary_stat["Median",],
-               summary_stat["3rd Qu.",],summary_stat["Max.",]),
-      labels=c('1','2','3','4','5')))
-dist_PC3 %>% dplyr::filter(Sample %in% "E-11-16")
-summary_stat <- data.frame(unclass(summary(dist$PC4)), check.names = F)
-dist_PC4 <- dist %>%
-  dplyr::mutate(
-    dist_PC4 = cut(
-      PC4,
-      breaks=c(0,
-               (summary_stat["1st Qu.",]-((summary_stat["1st Qu.",]-summary_stat["Min.",])/2)),
-               summary_stat["1st Qu.",],summary_stat["Median",],
-               summary_stat["3rd Qu.",],summary_stat["Max.",]),
-      labels=c('1','2','3','4','5')))
-dist_PC4 %>% dplyr::filter(Sample %in% "E-11-16")
-summary_stat <- data.frame(unclass(summary(dist$PC5)), check.names = F)
-dist_PC5 <- dist %>%
-  dplyr::mutate(
-    dist_PC5 = cut(
-      PC5,
-      breaks=c(0,
-               (summary_stat["1st Qu.",]-((summary_stat["1st Qu.",]-summary_stat["Min.",])/2)),
-               summary_stat["1st Qu.",],summary_stat["Median",],
-               summary_stat["3rd Qu.",],summary_stat["Max.",]),
-      labels=c('1','2','3','4','5')))
-dist_PC5 %>% dplyr::filter(Sample %in% "E-11-16")
-
-

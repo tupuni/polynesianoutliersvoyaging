@@ -1,10 +1,6 @@
 require(here)
 require(tidyverse)
-require(RSQLite)
 require(patchwork)
-
-georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
-pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
 shapes <- c("Luzon Arc"=21,"Sulawesi Arc"=22,"Sunda Arc"=23,"Banda Arc"=24,
             "Yap Arc"=25,"Mariana Arc"=21,"Bismarck Arc"=22,"Solomon Arc"=23,
@@ -29,30 +25,13 @@ contour <- c("Luzon Arc"="black","Sulawesi Arc"="black","Sunda Arc"="black",
 dir.create(here("analysis","supplementary-materials","FigS11"))
 
 #### Fig S11 A ####
-IAB <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-(LONGITUDE_MAX > 90 OR LONGITUDE_MAX < 0) AND
-LATITUDE_MAX < 20 AND TECTONIC_SETTING='CONVERGENT MARGIN'") %>%
-  get_georoc_location() %>% filter(Location != "na") %>% rename_georoc() %>%
-  dplyr::select(Sample,Location,lat,long,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
+IAB <- q20
 s <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18",
   "E-11-03","E-11-06","E-11-07","K-12-28","K-12-29")) %>%
-  mutate(Location = case_when(
-    grepl("E-11-10", Sample) ~ "E-11-10",
-    grepl("E-11-11", Sample) ~ "E-11-11",
-    grepl("E-11-13", Sample) ~ "E-11-13",
-    grepl("E-11-16", Sample) ~ "E-11-16",
-    grepl("E-11-18", Sample) ~ "E-11-18",
-    grepl("E-11-03", Sample) ~ "E-11-03",
-    grepl("E-11-06", Sample) ~ "E-11-06",
-    grepl("E-11-07", Sample) ~ "E-11-07",
-    grepl("K-12-28", Sample) ~ "K-12-28",
-    grepl("K-12-29", Sample) ~ "K-12-29")) %>% dplyr::select(
+  mutate(Location = Sample) %>% dplyr::select(
       Sample,Location,Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+
 A <- IAB %>%
   ggplot(aes(x=Sr87_Sr86,y=Nd143_Nd144, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
@@ -95,41 +74,6 @@ A_detail
 pdf(here("analysis","supplementary-materials","FigS11","FigS11-A_detail.pdf"), width=6, height=6)
 A_detail
 dev.off()
-
-
-B <- IAB %>%
-  ggplot(aes(x=Pb206_Pb204,y=Pb208_Pb204, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) +
-  geom_point(data=subset(IAB, Location %in% c("Luzon Arc")), size=3, stroke=.25) +
-  geom_point(data=subset(IAB, Location %in% c("Bismarck Arc")), size=3, stroke=.25) +
-  geom_point(data=subset(IAB, Location %in% c("Vanuatu Arc")), size=3, stroke=.25) +
-  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(17.8,19.2)) + scale_y_continuous(limits=c(37.8,39.7)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 18), axis.text = element_text(size = 10),
-        legend.position = "none", aspect.ratio=1)
-B
-B_detail <- IAB %>%
-  ggplot(aes(x=Pb206_Pb204,y=Pb208_Pb204, shape=factor(Location), fill=factor(Location),
-             color=factor(Location), group=Sample)) +
-  geom_point(size=3, stroke=.25) +
-  geom_point(data=subset(IAB, Location %in% c("Luzon Arc")), size=3, stroke=.25) +
-  geom_point(data=subset(IAB, Location %in% c("Bismarck Arc")), size=3, stroke=.25) +
-  geom_point(data=subset(IAB, Location %in% c("Vanuatu Arc")), size=3, stroke=.25) +
-  geom_point(data=s, size=3) + scale_shape_manual(values=shapes) +
-  scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(18.15,18.7), expand=c(0,0)) +
-  scale_y_continuous(limits=c(38,38.7), expand=c(0,0)) +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"), title = element_blank(),
-        axis.title = element_text(size = 18), axis.text = element_text(size = 10),
-        legend.position = "none", aspect.ratio=1)
-B_detail
 
 B <- IAB %>%
   ggplot(aes(x=Pb206_Pb204,y=Pb207_Pb204, shape=factor(Location), fill=factor(Location),

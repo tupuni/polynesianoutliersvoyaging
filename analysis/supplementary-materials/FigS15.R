@@ -1,10 +1,6 @@
 require(here)
 require(tidyverse)
-require(RSQLite)
 require(patchwork)
-
-georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
-pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
 shapes <- c("Caroline islands"=21,"Samoan islands"=24,"Austral-Cook chain"=23,
             "Society islands"=22,"Hawai'i islands"=25,"Marquesas islands"=21,
@@ -29,52 +25,14 @@ contour <- c("Caroline islands"="black","Samoan islands"="black",
 
 dir.create(here("analysis","supplementary-materials","FigS15"))
 
-OIB1 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING='OCEAN ISLAND'") %>%
-  get_georoc_location() %>% filter(Location != "na") %>% rename_georoc() %>%
-  dplyr::select(Sample,Location,lat,long,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
-OIB2 <- dbGetQuery(pofatu,
-"SELECT s.id AS sample_id, s.sample_category, s.location_region,
-s.location_subregion, s.location_latitude, s.location_longitude,
-max(CASE WHEN m.parameter='Nd143_Nd144' then m.value END) AS 'Nd143_Nd144',
-max(CASE WHEN m.parameter='Sr87_Sr86' then m.value END) AS 'Sr87_Sr86',
-max(CASE WHEN m.parameter='Pb206_Pb204' then m.value END) AS 'Pb206_Pb204',
-max(CASE WHEN m.parameter='Pb207_Pb204' then m.value END) AS 'Pb207_Pb204',
-max(CASE WHEN m.parameter='Pb208_Pb204' then m.value END) AS 'Pb208_Pb204'
-FROM 'samples.csv' AS s JOIN 'measurements.csv' AS m ON s.id=m.sample_id
-WHERE s.sample_category = 'SOURCE'
-AND m.parameter IN ('Nd143_Nd144', 'Sr87_Sr86','Pb206_Pb204', 'Pb207_Pb204',
-'Pb208_Pb204') GROUP BY sample_id") %>%
-  dplyr::mutate(Location = case_when(
-    location_region == "AUSTRAL" ~ "Austral-Cook chain",
-    location_region == "CAROLINE" ~ "Caroline islands",
-    location_region == "COOK ISLANDS" ~ "Austral-Cook chain",
-    location_region == "GAMBIER" ~ "Pitcairn-Gambier chain",
-    location_region == "HAWAI'I" ~ "Hawai'i islands",
-    location_region == "HENDERSON" ~ "Pitcairn-Gambier chain",
-    location_region == "MARQUESAS" ~ "Marquesas islands",
-    location_region == "PITCAIRN" ~ "Pitcairn-Gambier chain",
-    location_region == "SAMOA" ~ "Samoan islands",
-    location_region == "SOCIETY" ~ "Society islands",
-    TRUE ~ "na")) %>%
-  dplyr::rename(Sample=sample_id,lat=location_latitude,long=location_longitude) %>%
-  dplyr::filter(Location %in% c(
-    "Caroline islands","Samoan islands","Austral-Cook chain","Society islands",
-    "Hawai'i islands","Marquesas islands","Pitcairn-Gambier chain")) %>%
-  dplyr::select(Sample,Location,lat,long,Sr87_Sr86,Nd143_Nd144,
-                Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
-OIB <- full_join(OIB1,OIB2)
+OIB <- full_join(q26, q27)
 
 s <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-08","T-12-06","T-12-07","T-12-08","T-12-09","T-12-10",
   "K-12-24","K-12-25","K-12-26")) %>%
-  mutate(Location = Sample) %>% dplyr::select(
-      Sample,Location,Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+  dplyr::mutate(Location = Sample) %>%
+  dplyr::select(
+    Sample,Location,Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
 #### Fig S15 A ####
 A <- OIB %>%

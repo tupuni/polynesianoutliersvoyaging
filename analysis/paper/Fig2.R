@@ -1,5 +1,7 @@
 library(here)
 library(tidyverse)
+library(stats)
+library(gridExtra)
 library(patchwork)
 
 #### Fig 2 A ####
@@ -31,29 +33,12 @@ A <- traces %>% dplyr::filter(Type %in% c("Artefact", "Source")) %>%
   annotate("text", Inf, Inf, label = "A", size = 7, hjust = 2, vjust = 2)
 A
 
-
 #### Fig 2 B ####
-library(RSQLite)
-library(stats)
-library(gridExtra)
-
-georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
-pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
-
-IAB <- dbGetQuery(georoc,
-"SELECT TECTONIC_SETTING, id, file_id, LOCATION, LAND_OR_SEA,
-ROCK_TYPE, `NB(PPM)`, `LA(PPM)`, LATITUDE_MAX, LONGITUDE_MAX
-FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING = 'CONVERGENT MARGIN'") %>%
-  rename(Nb="NB(PPM)",La="LA(PPM)",lat="LATITUDE_MAX",long="LONGITUDE_MAX") %>%
-  mutate(Nb_La = Nb/La) %>%
-  dplyr::select(file_id, id, LOCATION, Nb, La, Nb_La, lat, long)
+IAB <- q0_1
 is.na(IAB) <- sapply(IAB, is.infinite) # replaces Inf or -Inf by NA
 IAB[IAB==0] <- NA # replaces 0 by NA
 IAB <- IAB[complete.cases(IAB),] # removes rows with NA
 IAB <- IAB %>% dplyr::filter(Nb_La < 3)
-
 summary(IAB$Nb_La)
 sd <- (sqrt(sum((IAB$Nb_La - mean(IAB$Nb_La)) ^ 2 / (length(IAB$Nb_La) - 1))))
 stat_IAB <- data.frame(
@@ -61,24 +46,13 @@ stat_IAB <- data.frame(
   value = c(mean(IAB$Nb_La),
             mean(IAB$Nb_La)-sd,
             mean(IAB$Nb_La)+sd(IAB$Nb_La),
-            median(IAB$Nb_La))) %>% mutate(across(where(is.numeric), round, 3))
+            median(IAB$Nb_La))) %>% dplyr::mutate(across(where(is.numeric), round, 3))
 
-
-OIB <- dbGetQuery(georoc,
-"SELECT TECTONIC_SETTING, id, file_id, LOCATION, LAND_OR_SEA,
-ROCK_TYPE, `NB(PPM)`, `LA(PPM)`, LATITUDE_MAX, LONGITUDE_MAX
-FROM 'sample'
-WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
-TECTONIC_SETTING = 'OCEAN ISLAND'") %>%
-  rename(Nb="NB(PPM)",La="LA(PPM)",lat="LATITUDE_MAX",long="LONGITUDE_MAX") %>%
-  mutate(Nb_La = Nb/La) %>%
-  dplyr::select(file_id, id, LOCATION, Nb, La, Nb_La, lat, long)
-
+OIB <- q0_2
 is.na(OIB) <- sapply(OIB, is.infinite) # replaces Inf or -Inf by NA
 OIB[OIB==0] <- NA # replaces 0 by NA
 OIB <- OIB[complete.cases(OIB),] # removes rows with NA
-OIB <- OIB %>% filter(Nb_La < 3)
-
+OIB <- OIB %>% dplyr::filter(Nb_La < 3)
 summary(OIB$Nb_La)
 sd <- (sqrt(sum((OIB$Nb_La - mean(OIB$Nb_La)) ^ 2 / (length(OIB$Nb_La) - 1))))
 stat_OIB <- data.frame(
@@ -86,7 +60,8 @@ stat_OIB <- data.frame(
   value = c(mean(OIB$Nb_La),
             mean(OIB$Nb_La)-sd,
             mean(OIB$Nb_La)+sd,
-            median(OIB$Nb_La))) %>% mutate(across(where(is.numeric), round, 3))
+            median(OIB$Nb_La))) %>%
+  dplyr::mutate(across(where(is.numeric), round, 3))
 
 B <- ggplot(OIB, aes(Nb_La)) +
   geom_histogram(binwidth=.02, col="black", fill="red", size=.2, alpha=.4) + #OIB

@@ -358,177 +358,6 @@ cite <- full_join(citation,reference)
 cite
 
 #### K_12_25 ####
-ranges_s_OIB[8,1:35]
-OIB <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE (ROCK_TYPE='VOL' AND file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16 AND
-`NB(PPM)` > 6.45 AND `NB(PPM)` < 19.35)") %>%
-  get_georoc_location() %>% filter(Location != "na") %>% rename_georoc() %>%
-  Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::select(Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
-
-d_price2014 <- price2014 %>%
-  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
-  dplyr::filter(Nb > 6.45 & Nb < 19.35) %>%
-  dplyr::select(Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
-OIB <- full_join(OIB,d_price2014)
-d_price2017 <- price2017 %>%
-  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
-  dplyr::filter(Nb > 6.45 & Nb < 19.35) %>%
-  dplyr::select(Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
-OIB <- full_join(OIB,d_price2017)
-d_jeanvoine2021 <- jeanvoine2021 %>%
-  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
-  dplyr::filter(Nb > 6.45 & Nb < 19.35) %>%
-  dplyr::select(Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
-d <- full_join(OIB,d_jeanvoine2021)
-is.na(d) <- sapply(d, is.infinite) #replace Inf by NA
-d[d == 0] <- NA # Replace 0 with NA
-d %>% group_by(Location) %>% tally()
-
-s <- joined_data %>% dplyr::mutate(Location=Sample)
-
-shapes <- c("North Fiji Basin"=25,"Rotuma"=21,
-            "Futuna"=22,"Cikobia"=23,"Uvea"=24,"K-12-25"=13)
-cols <- c("North Fiji Basin"="#B4C630",
-          "Rotuma"="#6EA002","Futuna"="#6EA002","Cikobia"="#6EA002",
-          "Uvea"="#6EA002","K-12-25"="red")
-contour <- c("North Fiji Basin"="black",
-             "Rotuma"="black","Futuna"="black","Cikobia"="black","Uvea"="black",
-             "K-12-25"="red")
-
-K_12_25_TAS <- tas +
-  geom_point(data=d,
-             aes(x=SiO2, y=Na2O+K2O, shape=factor(Location),
-                 color=factor(Location),fill=factor(Location),
-                 group=Sample), size=1, stroke=.25) +
-  geom_point(data=s,aes(x=SiO2, y=Na2O+K2O, shape=factor(Location),
-                        color=factor(Location), group=Sample), size=1, stroke=.5) +
-  scale_shape_manual(values = shapes) + scale_color_manual(values = contour) +
-  scale_fill_manual(values = cols) + scale_y_continuous(position = "right") +
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5),
-        panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.title = element_text(size = 9),
-        axis.text = element_text(size = 7),
-        legend.title = element_blank(), legend.text = element_text(size = 5),
-        legend.position="none", aspect.ratio=1)
-K_12_25_TAS
-
-OIB <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE (ROCK_TYPE='VOL' AND file_id = '2022-06-PVFZCE_TONGA_ARC.csv' AND
-LATITUDE_MAX > -16 AND
-`NB(PPM)` > 6.45 AND `NB(PPM)` < 19.35)") %>%
-  get_georoc_location() %>% filter(Location != "na") %>% rename_georoc() %>%
-  Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
-NFB <- OIB %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
-                            Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
-  dplyr::filter(Location %in% c("Tonga-Fiji")) %>% dplyr::na_if(0) %>%
-  mutate(Location=recode(Location,"Tonga-Fiji"="North Fiji Basin"))
-d_price2014 <- price2014 %>%
-  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
-  dplyr::filter(Yb > min(ranges_s_OIB[8,"Nb min"]) &
-                  Yb < max(ranges_s_OIB[8,"Nb max"])) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
-d_price2017 <- price2017 %>%
-  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
-  dplyr::filter(Yb > min(ranges_s_OIB[8,"Nb min"]) &
-                  Yb < max(ranges_s_OIB[8,"Nb max"])) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
-NFB <- full_join(NFB,d_price2017) %>% dplyr::na_if(0)
-d_jeanvoine2021 <- jeanvoine2021 %>%
-  dplyr::mutate(Nb_La = Nb/La) %>% dplyr::filter(Nb_La > 0.86) %>%
-  dplyr::filter(Yb > min(ranges_s_OIB[8,"Nb min"]) &
-                  Yb < max(ranges_s_OIB[8,"Nb max"])) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu)
-NFB <- full_join(NFB,jeanvoine2021) %>% dplyr::na_if(0)
-
-NFB_minmax <- data.frame (Sample  = c("North_Fiji_Basin_min", "North_Fiji_Basin_max"),
-                         Location = c("North Fiji Basin", "North Fiji Basin"),
-                         Cs = c(min(NFB[,"Cs"],na.rm=TRUE),max(NFB[,"Cs"],na.rm=TRUE)),
-                         Rb = c(min(NFB[,"Rb"],na.rm=TRUE),max(NFB[,"Rb"],na.rm=TRUE)),
-                         Ba = c(min(NFB[,"Ba"],na.rm=TRUE),max(NFB[,"Ba"],na.rm=TRUE)),
-                         Th = c(min(NFB[,"Th"],na.rm=TRUE),max(NFB[,"Th"],na.rm=TRUE)),
-                         U = c(min(NFB[,"U"],na.rm=TRUE),max(NFB[,"U"],na.rm=TRUE)),
-                         Nb = c(min(NFB[,"Nb"],na.rm=TRUE),max(NFB[,"Nb"],na.rm=TRUE)),
-                         Ta = c(min(NFB[,"Ta"],na.rm=TRUE),max(NFB[,"Ta"],na.rm=TRUE)),
-                         La = c(min(NFB[,"La"],na.rm=TRUE),max(NFB[,"La"],na.rm=TRUE)),
-                         Ce = c(min(NFB[,"Ce"],na.rm=TRUE),max(NFB[,"Ce"],na.rm=TRUE)),
-                         Pr = c(min(NFB[,"Pr"],na.rm=TRUE),max(NFB[,"Pr"],na.rm=TRUE)),
-                         Nd = c(min(NFB[,"Nd"],na.rm=TRUE),max(NFB[,"Nd"],na.rm=TRUE)),
-                         Sr = c(min(NFB[,"Sr"],na.rm=TRUE),max(NFB[,"Sr"],na.rm=TRUE)),
-                         Sm = c(min(NFB[,"Sm"],na.rm=TRUE),max(NFB[,"Sm"],na.rm=TRUE)),
-                         Zr = c(min(NFB[,"Zr"],na.rm=TRUE),max(NFB[,"Zr"],na.rm=TRUE)),
-                         Ti = c(min(NFB[,"Ti"],na.rm=TRUE),max(NFB[,"Ti"],na.rm=TRUE)),
-                         Eu = c(min(NFB[,"Eu"],na.rm=TRUE),max(NFB[,"Eu"],na.rm=TRUE)),
-                         Gd = c(min(NFB[,"Gd"],na.rm=TRUE),max(NFB[,"Gd"],na.rm=TRUE)),
-                         Tb = c(min(NFB[,"Tb"],na.rm=TRUE),max(NFB[,"Tb"],na.rm=TRUE)),
-                         Dy = c(min(NFB[,"Dy"],na.rm=TRUE),max(NFB[,"Dy"],na.rm=TRUE)),
-                         Y = c(min(NFB[,"Y"],na.rm=TRUE),max(NFB[,"Y"],na.rm=TRUE)),
-                         Er = c(min(NFB[,"Er"],na.rm=TRUE),max(NFB[,"Er"],na.rm=TRUE)),
-                         Yb = c(min(NFB[,"Yb"],na.rm=TRUE),max(NFB[,"Yb"],na.rm=TRUE)),
-                         Lu = c(min(NFB[,"Lu"],na.rm=TRUE),max(NFB[,"Lu"],na.rm=TRUE)))
-
-#d <- full_join(C_minmax,NFB_minmax)
-#d_spider <- d %>% normalize_to_pm()
-d_spider <- NFB_minmax %>% normalize_to_pm()
-
-s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
-  mutate(Location = case_when(grepl("K-12-25", Sample) ~ "K-12-25")) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
-  normalize_to_pm()
-
-shapes <- c("North Fiji Basin"=8,"K-12-25"=13)
-cols <- c("North Fiji Basin"="#B4C630","K-12-25"="red")
-
-K_12_25_spider_minmax <- d_spider %>%
-  mutate(var = fct_relevel(var,
-                           "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr",
-                           "Nd","Sr","Sm","Zr","Ti","Eu","Gd","Tb",
-                           "Dy","Y","Er","Yb","Lu")) %>%
-  ggplot(aes(x=var, y=conc, shape=factor(Location), color=factor(Location),
-             fill=factor(Location), group=Sample)) +
-  geom_line(size=.5) +
-  geom_line(data=s_spider, size=.5) + geom_point(data=s_spider, size=1, stroke=.5) +
-  scale_shape_manual(values=shapes) + scale_color_manual(values=cols) +
-  scale_fill_manual(values=cols) +
-  theme_classic() + theme(axis.line=element_blank()) +
-  theme(panel.border=element_rect(colour="black", fill=NA, size=.25),
-        axis.ticks.length.x = unit(-.15, "cm"), axis.text = element_text(size=8),
-        axis.ticks.x.top = element_line(size=.25),
-        axis.title = element_blank(), axis.ticks.y = element_blank(),
-        axis.text.y = element_text(hjust=1, margin = margin(r=5)),
-        legend.title = element_blank(),legend.text = element_text(size = 5),
-        legend.key.size = unit(.2, 'cm'),
-        legend.position = c(.7,.86), legend.direction = "vertical") +
-  guides(color = guide_legend(override.aes = list(size = 1))) +
-  scale_x_discrete(guide = guide_axis(n.dodge = 2)) + # dodge = 2 to stagger
-  scale_y_log10(breaks=c(1,10,100,1000), limits=c(.11,1000),
-                expand = c(0, 0), labels = scales::comma_format(big.mark = ""))+
-  annotation_logticks(sides="l", size = .25, outside = TRUE, long = unit(0.15, "cm"),
-                      mid = unit(0, "cm"), short = unit(0, "cm"))+
-  coord_cartesian(clip = "off")
-K_12_25_spider_minmax
-
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-c.pdf"), width=3.5, height=2)
-K_12_25_spider_minmax
-dev.off()
-
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-c-class.pdf"), width=6, height=2)
-K_12_25_spider_minmax|K_12_25_TAS
-dev.off()
-
-#### K_12_25 bis ####
 d <- dbGetQuery(georoc,
 "SELECT * FROM 'sample'
 WHERE (LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
@@ -612,6 +441,21 @@ K_12_25_spider_2
 pdf(here("analysis","supplementary-materials","FigS20","FigS20-c-class(2).pdf"), width=6, height=2)
 K_12_25_spider_2|K_12_25_TAS_2
 dev.off()
+
+
+citation <- dbGetQuery(georoc,
+"SELECT sample_id, reference_id
+FROM 'citation'
+WHERE sample_id = '143075' OR sample_id = '143077'")
+citation
+reference <- dbGetQuery(georoc,
+"SELECT id, reference
+FROM 'reference'
+WHERE id='6333'") %>% rename(reference_id=id)
+reference
+cite <- full_join(citation,reference)
+cite
+
 
 #### K_12_26 ####
 ranges_s_OIB[9,1:35]
@@ -902,3 +746,21 @@ pdf(here("analysis","supplementary-materials","FigS20","FigS20-d-class(2).pdf"),
 K_12_26_spider_2|K_12_26_TAS_2
 dev.off()
 
+
+
+dbGetQuery(georoc,
+"SELECT * FROM 'sample'
+WHERE id = '1175178' OR id = '1867324' OR id = '1867344'")
+
+citation <- dbGetQuery(georoc,
+"SELECT sample_id, reference_id
+FROM 'citation'
+WHERE sample_id = '1175178' OR sample_id = '1867324' OR sample_id = '1867344'")
+citation
+reference <- dbGetQuery(georoc,
+"SELECT id, reference
+FROM 'reference'
+WHERE id='21069' OR id='24239'") %>% rename(reference_id=id)
+reference
+cite <- full_join(citation,reference)
+cite

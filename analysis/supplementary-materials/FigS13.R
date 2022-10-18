@@ -1,14 +1,9 @@
 require(here)
 require(tidyverse)
-require(RSQLite)
 require(patchwork)
 require(FactoMineR)
 require(factoextra)
 require(stats)
-
-georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
-pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
-
 
 shapes <- c("Luzon Arc"=21,"Sulawesi Arc"=22,"Sunda Arc"=23,"Banda Arc"=24,
             "Yap Arc"=25,"Mariana Arc"=21,"Bismarck Arc"=22,"Solomon Arc"=23,
@@ -71,85 +66,7 @@ k2o_sio2 <- ggplot(data=df, mapping=aes(x=x, y=y)) + geom_blank() +
   annotate("text", label="Low-K series", x=65, y=0.6, size=1, colour="gray50", angle = 4)
 
 #### E_11_03 spider ####
-d <- dbGetQuery(pofatu,
-"SELECT s.id AS sample_id, s.sample_category, s.location_region,
-s.location_subregion, s.location_latitude, s.location_longitude,
-max(CASE WHEN m.parameter='SiO2 [%]' then m.value END) AS 'SiO2 [%]',
-max(CASE WHEN m.parameter='TiO2 [%]' then m.value END) AS 'TiO2 [%]',
-max(CASE WHEN m.parameter='Al2O3 [%]' then m.value END) AS 'Al2O3 [%]',
-max(CASE WHEN m.parameter='Fe2O3 [%]' then m.value END) AS 'Fe2O3 [%]',
-max(CASE WHEN m.parameter='FeO [%]' then m.value END) AS 'FeO [%]',
-max(CASE WHEN m.parameter='MnO [%]' then m.value END) AS 'MnO [%]',
-max(CASE WHEN m.parameter='MgO [%]' then m.value END) AS 'MgO [%]',
-max(CASE WHEN m.parameter='CaO [%]' then m.value END) AS 'CaO [%]',
-max(CASE WHEN m.parameter='Na2O [%]' then m.value END) AS 'Na2O [%]',
-max(CASE WHEN m.parameter='K2O [%]' then m.value END) AS 'K2O [%]',
-max(CASE WHEN m.parameter='Li [ppm]' then m.value END) AS 'Li [ppm]',
-max(CASE WHEN m.parameter='Sc [ppm]' then m.value END) AS 'Sc [ppm]',
-max(CASE WHEN m.parameter='Ti [ppm]' then m.value END) AS 'Ti [ppm]',
-max(CASE WHEN m.parameter='V [ppm]' then m.value END) AS 'V [ppm]',
-max(CASE WHEN m.parameter='Cr [ppm]' then m.value END) AS 'Cr [ppm]',
-max(CASE WHEN m.parameter='Co [ppm]' then m.value END) AS 'Co [ppm]',
-max(CASE WHEN m.parameter='Ni [ppm]' then m.value END) AS 'Ni [ppm]',
-max(CASE WHEN m.parameter='Cu [ppm]' then m.value END) AS 'Cu [ppm]',
-max(CASE WHEN m.parameter='Zn [ppm]' then m.value END) AS 'Zn [ppm]',
-max(CASE WHEN m.parameter='As [ppm]' then m.value END) AS 'As [ppm]',
-max(CASE WHEN m.parameter='Rb [ppm]' then m.value END) AS 'Rb [ppm]',
-max(CASE WHEN m.parameter='Sr [ppm]' then m.value END) AS 'Sr [ppm]',
-max(CASE WHEN m.parameter='Y [ppm]' then m.value END) AS 'Y [ppm]',
-max(CASE WHEN m.parameter='Zr [ppm]' then m.value END) AS 'Zr [ppm]',
-max(CASE WHEN m.parameter='Nb [ppm]' then m.value END) AS 'Nb [ppm]',
-max(CASE WHEN m.parameter='Cd [ppm]' then m.value END) AS 'Cd [ppm]',
-max(CASE WHEN m.parameter='Cs [ppm]' then m.value END) AS 'Cs [ppm]',
-max(CASE WHEN m.parameter='Ba [ppm]' then m.value END) AS 'Ba [ppm]',
-max(CASE WHEN m.parameter='La [ppm]' then m.value END) AS 'La [ppm]',
-max(CASE WHEN m.parameter='Ce [ppm]' then m.value END) AS 'Ce [ppm]',
-max(CASE WHEN m.parameter='Pr [ppm]' then m.value END) AS 'Pr [ppm]',
-max(CASE WHEN m.parameter='Nd [ppm]' then m.value END) AS 'Nd [ppm]',
-max(CASE WHEN m.parameter='Sm [ppm]' then m.value END) AS 'Sm [ppm]',
-max(CASE WHEN m.parameter='Eu [ppm]' then m.value END) AS 'Eu [ppm]',
-max(CASE WHEN m.parameter='Gd [ppm]' then m.value END) AS 'Gd [ppm]',
-max(CASE WHEN m.parameter='Tb [ppm]' then m.value END) AS 'Tb [ppm]',
-max(CASE WHEN m.parameter='Dy [ppm]' then m.value END) AS 'Dy [ppm]',
-max(CASE WHEN m.parameter='Ho [ppm]' then m.value END) AS 'Ho [ppm]',
-max(CASE WHEN m.parameter='Er [ppm]' then m.value END) AS 'Er [ppm]',
-max(CASE WHEN m.parameter='Tm [ppm]' then m.value END) AS 'Tm [ppm]',
-max(CASE WHEN m.parameter='Yb [ppm]' then m.value END) AS 'Yb [ppm]',
-max(CASE WHEN m.parameter='Lu [ppm]' then m.value END) AS 'Lu [ppm]',
-max(CASE WHEN m.parameter='Hf [ppm]' then m.value END) AS 'Hf [ppm]',
-max(CASE WHEN m.parameter='Ta [ppm]' then m.value END) AS 'Ta [ppm]',
-max(CASE WHEN m.parameter='Tl [ppm]' then m.value END) AS 'Tl [ppm]',
-max(CASE WHEN m.parameter='Pb [ppm]' then m.value END) AS 'Pb [ppm]',
-max(CASE WHEN m.parameter='Th [ppm]' then m.value END) AS 'Th [ppm]',
-max(CASE WHEN m.parameter='U [ppm]' then m.value END) AS 'U [ppm]',
-max(CASE WHEN m.parameter='Nd143_Nd144' then m.value END) AS 'Nd143_Nd144',
-max(CASE WHEN m.parameter='Sr87_Sr86' then m.value END) AS 'Sr87_Sr86',
-max(CASE WHEN m.parameter='Pb206_Pb204' then m.value END) AS 'Pb206_Pb204',
-max(CASE WHEN m.parameter='Pb207_Pb204' then m.value END) AS 'Pb207_Pb204',
-max(CASE WHEN m.parameter='Pb208_Pb204' then m.value END) AS 'Pb208_Pb204'
-FROM 'samples.csv' AS s JOIN 'measurements.csv' AS m ON s.id=m.sample_id
-WHERE s.location_subregion = 'VANUA LAVA' AND (sample_id = 'reepmeyer2008_ANU9006' OR sample_id = 'reepmeyer2008_ANU9009'
-OR sample_id = 'reepmeyer2008_ANU9008' OR sample_id = 'reepmeyer2008_ANU9003') AND
-m.parameter IN ('SiO2 [%]', 'TiO2 [%]', 'Al2O3 [%]', 'MnO [%]', 'MgO [%]', 'Fe2O3 [%]', 'FeO [%]',
-'CaO [%]','Na2O [%]', 'K2O [%]', 'Li [ppm]', 'Sc [ppm]', 'Ti [ppm]', 'V [ppm]',
-'Cr [ppm]', 'Co [ppm]', 'Ni [ppm]', 'Cu [ppm]', 'Zn [ppm]', 'As [ppm]',
-'Rb [ppm]', 'Sr [ppm]', 'Y [ppm]', 'Zr [ppm]', 'Nb [ppm]', 'Cd [ppm]',
-'Cs [ppm]', 'Ba [ppm]', 'La [ppm]', 'Ce [ppm]', 'Pr [ppm]', 'Nd [ppm]',
-'Sm [ppm]', 'Eu [ppm]', 'Gd [ppm]', 'Tb [ppm]', 'Dy [ppm]', 'Ho [ppm]',
-'Er [ppm]', 'Tm [ppm]', 'Yb [ppm]', 'Lu [ppm]', 'Hf [ppm]', 'Ta [ppm]',
-'Tl [ppm]', 'Pb [ppm]', 'Th [ppm]', 'U [ppm]', 'Nd143_Nd144', 'Sr87_Sr86',
-'Pb206_Pb204', 'Pb207_Pb204', 'Pb208_Pb204') GROUP BY sample_id") %>%
-  rename_pofatu_elements() %>% pofatu_location() %>%
-  Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::mutate(Location = case_when(
-    grepl("VANUATU", location_region) ~ "Vanuatu Arc")) %>%
-  dplyr::mutate(Island = case_when(
-    grepl("VANUA LAVA", location_subregion) ~ "Vanua Lava")) %>%
-  dplyr::select(Sample,Location,Island,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
+d <- q21
 d_spider <- d %>%
   dplyr::mutate(Location = case_when(
     grepl("reepmeyer2008_ANU9006", Sample) ~ "[ANU9006] Vanua Lava (Vanuatu)",
@@ -161,8 +78,8 @@ d_spider <- d %>%
   normalize_to_pm()
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("E-11-03")) %>%
-  dplyr::mutate(Location = case_when(grepl("E-11-03", Sample) ~ "E-11-03")) %>%
-  dplyr::mutate(Island = case_when(grepl("E-11-03", Sample) ~ "E-11-03")) %>%
+  dplyr::mutate(Location = Sample) %>%
+  dplyr::mutate(Island = Sample) %>%
   dplyr::select(Sample,Location,Island,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
@@ -250,15 +167,12 @@ dev.off()
 
 
 #### E_11_06 & E_11_07 spider ####
-s <- joined_data %>% filter(Sample %in% c("E-11-06","E-11-07")) %>%
-  mutate(
-    Location = case_when(
-      grepl("E-11-06", Sample) ~ "E-11-06",
-      grepl("E-11-07", Sample) ~ "E-11-07")) %>% dplyr::select(
+s <- joined_data %>% dplyr::filter(Sample %in% c("E-11-06","E-11-07")) %>%
+  dplyr::mutate(Location = Sample) %>% dplyr::select(
         Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
 s[s == 0] <- NA # Replace 0 with NA
 s <- s[rowSums(is.na(s)) == 0,] # removes rows with missing info for PCA
-d <- joined_data %>% filter(Sample %in% c(
+d <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-19")) %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
@@ -282,10 +196,8 @@ d_spider <- d %>%
   normalize_to_pm()
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("E-11-06","E-11-07")) %>%
-  mutate(Location = case_when(grepl("E-11-06", Sample) ~ "E-11-06",
-                              grepl("E-11-07", Sample) ~ "E-11-07")) %>%
-  mutate(Island = case_when(grepl("E-11-06", Sample) ~ "E-11-06",
-                              grepl("E-11-07", Sample) ~ "E-11-07")) %>%
+  dplyr::mutate(Location = Sample) %>%
+  dplyr::mutate(Island = Sample) %>%
   dplyr::select(Sample,Location,Island,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
@@ -333,7 +245,6 @@ E_11_06_07_spider <- d_spider %>%
                       mid = unit(0, "cm"), short = unit(0, "cm"))+
   coord_cartesian(clip = "off")
 E_11_06_07_spider
-
 pdf(here("analysis","supplementary-materials","FigS13","FigS13-b.pdf"), width=5, height=2)
 E_11_06_07_spider
 dev.off()
@@ -362,27 +273,15 @@ dev.off()
 
 
 #### K_12_28 spider ####
-d <- dbGetQuery(georoc,
- "SELECT * FROM 'sample'
-WHERE id='13423-E5/11' OR id='13426-F7/2' OR id='13436-2654A'
-OR id='13436-2649' OR id='13437-F5/2' OR id='634326'") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  mutate_at("LOCATION", str_replace,
-            "BISMARCK ARC - NEW BRITAIN ARC / BISMARCK ARC - ", "") %>%
-  rename(Location=LOCATION)%>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-d[,1:4]
-d_spider <- d %>%
-  mutate(Location = case_when(
+q22[,1:4]
+d_spider <- q22 %>%
+  dplyr::mutate(Location = case_when(
     grepl("ULAWUN", Location) ~ "Ulawun volcano (New Britain)",
     grepl("LOLOBAU", Location) ~ "Lolobau Is. (New Britain)",
     grepl("SULU", Location) ~ "Sulu (New Britain)",
     grepl("WULAI", Location) ~ "Wulai Is. (New Britain)",
     grepl("MANAM", Location) ~ "Manam Is. (New Britain)")) %>%
-  mutate(Sample = case_when(
+  dplyr::mutate(Sample = case_when(
     grepl("13423-E5/11", Sample) ~ "[E5/11] Ulawun volcano (New Britain)",
     grepl("13426-F7/2", Sample) ~ "[F7/2] Lolobau Is. (New Britain)",
     grepl("13436-2649", Sample) ~ "[2649] Sulu (New Britain)",
@@ -393,8 +292,8 @@ d_spider <- d %>%
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
 
-s_spider <- joined_data %>% filter(Sample %in% c("K-12-28")) %>%
-  mutate(Location = case_when(grepl("K-12-28", Sample) ~ "K-12-28")) %>%
+s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-28")) %>%
+  dplyr::mutate(Location = Sample) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
@@ -415,7 +314,7 @@ cols <- c("[2649] Sulu (New Britain)"="#25A782",
           "K-12-28"="red")
 
 K_12_28_spider <- d_spider %>%
-  mutate(var = fct_relevel(var,
+  dplyr::mutate(var = fct_relevel(var,
                            "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr",
                            "Nd","Sr","Sm","Zr","Ti","Eu","Gd","Tb",
                            "Dy","Y","Er","Yb","Lu")) %>%
@@ -465,24 +364,10 @@ cite
 
 
 #### K_12_28 classification ####
-s <- joined_data %>% dplyr::mutate(Location=Sample)
-
-d <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE file_id= '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv'") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::filter(grepl('ULAWUN|LOLOBAU|SULU|WULAI|MANAM', LOCATION)) %>%
-  dplyr::mutate(Location = case_when(
-    grepl("ULAWUN", LOCATION) ~ "Ulawun",
-    grepl("LOLOBAU", LOCATION) ~ "Lolobau",
-    grepl("SULU", LOCATION) ~ "Sulu",
-    grepl("WULAI", LOCATION) ~ "Wulai",
-    grepl("MANAM", LOCATION) ~ "Manam")) %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+d <- q23
 d[,1:2]
+
+s <- joined_data %>% dplyr::mutate(Location=Sample)
 
 shapes <- c("Ulawun"=3,"Lolobau"=5,"Sulu"=0,"Wulai"=2,"Manam"=6,"K-12-28"=3)
 cols <- c("Ulawun"="#25A782","Lolobau"="#25A782","Sulu"="#25A782",
@@ -542,29 +427,29 @@ B <- q7 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
   dplyr::filter(Location %in% c("Bismarck Arc")) %>% dplyr::na_if(0)
 B_minmax <- data.frame (Sample  = c("Bismarck_Arc_min", "Bismarck_Arc_max"),
                          Location = c("Bismarck Arc", "Bismarck Arc"),
-                         Cs = c(min(TF[,"Cs"],na.rm=TRUE),max(TF[,"Cs"],na.rm=TRUE)),
-                         Rb = c(min(TF[,"Rb"],na.rm=TRUE),max(TF[,"Rb"],na.rm=TRUE)),
-                         Ba = c(min(TF[,"Ba"],na.rm=TRUE),max(TF[,"Ba"],na.rm=TRUE)),
-                         Th = c(min(TF[,"Th"],na.rm=TRUE),max(TF[,"Th"],na.rm=TRUE)),
-                         U = c(min(TF[,"U"],na.rm=TRUE),max(TF[,"U"],na.rm=TRUE)),
-                         Nb = c(min(TF[,"Nb"],na.rm=TRUE),max(TF[,"Nb"],na.rm=TRUE)),
-                         Ta = c(min(TF[,"Ta"],na.rm=TRUE),max(TF[,"Ta"],na.rm=TRUE)),
-                         La = c(min(TF[,"La"],na.rm=TRUE),max(TF[,"La"],na.rm=TRUE)),
-                         Ce = c(min(TF[,"Ce"],na.rm=TRUE),max(TF[,"Ce"],na.rm=TRUE)),
-                         Pr = c(min(TF[,"Pr"],na.rm=TRUE),max(TF[,"Pr"],na.rm=TRUE)),
-                         Nd = c(min(TF[,"Nd"],na.rm=TRUE),max(TF[,"Nd"],na.rm=TRUE)),
-                         Sr = c(min(TF[,"Sr"],na.rm=TRUE),max(TF[,"Sr"],na.rm=TRUE)),
-                         Sm = c(min(TF[,"Sm"],na.rm=TRUE),max(TF[,"Sm"],na.rm=TRUE)),
-                         Zr = c(min(TF[,"Zr"],na.rm=TRUE),max(TF[,"Zr"],na.rm=TRUE)),
-                         Ti = c(min(TF[,"Ti"],na.rm=TRUE),max(TF[,"Ti"],na.rm=TRUE)),
-                         Eu = c(min(TF[,"Eu"],na.rm=TRUE),max(TF[,"Eu"],na.rm=TRUE)),
-                         Gd = c(min(TF[,"Gd"],na.rm=TRUE),max(TF[,"Gd"],na.rm=TRUE)),
-                         Tb = c(min(TF[,"Tb"],na.rm=TRUE),max(TF[,"Tb"],na.rm=TRUE)),
-                         Dy = c(min(TF[,"Dy"],na.rm=TRUE),max(TF[,"Dy"],na.rm=TRUE)),
-                         Y = c(min(TF[,"Y"],na.rm=TRUE),max(TF[,"Y"],na.rm=TRUE)),
-                         Er = c(min(TF[,"Er"],na.rm=TRUE),max(TF[,"Er"],na.rm=TRUE)),
-                         Yb = c(min(TF[,"Yb"],na.rm=TRUE),max(TF[,"Yb"],na.rm=TRUE)),
-                         Lu = c(min(TF[,"Lu"],na.rm=TRUE),max(TF[,"Lu"],na.rm=TRUE)))
+                         Cs = c(min(B[,"Cs"],na.rm=TRUE),max(B[,"Cs"],na.rm=TRUE)),
+                         Rb = c(min(B[,"Rb"],na.rm=TRUE),max(B[,"Rb"],na.rm=TRUE)),
+                         Ba = c(min(B[,"Ba"],na.rm=TRUE),max(B[,"Ba"],na.rm=TRUE)),
+                         Th = c(min(B[,"Th"],na.rm=TRUE),max(B[,"Th"],na.rm=TRUE)),
+                         U = c(min(B[,"U"],na.rm=TRUE),max(B[,"U"],na.rm=TRUE)),
+                         Nb = c(min(B[,"Nb"],na.rm=TRUE),max(B[,"Nb"],na.rm=TRUE)),
+                         Ta = c(min(B[,"Ta"],na.rm=TRUE),max(B[,"Ta"],na.rm=TRUE)),
+                         La = c(min(B[,"La"],na.rm=TRUE),max(B[,"La"],na.rm=TRUE)),
+                         Ce = c(min(B[,"Ce"],na.rm=TRUE),max(B[,"Ce"],na.rm=TRUE)),
+                         Pr = c(min(B[,"Pr"],na.rm=TRUE),max(B[,"Pr"],na.rm=TRUE)),
+                         Nd = c(min(B[,"Nd"],na.rm=TRUE),max(B[,"Nd"],na.rm=TRUE)),
+                         Sr = c(min(B[,"Sr"],na.rm=TRUE),max(B[,"Sr"],na.rm=TRUE)),
+                         Sm = c(min(B[,"Sm"],na.rm=TRUE),max(B[,"Sm"],na.rm=TRUE)),
+                         Zr = c(min(B[,"Zr"],na.rm=TRUE),max(B[,"Zr"],na.rm=TRUE)),
+                         Ti = c(min(B[,"Ti"],na.rm=TRUE),max(B[,"Ti"],na.rm=TRUE)),
+                         Eu = c(min(B[,"Eu"],na.rm=TRUE),max(B[,"Eu"],na.rm=TRUE)),
+                         Gd = c(min(B[,"Gd"],na.rm=TRUE),max(B[,"Gd"],na.rm=TRUE)),
+                         Tb = c(min(B[,"Tb"],na.rm=TRUE),max(B[,"Tb"],na.rm=TRUE)),
+                         Dy = c(min(B[,"Dy"],na.rm=TRUE),max(B[,"Dy"],na.rm=TRUE)),
+                         Y = c(min(B[,"Y"],na.rm=TRUE),max(B[,"Y"],na.rm=TRUE)),
+                         Er = c(min(B[,"Er"],na.rm=TRUE),max(B[,"Er"],na.rm=TRUE)),
+                         Yb = c(min(B[,"Yb"],na.rm=TRUE),max(B[,"Yb"],na.rm=TRUE)),
+                         Lu = c(min(B[,"Lu"],na.rm=TRUE),max(B[,"Lu"],na.rm=TRUE)))
 
 L <- q7 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
@@ -600,7 +485,7 @@ d <- full_join(d,L_minmax)
 d_spider <- d %>% normalize_to_pm()
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-28")) %>%
-  mutate(Location = case_when(grepl("K-12-28", Sample) ~ "K-12-28")) %>%
+  dplyr::mutate(Location = Sample) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
@@ -649,41 +534,15 @@ dev.off()
 
 
 #### K_12_29 spider ####
-s <- joined_data %>%
-  filter(Sample %in% c(
-    "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-18dup","K-12-29")) %>%
-  mutate(
-    Location = case_when(
-      grepl("E-11-10", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-11", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-13", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-16", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-18", Sample) ~ "Vanuatu Arc",
-      grepl("E-11-18dup", Sample) ~ "Vanuatu Arc",
-      grepl("K-12-29", Sample) ~ "K-12-29")) %>% dplyr::select(
-        Sample,Location,SiO2,K2O,Na2O,Rb,Ba,Th,U,Nb,La,Ce,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Y,Yb)
-s <- s[c("6","1","2","3","4","5","7"),]
-
-d <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE id = '70512' OR id = '13306-VMAC6' OR id = '317050' OR id = '1871790'
-OR id = '144138-KS094' OR id = '13303-UA10'") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  rename(Location=LOCATION)%>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+d <- q24
 d[,1:2]
-s <- joined_data %>%
-  filter(Sample %in% c("E-11-13")) %>%
+s_d <- joined_data %>%
+  dplyr::filter(Sample %in% c("E-11-13")) %>%
   dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
                 Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-d <- full_join(d,s)
-
-d_spider <- d %>%
+d_spider <- full_join(d,s_d) %>%
   mutate(Location = case_when(
     grepl("13303-UA10", Sample) ~ "[UA10] Ureparapara (Vanuatu)",
     grepl("70512", Sample) ~ "[70512] Vanua Lava (Vanuatu)",
@@ -754,7 +613,6 @@ pdf(here("analysis","supplementary-materials","FigS13","FigS13-d.pdf"), width=5,
 K_12_29_spider
 dev.off()
 
-
 citation <- dbGetQuery(georoc,
 "SELECT sample_id, reference_id
 FROM 'citation'
@@ -773,25 +631,6 @@ cite
 
 
 #### K_12_29 classification ####
-d <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
-WHERE file_id= '2022-06-PVFZCE_LUZON_ARC.csv' OR
-file_id= '2022-06-PVFZCE_NEW_HEBRIDES_ARC_VANUATU_ARCHIPELAGO.csv' OR
-file_id= '2022-06-PVFZCE_SULAWESI_ARC.csv' OR
-file_id= '2022-06-PVFZCE_TONGA_ARC.csv'") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::filter(grepl('VANUA LAVA|UREPARAPARA|KIBOBO|CEBU|BUHIA', LOCATION)) %>%
-  mutate(Location = case_when(
-    grepl("VANUA LAVA", LOCATION) ~ "Vanua Lava",
-    grepl("UREPARAPARA", LOCATION) ~ "Ureparapara",
-    grepl("KIBOBO", LOCATION) ~ "Kibobo",
-    grepl("BUHIA", LOCATION) ~ "Buhias",
-    grepl("CEBU", LOCATION) ~ "Cebu")) %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
-
 emae <- joined_data %>% filter(Sample %in% c(
   "E-11-10","E-11-11","E-11-13","E-11-16","E-11-18","E-11-19")) %>%
   dplyr::mutate(Location = Sample) %>%
@@ -800,7 +639,7 @@ emae <- joined_data %>% filter(Sample %in% c(
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
-d <- full_join(d,emae)
+d <- full_join(q25,emae)
 s <- joined_data %>% dplyr::mutate(Location=Sample)
 
 shapes <- c("Vanua Lava "=0,"Ureparapara"=5,"Emae"=4,
@@ -921,7 +760,7 @@ d <- full_join(d,L_minmax)
 d_spider <- d %>% normalize_to_pm()
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-29")) %>%
-  mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29")) %>%
+  dplyr::mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29")) %>%
   dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
                 Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()

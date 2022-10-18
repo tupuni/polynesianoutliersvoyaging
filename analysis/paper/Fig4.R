@@ -6,9 +6,6 @@ require(FactoMineR)
 require(factoextra)
 library(ggridges)
 
-georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
-pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
-
 shapes <- c("Caroline islands"=21,"Samoan islands"=24,"Austral-Cook chain"=23,
             "Society islands"=22,"Hawai'i islands"=25,"Marquesas islands"=21,
             "Pitcairn-Gambier chain"=21,"North Fiji Basin"=25,"Rotuma"=21,
@@ -194,7 +191,7 @@ E_T_PCA_2a <- fviz_pca_biplot(
   pointsize = 2, invisible = "quali", labelsize = 3, repel = T) +
   scale_shape_manual(values=shapes) + scale_fill_manual(values=cols) +
   scale_color_manual(values=cols) +
-  scale_x_continuous(limits=c(-5, 7)) + scale_y_continuous(limits=c(-5.5, 5.5)) +
+  scale_x_continuous(limits=c(-5, 7.5)) + scale_y_continuous(limits=c(-5.5, 5.5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -214,13 +211,13 @@ d_pca <- full_join(res.pca.df, pred)
 E_T_PCA_2b <- d_pca %>%
   ggplot(aes(x=PC1,y=PC2, shape=factor(Location), fill=factor(Location),
              color=factor(Location), group=Sample)) +
-  geom_point(aes(x=median(d_pca[71:76,"PC1"]),
-                 y=median(d_pca[71:76,"PC2"])), shape=3, color="red") +
+  geom_point(aes(x=median(d_pca[67:72,"PC1"]),
+                 y=median(d_pca[67:72,"PC2"])), shape=3, color="red") +
   geom_vline(aes(xintercept = 0), size=.25, linetype="dashed") +
   geom_hline(aes(yintercept = 0), size=.25, linetype="dashed") +
   geom_point(size = 3, stroke=.25) + scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(-5, 7)) + scale_y_continuous(limits=c(-5.5, 5.5)) +
+  scale_x_continuous(limits=c(-5, 7.5)) + scale_y_continuous(limits=c(-5.5, 5.5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -233,27 +230,27 @@ E_T_PCA_2b
 # PC values > distance to artefacts (individual or median of group)
 # distance within all PCs > weight mean distance
 dist <- data.frame(
-  Sample = c(d_pca[1:70,"Sample"]),
-  Location = c(d_pca[1:70,"Location"]),
-  PC1 = c(sqrt(((median(d_pca[71:76,"PC1"]))-d_pca[1:70,"PC1"])^2)),
-  PC2 = c(sqrt(((median(d_pca[71:76,"PC2"]))-d_pca[1:70,"PC2"])^2)),
-  PC3 = c(sqrt(((median(d_pca[71:76,"PC3"]))-d_pca[1:70,"PC3"])^2)),
-  PC4 = c(sqrt(((median(d_pca[71:76,"PC4"]))-d_pca[1:70,"PC4"])^2)),
-  PC5 = c(sqrt(((median(d_pca[71:76,"PC5"]))-d_pca[1:70,"PC5"])^2)),
-  PC6 = c(sqrt(((median(d_pca[71:76,"PC6"]))-d_pca[1:70,"PC6"])^2)),
-  PC7 = c(sqrt(((median(d_pca[71:76,"PC7"]))-d_pca[1:70,"PC7"])^2)),
-  PC8 = c(sqrt(((median(d_pca[71:76,"PC8"]))-d_pca[1:70,"PC8"])^2)),
-  PC9 = c(sqrt(((median(d_pca[71:76,"PC9"]))-d_pca[1:70,"PC9"])^2)),
-  PC10 = c(sqrt(((median(d_pca[71:76,"PC10"]))-d_pca[1:70,"PC10"])^2)),
-  PC11 = c(sqrt(((median(d_pca[71:76,"PC11"]))-d_pca[1:70,"PC11"])^2)),
-  PC12 = c(sqrt(((median(d_pca[71:76,"PC12"]))-d_pca[1:70,"PC12"])^2)),
-  PC13 = c(sqrt(((median(d_pca[71:76,"PC13"]))-d_pca[1:70,"PC13"])^2)),
-  PC14 = c(sqrt(((median(d_pca[71:76,"PC14"]))-d_pca[1:70,"PC14"])^2)),
-  PC15 = c(sqrt(((median(d_pca[71:76,"PC15"]))-d_pca[1:70,"PC15"])^2)),
-  PC16 = c(sqrt(((median(d_pca[71:76,"PC16"]))-d_pca[1:70,"PC16"])^2)),
-  PC17 = c(sqrt(((median(d_pca[71:76,"PC17"]))-d_pca[1:70,"PC17"])^2)),
-  PC18 = c(sqrt(((median(d_pca[71:76,"PC18"]))-d_pca[1:70,"PC18"])^2)),
-  PC19 = c(sqrt(((median(d_pca[71:76,"PC19"]))-d_pca[1:70,"PC19"])^2))) %>%
+  Sample = c(d_pca[1:66,"Sample"]),
+  Location = c(d_pca[1:66,"Location"]),
+  PC1 = c(sqrt(((median(d_pca[67:72,"PC1"]))-d_pca[1:66,"PC1"])^2)),
+  PC2 = c(sqrt(((median(d_pca[67:72,"PC2"]))-d_pca[1:66,"PC2"])^2)),
+  PC3 = c(sqrt(((median(d_pca[67:72,"PC3"]))-d_pca[1:66,"PC3"])^2)),
+  PC4 = c(sqrt(((median(d_pca[67:72,"PC4"]))-d_pca[1:66,"PC4"])^2)),
+  PC5 = c(sqrt(((median(d_pca[67:72,"PC5"]))-d_pca[1:66,"PC5"])^2)),
+  PC6 = c(sqrt(((median(d_pca[67:72,"PC6"]))-d_pca[1:66,"PC6"])^2)),
+  PC7 = c(sqrt(((median(d_pca[67:72,"PC7"]))-d_pca[1:66,"PC7"])^2)),
+  PC8 = c(sqrt(((median(d_pca[67:72,"PC8"]))-d_pca[1:66,"PC8"])^2)),
+  PC9 = c(sqrt(((median(d_pca[67:72,"PC9"]))-d_pca[1:66,"PC9"])^2)),
+  PC10 = c(sqrt(((median(d_pca[67:72,"PC10"]))-d_pca[1:66,"PC10"])^2)),
+  PC11 = c(sqrt(((median(d_pca[67:72,"PC11"]))-d_pca[1:66,"PC11"])^2)),
+  PC12 = c(sqrt(((median(d_pca[67:72,"PC12"]))-d_pca[1:66,"PC12"])^2)),
+  PC13 = c(sqrt(((median(d_pca[67:72,"PC13"]))-d_pca[1:66,"PC13"])^2)),
+  PC14 = c(sqrt(((median(d_pca[67:72,"PC14"]))-d_pca[1:66,"PC14"])^2)),
+  PC15 = c(sqrt(((median(d_pca[67:72,"PC15"]))-d_pca[1:66,"PC15"])^2)),
+  PC16 = c(sqrt(((median(d_pca[67:72,"PC16"]))-d_pca[1:66,"PC16"])^2)),
+  PC17 = c(sqrt(((median(d_pca[67:72,"PC17"]))-d_pca[1:66,"PC17"])^2)),
+  PC18 = c(sqrt(((median(d_pca[67:72,"PC18"]))-d_pca[1:66,"PC18"])^2)),
+  PC19 = c(sqrt(((median(d_pca[67:72,"PC19"]))-d_pca[1:66,"PC19"])^2))) %>%
   mutate(weight_mean = (
     (PC1*eig[1,2])+(PC2*eig[2,2])+(PC3*eig[3,2])+(PC4*eig[4,2])+(PC5*eig[5,2])+
       (PC6*eig[6,2])+(PC7*eig[7,2])+(PC8*eig[8,2])+(PC9*eig[9,2])+

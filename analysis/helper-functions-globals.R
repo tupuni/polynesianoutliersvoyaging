@@ -82,8 +82,6 @@ zhang2020 <- read.csv(here("analysis", "data", "raw_data", "zhang2020CG.csv"),
   dplyr::mutate(Location = case_when(grepl("Caroline", Site) ~ "Caroline plateau"))
 
 
-
-
 ## ranges()
 summary(joined_data[,c(
   "Sample","SiO2","K2O","Na2O","MgO","Nb","La","Ba","Ta","Sr","Nd","Pb",
@@ -233,14 +231,14 @@ get_georoc_location <- function(georoc_output) {
         grepl("TONGA_ARC", file_id) ~ "Tonga-Fiji",
         LOCATION == "TONGA ARC / WALLIS-FUTUNA ISLANDS / WALLIS (UVEA) ISLANDS" ~ "Uvea (Wallis)",
         grepl("YAP_ARC", file_id) ~ "Yap Arc",
-        grepl("AUSTRAL-COOK_ISLANDS", file_id) & LONGITUDE_MIN > -155 ~ "Austral-Cook chain",
-        grepl("AUSTRAL-COOK_ISLANDS", file_id) & LONGITUDE_MIN < -155 ~ "Austral-Cook chain",
+        grepl("AUSTRAL-COOK_ISLANDS", file_id) & long > -155 ~ "Austral-Cook chain",
+        grepl("AUSTRAL-COOK_ISLANDS", file_id) & long < -155 ~ "Austral-Cook chain",
         grepl("CAROLINE_ISLANDS", file_id) ~ "Caroline islands",
         grepl("EASTER_SEAMOUNT_CHAIN", file_id) ~ "Rapa Nui",
         grepl("HAWAIIAN_ISLANDS", file_id) ~ "Hawai'i islands",
         grepl("MARQUESAS", file_id) ~ "Marquesas islands",
-        grepl("PITCAIRN-GAMBIER", file_id) & LONGITUDE_MIN > -132 ~ "Pitcairn-Gambier chain",
-        grepl("PITCAIRN-GAMBIER", file_id) & LONGITUDE_MIN < -132 ~ "Pitcairn-Gambier chain",
+        grepl("PITCAIRN-GAMBIER", file_id) & long > -132 ~ "Pitcairn-Gambier chain",
+        grepl("PITCAIRN-GAMBIER", file_id) & long < -132 ~ "Pitcairn-Gambier chain",
         grepl("SAMOAN_ISLANDS", file_id) ~ "Samoan islands",
         grepl("SOCIETY_ISLANDS", file_id) ~ "Society islands",
         grepl("TUAMOTU_ISLANDS", file_id) ~ "Tuamotu islands",
@@ -481,8 +479,7 @@ pofatu_location <- function(pofatu_output) {
 ##used##
 rename_pofatu_elements <- function(pofatu_output) {
   pofatu_output_renamed <- pofatu_output %>%
-    rename(Sample=sample_id, lat=location_latitude,
-           long=location_longitude, SiO2=`SiO2 [%]`, TiO2=`TiO2 [%]`, Al2O3=`Al2O3 [%]`,
+    dplyr::rename(Sample=sample_id, lat=location_latitude, long=location_longitude, SiO2=`SiO2 [%]`, TiO2=`TiO2 [%]`, Al2O3=`Al2O3 [%]`,
            Fe2O3=`Fe2O3 [%]`, FeO=`FeO [%]`,  MnO=`MnO [%]`, MgO=`MgO [%]`, CaO=`CaO [%]`,
            Na2O=`Na2O [%]`, K2O=`K2O [%]`,  Li=`Li [ppm]`, Sc=`Sc [ppm]`,
            Ti=`Ti [ppm]`, V=`V [ppm]`, Cr=`Cr [ppm]`, Co=`Co [ppm]`, Ni=`Ni [ppm]`,
@@ -494,6 +491,12 @@ rename_pofatu_elements <- function(pofatu_output) {
            Ho=`Ho [ppm]`, Er=`Er [ppm]`, Tm=`Tm [ppm]`, Yb=`Yb [ppm]`,
            Lu=`Lu [ppm]`, Hf=`Hf [ppm]`, Ta=`Ta [ppm]`, Pb=`Pb [ppm]`,
            Th=`Th [ppm]`, U=`U [ppm]`)
+  return(pofatu_output_renamed)
+}
+
+rename_pofatu_elements <- function(pofatu_output) {
+  pofatu_output_renamed <- pofatu_output %>% dplyr::rename(
+    Sample=sample_id, lat=location_latitude, long=location_longitude)
   return(pofatu_output_renamed)
 }
 
