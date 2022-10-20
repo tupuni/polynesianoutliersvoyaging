@@ -812,8 +812,8 @@ LATITUDE_MAX < 20 AND TECTONIC_SETTING='CONVERGENT MARGIN'") %>%
 q21 <- dbGetQuery(
   pofatu,
   "SELECT * FROM (
-  SELECT s.id AS sample_id, s.sample_category, s.location_region,
-  s.location_subregion, s.location_latitude, s.location_longitude,
+  SELECT s.id AS Sample, s.sample_category, s.location_region,
+  s.location_subregion, s.location_latitude AS lat, s.location_longitude AS long,
   max(CASE WHEN m.parameter='SiO2 [%]' then m.value END) AS 'SiO2',
   max(CASE WHEN m.parameter='TiO2 [%]' then m.value END) AS 'TiO2',
   max(CASE WHEN m.parameter='Al2O3 [%]' then m.value END) AS 'Al2O3',
@@ -882,24 +882,30 @@ q21 <- dbGetQuery(
   (sample_category = 'SOURCE' AND
   location_subregion = 'VANUA LAVA' AND
   (
-  sample_id = 'reepmeyer2008_ANU9006' OR
-  sample_id = 'reepmeyer2008_ANU9009' OR
-  sample_id = 'reepmeyer2008_ANU9008' OR
-  sample_id = 'reepmeyer2008_ANU9003'
+  Sample = 'reepmeyer2008_ANU9006' OR
+  Sample = 'reepmeyer2008_ANU9009' OR
+  Sample = 'reepmeyer2008_ANU9008' OR
+  Sample = 'reepmeyer2008_ANU9003'
   ))") %>%
-  rename_pofatu_elements() %>% pofatu_location() %>%
-  Ti_from_TiO2() %>% K_from_K2O() %>%
+  pofatu_location() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::mutate(Location = case_when(
-    grepl("VANUATU", location_region) ~ "Vanuatu Arc")) %>%
+  grepl("VANUATU", location_region) ~ "Vanuatu Arc")) %>%
   dplyr::mutate(Island = case_when(
-    grepl("VANUA LAVA", location_subregion) ~ "Vanua Lava")) %>%
-  dplyr::select(Sample,Location,Island,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+    grepl("VANUA LAVA", location_subregion) ~ "Vanua Lava"))
+q21 %>% group_by(Location) %>% tally()
+
 
 q22 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+"SELECT id AS Sample, file_id,
+LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`TIO2(WT%)` AS TiO2, `K2O(WT%)`AS K2O,
+`CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
+`U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
+`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
+`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
+`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+FROM 'sample'
 WHERE
 id='13423-E5/11' OR
 id='13426-F7/2' OR
@@ -908,33 +914,59 @@ id='13436-2649' OR
 id='13437-F5/2' OR
 id='634326'
 ") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::mutate_at("LOCATION", str_replace,
             "BISMARCK ARC - NEW BRITAIN ARC / BISMARCK ARC - ", "") %>%
-  dplyr::rename(Location=LOCATION)%>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+  dplyr::rename(Location=LOCATION)
 
 q23 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+"SELECT id AS Sample, file_id,
+LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`SIO2(WT%)` AS SiO2, `K2O(WT%)`AS K2O
+FROM 'sample'
 WHERE file_id= '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv'") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::filter(grepl('ULAWUN|LOLOBAU|SULU|WULAI|MANAM', LOCATION)) %>%
   dplyr::mutate(Location = case_when(
     grepl("ULAWUN", LOCATION) ~ "Ulawun",
     grepl("LOLOBAU", LOCATION) ~ "Lolobau",
     grepl("SULU", LOCATION) ~ "Sulu",
     grepl("WULAI", LOCATION) ~ "Wulai",
-    grepl("MANAM", LOCATION) ~ "Manam")) %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+    grepl("MANAM", LOCATION) ~ "Manam"))
 
 q24 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+"SELECT id AS Sample, file_id,
+LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `K2O(WT%)`AS K2O,
+`CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
+`U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
+`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
+`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
+`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+FROM 'sample'
+WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE = 'VOL' AND
+(long > 90 OR long < 0) AND
+lat < 20 AND TECTONIC_SETTING='CONVERGENT MARGIN' AND
+(SiO2 > 52.1 AND SiO2 < 55.1 AND K2O > 0 AND K2O < 1.55) AND
+(file_id= '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv' OR
+file_id= '2022-06-PVFZCE_LUZON_ARC.csv' OR
+file_id= '2022-06-PVFZCE_NEW_HEBRIDES_ARC_VANUATU_ARCHIPELAGO.csv' OR
+file_id= '2022-06-PVFZCE_SULAWESI_ARC.csv')
+") %>% get_georoc_location() %>% dplyr::filter(Location != "na") %>%
+  Ti_from_TiO2() %>% K_from_K2O()
+q24 %>% group_by(Location) %>% tally()
+
+q25 <- dbGetQuery(georoc,
+"SELECT id AS Sample, file_id,
+LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `K2O(WT%)`AS K2O,
+`CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
+`U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
+`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
+`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
+`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+FROM 'sample'
 WHERE
 id = '70512' OR
 id = '13306-VMAC6' OR
@@ -943,45 +975,69 @@ id = '1871790' OR
 id = '144138-KS094' OR
 id = '13303-UA10'
 ") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
-  dplyr::rename(Location=LOCATION)%>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+  Ti_from_TiO2() %>% K_from_K2O() %>%
+  dplyr::rename(Location=LOCATION)
 
-q25 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+q26 <- dbGetQuery(georoc,
+"SELECT id AS Sample, file_id, LOCATION,
+LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`SIO2(WT%)`AS SiO2, `K2O(WT%)`AS K2O
+FROM 'sample'
 WHERE file_id= '2022-06-PVFZCE_LUZON_ARC.csv' OR
 file_id= '2022-06-PVFZCE_NEW_HEBRIDES_ARC_VANUATU_ARCHIPELAGO.csv' OR
 file_id= '2022-06-PVFZCE_SULAWESI_ARC.csv' OR
 file_id= '2022-06-PVFZCE_TONGA_ARC.csv'
 ") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::filter(grepl('VANUA LAVA|UREPARAPARA|KIBOBO|CEBU|BUHIA', LOCATION)) %>%
-  mutate(Location = case_when(
+  dplyr::mutate(Location = case_when(
     grepl("VANUA LAVA", LOCATION) ~ "Vanua Lava",
     grepl("UREPARAPARA", LOCATION) ~ "Ureparapara",
     grepl("KIBOBO", LOCATION) ~ "Kibobo",
     grepl("BUHIA", LOCATION) ~ "Buhias",
-    grepl("CEBU", LOCATION) ~ "Cebu")) %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+    grepl("CEBU", LOCATION) ~ "Cebu"))
+
+q27 <- dbGetQuery(georoc,
+"SELECT id AS Sample, file_id,
+LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `K2O(WT%)`AS K2O,
+`CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
+`U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
+`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
+`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
+`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+FROM 'sample'
+WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
+(long > 90 OR long < 0) AND lat < 20 AND
+TECTONIC_SETTING='CONVERGENT MARGIN' AND
+SiO2 > 48.2 AND SiO2 < 51.2 AND K2O > 0.14 AND K2O < 3.14 AND
+Yb > 1.05 AND Yb < 3.15 AND
+(file_id= '2022-06-PVFZCE_BISMARCK_ARC_NEW_BRITAIN_ARC.csv' OR
+file_id= '2022-06-PVFZCE_LUZON_ARC.csv' OR
+file_id= '2022-06-PVFZCE_NEW_HEBRIDES_ARC_VANUATU_ARCHIPELAGO.csv' OR
+file_id= '2022-06-PVFZCE_SULAWESI_ARC.csv' OR
+file_id= '2022-06-PVFZCE_TONGA_ARC.csv')") %>%
+  get_georoc_location() %>% Ti_from_TiO2() %>% K_from_K2O()
+q27 %>% group_by(Location) %>% tally() #the island arcs represented
 
 
 #### Fig S15 ####
-q26 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+q28 <- dbGetQuery(georoc,
+"SELECT id AS Sample, file_id, LOCATION,
+LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+ND143_ND144 AS Nd143_Nd144, SR87_SR86 AS Sr87_Sr86,
+PB206_PB204 AS Pb206_Pb204, PB207_PB204 AS Pb207_Pb204,
+PB208_PB204 AS Pb208_Pb204
+FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 TECTONIC_SETTING='OCEAN ISLAND'
 ") %>%
-  get_georoc_location() %>% dplyr::filter(Location != "na") %>% rename_georoc() %>%
+  get_georoc_location() %>%
+  dplyr::filter(Location != "na") %>%
   dplyr::select(Sample,Location,lat,long,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
-q27 <- dbGetQuery(pofatu,
+q29 <- dbGetQuery(pofatu,
 "SELECT s.id AS sample_id, s.sample_category, s.location_region,
 s.location_subregion, s.location_latitude, s.location_longitude,
 max(CASE WHEN m.parameter='Nd143_Nd144' then m.value END) AS 'Nd143_Nd144',
@@ -1014,8 +1070,17 @@ AND m.parameter IN ('Nd143_Nd144', 'Sr87_Sr86','Pb206_Pb204', 'Pb207_Pb204',
 
 
 #### Fig S16 ####
-q28 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+q30 <- dbGetQuery(georoc,
+"SELECT id AS Sample, file_id, LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `MGO(WT%)`AS MgO,
+`K2O(WT%)`AS K2O, `NA2O(WT%)`AS Na2O,
+`CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
+`U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
+`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
+`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
+`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+FROM 'sample'
 WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
 ((
 `SIO2(WT%)` > 45.2 AND `SIO2(WT%)` < 48.2 AND
@@ -1050,18 +1115,14 @@ WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
 ))") %>%
   dplyr::filter(grepl("SAMOAN", file_id)) %>%
   get_georoc_location() %>% filter(Location != "na") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::mutate(Location = case_when(
     grepl("MANUA ISLANDS", LOCATION) ~ "Manua Islands",
     grepl("SAVAI", LOCATION) ~ "Savai'i",
     grepl("TUTUILA", LOCATION) ~ "Tutuila",
-    grepl("UPOLU", LOCATION) ~ "Upolu")) %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+    grepl("UPOLU", LOCATION) ~ "Upolu"))
 
-q29 <- dbGetQuery(pofatu,
+q31 <- dbGetQuery(pofatu,
 "SELECT * FROM (
 SELECT s.id AS Sample, s.sample_category, s.location_region,
 s.location_subregion, s.site_name, s.sample_comment,
@@ -1132,7 +1193,7 @@ max(CASE WHEN m.parameter='Pb208_Pb204' then m.value END) AS 'Pb208_Pb204'
                   'Yb [ppm]', 'Lu [ppm]', 'Hf [ppm]', 'Ta [ppm]', 'Tl [ppm]',
                   'Pb [ppm]', 'Th [ppm]', 'U [ppm]', 'Nd143_Nd144',
                   'Sr87_Sr86', 'Pb206_Pb204', 'Pb207_Pb204', 'Pb208_Pb204')
-  GROUP BY sample_id) AS Q29 WHERE
+  GROUP BY sample_id) AS Q31 WHERE
 (
   (
   SiO2 > 45.2 AND SiO2 < 48.2 AND
@@ -1169,70 +1230,240 @@ max(CASE WHEN m.parameter='Pb208_Pb204' then m.value END) AS 'Pb208_Pb204'
   dplyr::mutate(Location = case_when(
     location_subregion=="TUTUILA" ~ "Tutuila",
     location_subregion=="SAVAI'I" ~ "Savai'i",
-    location_subregion=="OFU" ~ "Manua Islands")) %>%
-  dplyr::select(
-    Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
-    Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-    Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-    Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+    location_subregion=="OFU" ~ "Manua Islands"))
 
-q30 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+q32 <- dbGetQuery(georoc,
+"SELECT id AS Sample, file_id, LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `MGO(WT%)`AS MgO,
+`K2O(WT%)`AS K2O, `NA2O(WT%)`AS Na2O,
+`CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
+`U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
+`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
+`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
+`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+FROM 'sample'
 WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
 `NA2O(WT%)` > 1.61 AND `NA2O(WT%)` < 4.61 AND
 `K2O(WT%)` > 0 AND `K2O(WT%)` < 2.91 AND
 file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv'
 ") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::mutate(Location = case_when(
     grepl("PONAPE", LOCATION) ~ "Ponape",
     grepl("KUSAIE", LOCATION) ~ "Kosrae",
     grepl("KOSRAE", LOCATION) ~ "Kosrae",
-    grepl("CHUUK", LOCATION) ~ "Chuuk")) %>% dplyr::filter(Location != "NA") %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+    grepl("CHUUK", LOCATION) ~ "Chuuk")) %>% dplyr::filter(Location != "NA")
 
-q31 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+q33 <- dbGetQuery(georoc,
+"SELECT id AS Sample, file_id, LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `MGO(WT%)`AS MgO,
+`K2O(WT%)`AS K2O, `NA2O(WT%)`AS Na2O,
+`CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
+`U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
+`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
+`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
+`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 `SIO2(WT%)` > 43.1 AND `SIO2(WT%)` < 46.1 AND
 `NA2O(WT%)` > 0.89 AND `NA2O(WT%)` < 3.89 AND
 file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv'
 ") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>%
   dplyr::mutate(Location = case_when(
     grepl("PONAPE", LOCATION) ~ "Ponape",
     grepl("KUSAIE", LOCATION) ~ "Kosrae",
     grepl("KOSRAE", LOCATION) ~ "Kosrae",
-    grepl("CHUUK", LOCATION) ~ "Chuuk")) %>% dplyr::filter(Location != "NA") %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+    grepl("CHUUK", LOCATION) ~ "Chuuk")) %>% dplyr::filter(Location != "NA")
 
-q32 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+q34 <- dbGetQuery(georoc,
+"SELECT id AS Sample, file_id, LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+`SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `MGO(WT%)`AS MgO,
+`K2O(WT%)`AS K2O, `NA2O(WT%)`AS Na2O,
+`CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
+`U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
+`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
+`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
+`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 `SIO2(WT%)` > 42.9 AND `SIO2(WT%)` < 45.9 AND
 `NA2O(WT%)` > 2.41 AND `NA2O(WT%)` < 5.41 AND
 file_id = '2022-06-WFJZKY_CAROLINE_ISLANDS.csv'
 ") %>%
-  rename_georoc() %>% Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO() %>%
+  Ti_from_TiO2() %>% K_from_K2O()  %>%
   dplyr::mutate(Location = case_when(
     grepl("PONAPE", LOCATION) ~ "Ponape",
     grepl("KUSAIE", LOCATION) ~ "Kosrae",
     grepl("KOSRAE", LOCATION) ~ "Kosrae",
-    grepl("CHUUK", LOCATION) ~ "Chuuk")) %>% dplyr::filter(Location != "NA") %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+    grepl("CHUUK", LOCATION) ~ "Chuuk")) %>% dplyr::filter(Location != "NA")
 
-q33 <- dbGetQuery(pofatu,
+
+#### Fig S17 ####
+q35 <- dbGetQuery(pofatu,
 "SELECT id AS Sample, sample_category,
 location_subregion, site_name, sample_comment,
 location_latitude AS lat, location_longitude AS long
 FROM 'samples.csv'
 WHERE location_subregion = 'TUTUILA'")
+
+
+#### Fig S18 ####
+q36 <- dbGetQuery(pofatu,
+"SELECT s.id AS Sample, s.sample_category,
+s.location_subregion, s.site_name, s.sample_comment,
+s.location_latitude AS lat, s.location_longitude AS long,
+max(CASE WHEN m.parameter='SiO2 [%]' then m.value END) AS 'SiO2',
+max(CASE WHEN m.parameter='TiO2 [%]' then m.value END) AS 'TiO2',
+max(CASE WHEN m.parameter='Al2O3 [%]' then m.value END) AS 'Al2O3',
+max(CASE WHEN m.parameter='Fe2O3 [%]' then m.value END) AS 'Fe2O3',
+max(CASE WHEN m.parameter='FeO [%]' then m.value END) AS 'FeO',
+max(CASE WHEN m.parameter='MnO [%]' then m.value END) AS 'MnO',
+max(CASE WHEN m.parameter='MgO [%]' then m.value END) AS 'MgO',
+max(CASE WHEN m.parameter='CaO [%]' then m.value END) AS 'CaO',
+max(CASE WHEN m.parameter='Na2O [%]' then m.value END) AS 'Na2O',
+max(CASE WHEN m.parameter='K2O [%]' then m.value END) AS 'K2O',
+max(CASE WHEN m.parameter='Li [ppm]' then m.value END) AS 'Li',
+max(CASE WHEN m.parameter='Sc [ppm]' then m.value END) AS 'Sc',
+max(CASE WHEN m.parameter='Ti [ppm]' then m.value END) AS 'Ti',
+max(CASE WHEN m.parameter='V [ppm]' then m.value END) AS 'V',
+max(CASE WHEN m.parameter='Cr [ppm]' then m.value END) AS 'Cr',
+max(CASE WHEN m.parameter='Co [ppm]' then m.value END) AS 'Co',
+max(CASE WHEN m.parameter='Ni [ppm]' then m.value END) AS 'Ni',
+max(CASE WHEN m.parameter='Cu [ppm]' then m.value END) AS 'Cu',
+max(CASE WHEN m.parameter='Zn [ppm]' then m.value END) AS 'Zn',
+max(CASE WHEN m.parameter='As [ppm]' then m.value END) AS 'As',
+max(CASE WHEN m.parameter='Rb [ppm]' then m.value END) AS 'Rb',
+max(CASE WHEN m.parameter='Sr [ppm]' then m.value END) AS 'Sr',
+max(CASE WHEN m.parameter='Y [ppm]' then m.value END) AS 'Y',
+max(CASE WHEN m.parameter='Zr [ppm]' then m.value END) AS 'Zr',
+max(CASE WHEN m.parameter='Nb [ppm]' then m.value END) AS 'Nb',
+max(CASE WHEN m.parameter='Cd [ppm]' then m.value END) AS 'Cd',
+max(CASE WHEN m.parameter='Cs [ppm]' then m.value END) AS 'Cs',
+max(CASE WHEN m.parameter='Ba [ppm]' then m.value END) AS 'Ba',
+max(CASE WHEN m.parameter='La [ppm]' then m.value END) AS 'La',
+max(CASE WHEN m.parameter='Ce [ppm]' then m.value END) AS 'Ce',
+max(CASE WHEN m.parameter='Pr [ppm]' then m.value END) AS 'Pr',
+max(CASE WHEN m.parameter='Nd [ppm]' then m.value END) AS 'Nd',
+max(CASE WHEN m.parameter='Sm [ppm]' then m.value END) AS 'Sm',
+max(CASE WHEN m.parameter='Eu [ppm]' then m.value END) AS 'Eu',
+max(CASE WHEN m.parameter='Gd [ppm]' then m.value END) AS 'Gd',
+max(CASE WHEN m.parameter='Tb [ppm]' then m.value END) AS 'Tb',
+max(CASE WHEN m.parameter='Dy [ppm]' then m.value END) AS 'Dy',
+max(CASE WHEN m.parameter='Ho [ppm]' then m.value END) AS 'Ho',
+max(CASE WHEN m.parameter='Er [ppm]' then m.value END) AS 'Er',
+max(CASE WHEN m.parameter='Tm [ppm]' then m.value END) AS 'Tm',
+max(CASE WHEN m.parameter='Yb [ppm]' then m.value END) AS 'Yb',
+max(CASE WHEN m.parameter='Lu [ppm]' then m.value END) AS 'Lu',
+max(CASE WHEN m.parameter='Hf [ppm]' then m.value END) AS 'Hf',
+max(CASE WHEN m.parameter='Ta [ppm]' then m.value END) AS 'Ta',
+max(CASE WHEN m.parameter='Tl [ppm]' then m.value END) AS 'Tl',
+max(CASE WHEN m.parameter='Pb [ppm]' then m.value END) AS 'Pb',
+max(CASE WHEN m.parameter='Th [ppm]' then m.value END) AS 'Th',
+max(CASE WHEN m.parameter='U [ppm]' then m.value END) AS 'U',
+max(CASE WHEN m.parameter='Nd143_Nd144' then m.value END) AS 'Nd143_Nd144',
+max(CASE WHEN m.parameter='Sr87_Sr86' then m.value END) AS 'Sr87_Sr86',
+max(CASE WHEN m.parameter='Pb206_Pb204' then m.value END) AS 'Pb206_Pb204',
+max(CASE WHEN m.parameter='Pb207_Pb204' then m.value END) AS 'Pb207_Pb204',
+max(CASE WHEN m.parameter='Pb208_Pb204' then m.value END) AS 'Pb208_Pb204'
+FROM 'samples.csv' AS s JOIN 'measurements.csv' AS m ON s.id=m.sample_id
+WHERE location_subregion = 'TUTUILA' AND
+m.parameter IN ('SiO2 [%]', 'TiO2 [%]', 'Al2O3 [%]', 'Fe2O3 [%]', 'FeO [%]',
+'MnO [%]', 'MgO [%]', 'CaO [%]', 'Na2O [%]', 'K2O [%]',
+'Li [ppm]', 'Sc [ppm]', 'Ti [ppm]', 'V [ppm]',
+'Cr [ppm]', 'Co [ppm]', 'Ni [ppm]', 'Cu [ppm]', 'Zn [ppm]', 'As [ppm]',
+'Rb [ppm]', 'Sr [ppm]', 'Y [ppm]', 'Zr [ppm]', 'Nb [ppm]', 'Cd [ppm]',
+'Cs [ppm]', 'Ba [ppm]', 'La [ppm]', 'Ce [ppm]', 'Pr [ppm]', 'Nd [ppm]',
+'Sm [ppm]', 'Eu [ppm]', 'Gd [ppm]', 'Tb [ppm]', 'Dy [ppm]', 'Ho [ppm]',
+'Er [ppm]', 'Tm [ppm]', 'Yb [ppm]', 'Lu [ppm]', 'Hf [ppm]', 'Ta [ppm]',
+'Tl [ppm]', 'Pb [ppm]', 'Th [ppm]', 'U [ppm]', 'Nd143_Nd144', 'Sr87_Sr86',
+'Pb206_Pb204', 'Pb207_Pb204', 'Pb208_Pb204') GROUP BY sample_id") %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO()
+
+
+#### Fig S19 ####
+q37 <- dbGetQuery(pofatu,
+"SELECT * FROM (
+SELECT
+s.id AS Sample, s.sample_category,
+s.location_subregion, s.site_name, s.sample_comment,
+s.location_latitude AS lat, s.location_longitude AS long,
+max(CASE WHEN m.parameter='SiO2 [%]' then m.value END) AS 'SiO2',
+max(CASE WHEN m.parameter='TiO2 [%]' then m.value END) AS 'TiO2',
+max(CASE WHEN m.parameter='Al2O3 [%]' then m.value END) AS 'Al2O3',
+max(CASE WHEN m.parameter='Fe2O3 [%]' then m.value END) AS 'Fe2O3',
+max(CASE WHEN m.parameter='FeO [%]' then m.value END) AS 'FeO',
+max(CASE WHEN m.parameter='MnO [%]' then m.value END) AS 'MnO',
+max(CASE WHEN m.parameter='MgO [%]' then m.value END) AS 'MgO',
+max(CASE WHEN m.parameter='CaO [%]' then m.value END) AS 'CaO',
+max(CASE WHEN m.parameter='Na2O [%]' then m.value END) AS 'Na2O',
+max(CASE WHEN m.parameter='K2O [%]' then m.value END) AS 'K2O',
+max(CASE WHEN m.parameter='Li [ppm]' then m.value END) AS 'Li',
+max(CASE WHEN m.parameter='Sc [ppm]' then m.value END) AS 'Sc',
+max(CASE WHEN m.parameter='Ti [ppm]' then m.value END) AS 'Ti',
+max(CASE WHEN m.parameter='V [ppm]' then m.value END) AS 'V',
+max(CASE WHEN m.parameter='Cr [ppm]' then m.value END) AS 'Cr',
+max(CASE WHEN m.parameter='Co [ppm]' then m.value END) AS 'Co',
+max(CASE WHEN m.parameter='Ni [ppm]' then m.value END) AS 'Ni',
+max(CASE WHEN m.parameter='Cu [ppm]' then m.value END) AS 'Cu',
+max(CASE WHEN m.parameter='Zn [ppm]' then m.value END) AS 'Zn',
+max(CASE WHEN m.parameter='As [ppm]' then m.value END) AS 'As',
+max(CASE WHEN m.parameter='Rb [ppm]' then m.value END) AS 'Rb',
+max(CASE WHEN m.parameter='Sr [ppm]' then m.value END) AS 'Sr',
+max(CASE WHEN m.parameter='Y [ppm]' then m.value END) AS 'Y',
+max(CASE WHEN m.parameter='Zr [ppm]' then m.value END) AS 'Zr',
+max(CASE WHEN m.parameter='Nb [ppm]' then m.value END) AS 'Nb',
+max(CASE WHEN m.parameter='Cd [ppm]' then m.value END) AS 'Cd',
+max(CASE WHEN m.parameter='Cs [ppm]' then m.value END) AS 'Cs',
+max(CASE WHEN m.parameter='Ba [ppm]' then m.value END) AS 'Ba',
+max(CASE WHEN m.parameter='La [ppm]' then m.value END) AS 'La',
+max(CASE WHEN m.parameter='Ce [ppm]' then m.value END) AS 'Ce',
+max(CASE WHEN m.parameter='Pr [ppm]' then m.value END) AS 'Pr',
+max(CASE WHEN m.parameter='Nd [ppm]' then m.value END) AS 'Nd',
+max(CASE WHEN m.parameter='Sm [ppm]' then m.value END) AS 'Sm',
+max(CASE WHEN m.parameter='Eu [ppm]' then m.value END) AS 'Eu',
+max(CASE WHEN m.parameter='Gd [ppm]' then m.value END) AS 'Gd',
+max(CASE WHEN m.parameter='Tb [ppm]' then m.value END) AS 'Tb',
+max(CASE WHEN m.parameter='Dy [ppm]' then m.value END) AS 'Dy',
+max(CASE WHEN m.parameter='Ho [ppm]' then m.value END) AS 'Ho',
+max(CASE WHEN m.parameter='Er [ppm]' then m.value END) AS 'Er',
+max(CASE WHEN m.parameter='Tm [ppm]' then m.value END) AS 'Tm',
+max(CASE WHEN m.parameter='Yb [ppm]' then m.value END) AS 'Yb',
+max(CASE WHEN m.parameter='Lu [ppm]' then m.value END) AS 'Lu',
+max(CASE WHEN m.parameter='Hf [ppm]' then m.value END) AS 'Hf',
+max(CASE WHEN m.parameter='Ta [ppm]' then m.value END) AS 'Ta',
+max(CASE WHEN m.parameter='Tl [ppm]' then m.value END) AS 'Tl',
+max(CASE WHEN m.parameter='Pb [ppm]' then m.value END) AS 'Pb',
+max(CASE WHEN m.parameter='Th [ppm]' then m.value END) AS 'Th',
+max(CASE WHEN m.parameter='U [ppm]' then m.value END) AS 'U',
+max(CASE WHEN m.parameter='Nd143_Nd144' then m.value END) AS 'Nd143_Nd144',
+max(CASE WHEN m.parameter='Sr87_Sr86' then m.value END) AS 'Sr87_Sr86',
+max(CASE WHEN m.parameter='Pb206_Pb204' then m.value END) AS 'Pb206_Pb204',
+max(CASE WHEN m.parameter='Pb207_Pb204' then m.value END) AS 'Pb207_Pb204',
+max(CASE WHEN m.parameter='Pb208_Pb204' then m.value END) AS 'Pb208_Pb204'
+FROM 'samples.csv' AS s JOIN 'measurements.csv' AS m ON s.id=m.sample_id
+WHERE m.parameter IN ('SiO2 [%]', 'TiO2 [%]', 'Al2O3 [%]', 'Fe2O3 [%]', 'FeO [%]',
+'MnO [%]', 'MgO [%]', 'CaO [%]', 'Na2O [%]', 'K2O [%]',
+'Li [ppm]', 'Sc [ppm]', 'Ti [ppm]', 'V [ppm]',
+'Cr [ppm]', 'Co [ppm]', 'Ni [ppm]', 'Cu [ppm]', 'Zn [ppm]', 'As [ppm]',
+'Rb [ppm]', 'Sr [ppm]', 'Y [ppm]', 'Zr [ppm]', 'Nb [ppm]', 'Cd [ppm]',
+'Cs [ppm]', 'Ba [ppm]', 'La [ppm]', 'Ce [ppm]', 'Pr [ppm]', 'Nd [ppm]',
+'Sm [ppm]', 'Eu [ppm]', 'Gd [ppm]', 'Tb [ppm]', 'Dy [ppm]', 'Ho [ppm]',
+'Er [ppm]', 'Tm [ppm]', 'Yb [ppm]', 'Lu [ppm]', 'Hf [ppm]', 'Ta [ppm]',
+'Tl [ppm]', 'Pb [ppm]', 'Th [ppm]', 'U [ppm]', 'Nd143_Nd144', 'Sr87_Sr86',
+'Pb206_Pb204', 'Pb207_Pb204', 'Pb208_Pb204')
+GROUP BY sample_id) WHERE
+(Sample = 'best1992_TAU48' OR Sample = 'best1992_TAU49' OR
+Sample = 'best1992_TAU52' OR Sample = 'best1992_TAU54' OR
+Sample = 'best1992_TOK-A2' OR Sample = 'best1992_COOK-1' OR
+Sample = 'best1992_BB-8-4-4(A)' OR Sample = 'best1992_TOK-A2' OR
+Sample = 'allen1997_5' OR Sample = 'allen1997_6' OR
+Sample = 'weisler2016a_2009-369' OR Sample = 'clark2014_36' OR
+Sample = 'clark2014_51' OR Sample = 'clark2014_53' OR
+Sample = 'clark2014_54' OR Sample = 'clark2014_241' OR
+Sample = 'clark2014_678' OR Sample = 'clark2014_683' OR
+Sample = 'clark2014_707')") %>%
+  Ti_from_TiO2() %>% K_from_K2O() %>% Fe2O3_from_FeO()

@@ -4,7 +4,7 @@ require(osmdata)
 require(patchwork)
 
 #### Fig S17 ####
-OIB <- q33
+OIB <- q35
 OIB %>% group_by(site_name) %>% tally() %>% print(n=30)
 
 OIB <- OIB %>%
@@ -31,10 +31,10 @@ contour <- c("Tatagamatau-source"="black","Tatagamatau-artefact"="#77246C",
              "Malaeloa-source"="black","Malaeloa-artefact"="#D694C9",
              "Maloata-source"="black","Maloata-artefact"="#B262A7")
 
-coast <- getbb("Tutuila Samoa")%>% opq()%>%
+coast <- getbb("Tutuila Samoa") %>% opq() %>%
   add_osm_feature(key = "natural", value = c("coastline")) %>%
   osmdata_sf()
-rivers <- getbb("Tutuila Samoa")%>% opq()%>%
+rivers <- getbb("Tutuila Samoa") %>% opq() %>%
   add_osm_feature(key = "waterway", value = c("river","stream")) %>%
   osmdata_sf()
 

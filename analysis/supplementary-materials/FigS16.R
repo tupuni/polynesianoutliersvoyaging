@@ -30,7 +30,7 @@ contour <- c("Caroline islands"="black","Samoan islands"="black",
 
 #### Fig S16a ####
 ranges_s_OIB[1:6,1:5]
-OIB <- full_join(q28,q29)
+OIB <- full_join(q30,q31)
 OIB[OIB == 0] <- NA # Replace 0 with NA
 
 s <- joined_data %>% dplyr::filter(Sample %in% c(
@@ -94,7 +94,7 @@ S16a
 
 #### Fig S16b ####
 ranges_s_OIB[7,]
-OIB <- q30
+OIB <- q32
 OIB %>% group_by(Location) %>% tally()
 OIB[OIB == 0] <- NA # Replace 0 with NA
 
@@ -153,7 +153,7 @@ S16b
 
 #### Fig S16c ####
 ranges_s_OIB[8,]
-OIB <- q31
+OIB <- q33
 OIB %>% group_by(Location) %>% tally()
 
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-25")) %>%
@@ -215,7 +215,7 @@ S16c
 
 #### Fig S16d ####
 ranges_s_OIB[9,]
-OIB <- q32
+OIB <- q34
 OIB %>% group_by(Location) %>% tally()
 
 s <- joined_data %>% dplyr::filter(Sample %in% c("K-12-26")) %>%

@@ -25,7 +25,7 @@ contour <- c("Caroline islands"="black","Samoan islands"="black",
 
 dir.create(here("analysis","supplementary-materials","FigS15"))
 
-OIB <- full_join(q26, q27)
+OIB <- full_join(q28, q29)
 
 s <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-08","T-12-06","T-12-07","T-12-08","T-12-09","T-12-10",

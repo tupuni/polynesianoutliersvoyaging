@@ -393,7 +393,7 @@ K_12_28_spider|K_12_28
 dev.off()
 
 #### K_12_28 min max ####
-V <- q7 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+V <- q24 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Vanuatu Arc")) %>% dplyr::na_if(0)
 V_minmax <- data.frame (Sample  = c("Vanuatu_min", "Vanuatu_max"),
@@ -422,7 +422,7 @@ V_minmax <- data.frame (Sample  = c("Vanuatu_min", "Vanuatu_max"),
                         Yb = c(min(V[,"Yb"],na.rm=TRUE),max(V[,"Yb"],na.rm=TRUE)),
                         Lu = c(min(V[,"Lu"],na.rm=TRUE),max(V[,"Lu"],na.rm=TRUE)))
 
-B <- q7 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+B <- q24 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
                            Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Bismarck Arc")) %>% dplyr::na_if(0)
 B_minmax <- data.frame (Sample  = c("Bismarck_Arc_min", "Bismarck_Arc_max"),
@@ -451,7 +451,7 @@ B_minmax <- data.frame (Sample  = c("Bismarck_Arc_min", "Bismarck_Arc_max"),
                          Yb = c(min(B[,"Yb"],na.rm=TRUE),max(B[,"Yb"],na.rm=TRUE)),
                          Lu = c(min(B[,"Lu"],na.rm=TRUE),max(B[,"Lu"],na.rm=TRUE)))
 
-L <- q7 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+L <- q24 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Luzon Arc")) %>% dplyr::na_if(0)
 L_minmax <- data.frame (Sample  = c("Luzon_min", "Luzon_max"),
@@ -534,14 +534,11 @@ dev.off()
 
 
 #### K_12_29 spider ####
-d <- q24
+d <- q25
 d[,1:2]
 s_d <- joined_data %>%
-  dplyr::filter(Sample %in% c("E-11-13")) %>%
-  dplyr::select(Sample,Location,lat,long,SiO2,TiO2,Al2O3,MnO,MgO,CaO,Na2O,K2O,
-                Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-                Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-                Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+  dplyr::filter(Sample %in% c("E-11-13"))
+
 d_spider <- full_join(d,s_d) %>%
   mutate(Location = case_when(
     grepl("13303-UA10", Sample) ~ "[UA10] Ureparapara (Vanuatu)",
@@ -639,7 +636,7 @@ emae <- joined_data %>% filter(Sample %in% c(
                 Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
                 Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
-d <- full_join(q25,emae)
+d <- full_join(q26,emae)
 s <- joined_data %>% dplyr::mutate(Location=Sample)
 
 shapes <- c("Vanua Lava "=0,"Ureparapara"=5,"Emae"=4,
@@ -668,7 +665,8 @@ K_12_29_spider|K_12_29
 dev.off()
 
 #### K_12_29 min max ####
-V <- q9 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+q9 >> q27
+V <- q27 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
                            Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Vanuatu Arc")) %>% dplyr::na_if(0)
 V_minmax <- data.frame (Sample  = c("Vanuatu_min", "Vanuatu_max"),
@@ -697,7 +695,7 @@ V_minmax <- data.frame (Sample  = c("Vanuatu_min", "Vanuatu_max"),
                         Yb = c(min(V[,"Yb"],na.rm=TRUE),max(V[,"Yb"],na.rm=TRUE)),
                         Lu = c(min(V[,"Lu"],na.rm=TRUE),max(V[,"Lu"],na.rm=TRUE)))
 
-TF <- q9 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+TF <- q27 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Tonga-Fiji")) %>% dplyr::na_if(0)
 TF_minmax <- data.frame (Sample  = c("Tonga-Fiji_min", "Tonga-Fiji_max"),
@@ -726,7 +724,7 @@ TF_minmax <- data.frame (Sample  = c("Tonga-Fiji_min", "Tonga-Fiji_max"),
                         Yb = c(min(TF[,"Yb"],na.rm=TRUE),max(TF[,"Yb"],na.rm=TRUE)),
                         Lu = c(min(TF[,"Lu"],na.rm=TRUE),max(TF[,"Lu"],na.rm=TRUE)))
 
-L <- q9 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+L <- q27 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
                            Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Luzon Arc")) %>% dplyr::na_if(0)
 L_minmax <- data.frame (Sample  = c("Luzon_min", "Luzon_max"),
