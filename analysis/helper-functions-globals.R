@@ -1,6 +1,10 @@
 library(tidyverse)
 library(here)
 
+## paths to db : insert path to the sqlite files
+path_to_georoc <- "~/Documents/Github/georoc-data/georoc.sqlite"
+path_to_pofatu <- "~/Documents/Github/pofatu-data/dist/pofatu.sqlite"
+
 ## load data
 inventory <- read.csv(here("analysis", "data", "raw_data", "inventory.csv"),
                       header=TRUE, sep=",", stringsAsFactors=FALSE)
@@ -128,12 +132,6 @@ ranges_s_OIB <- joined_data %>% dplyr::filter(Sample %in% c(
   "K-12-24","K-12-25","K-12-26")) %>% ranges_OIB()
 write_csv(ranges_s_OIB, (here(
   "analysis", "data", "derived_data","OIB_ranges.csv")))
-
-
-## paths to db : insert path to the sqlite files
-path_to_georoc <- "~/Documents/Github/georoc-data/georoc.sqlite"
-path_to_pofatu <- "~/Documents/Github/pofatu-data/dist/pofatu.sqlite"
-
 
 ## normalizes trace element values to primitive mantle,
 ## based on PM values from McDonough & Sun (1989,1995)
