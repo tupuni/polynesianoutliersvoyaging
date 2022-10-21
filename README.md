@@ -7,7 +7,7 @@
 
 This repository contains the data and code for our paper:
 
-> Authors, (YYYY). *Title of your paper goes here*. Name of journal/book
+> A. Hermann, P. Gutiérrez, C. Chauvel, R. Maury, C. Liorzou, E. Willie, I. Phillip, R. Forkel, C. Rzymski, S. Bedford (YYYY). *Artefact geochemistry demonstrates long-distance voyaging in the Polynesian Outliers (submitted to Science Advances)*. Name of journal/book
 > <https://doi.org/xxx/xxx>
 
 Our pre-print is online here:
@@ -20,8 +20,7 @@ Our pre-print is online here:
 
 Please cite this compendium as:
 
-> Authors, (2022). *Compendium of R code and data for Title of your
-> paper goes here*. Accessed 15 Sep 2022. Online at
+> A. Hermann, (2022). *Artefact geochemistry demonstrates long-distance voyaging in the Polynesian Outliers*. Accessed 15 Sep 2022. Online at
 > <https://doi.org/xxx/xxx>
 
 ## Contents
