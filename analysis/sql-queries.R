@@ -1314,7 +1314,7 @@ WHERE location_subregion = 'TUTUILA'")
 #### Fig S18 ####
 q36 <- dbGetQuery(pofatu,
 "SELECT s.id AS Sample, s.sample_category,
-s.location_subregion, s.site_name, s.sample_comment,
+s.location_subregion, s.site_name, s.site_comment, s.sample_comment,
 s.location_latitude AS lat, s.location_longitude AS long,
 max(CASE WHEN m.parameter='SiO2 [%]' then m.value END) AS 'SiO2',
 max(CASE WHEN m.parameter='TiO2 [%]' then m.value END) AS 'TiO2',

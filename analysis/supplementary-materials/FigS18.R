@@ -19,14 +19,11 @@ OIB <- OIB %>%
     grepl("MALAELOA", Sample) & Category == "artefact" ~ "Malaeloa-artefact",
     grepl("MALOATA", Sample) & Category == "source" ~ "Maloata-source",
     grepl("MALOATA", Sample) & Category == "artefact" ~ "Maloata-artefact",
-    TRUE ~ "Tutuila")) %>%
-  dplyr::select(
-    Sample,Location,Category,lat,long,SiO2,TiO2,Al2O3,Fe2O3,MnO,MgO,CaO,Na2O,K2O,
-    Li,Sc,Ti,V,Cr,Co,Ni,Cu,Zn,As,Rb,Sr,Y,Zr,Nb,Cd,Cs,Ba,La,Ce,Pr,Nd,
-    Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,Pb,Th,U,K,
-    Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
+    TRUE ~ "Tutuila"))
 OIB %>% dplyr::select(Sample, Location, Category)
 OIB[OIB == 0] <- NA # Replace 0 with NA
+
+OIB[order(OIB$Nb, decreasing = TRUE), ] %>% select("Sample","Location","Nb")
 
 s <- joined_data %>% dplyr::filter(Sample %in% c(
   "E-11-08","T-12-06","T-12-07","T-12-08","T-12-09","T-12-10")) %>%
