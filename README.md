@@ -58,10 +58,10 @@ packages this analysis depends on (also listed in the
 
 ## How to reproduce the analysis
 
--   1- Access and download locally georoc and pofatu repositories
-2- Run the R script [helper-functions-globals](analysis/helper-functions-globals.R) after inserting the path to the sqlite files on your machine
-3- Run the R script [sql-queries](analysis/sql-queries.R)
-4- Run any of the R scripts in [:file_folder: paper](/analysis/paper) or in [:file_folder:supplementary-materials](/analysis/supplementary-materials) to reproduce the figures in the paper or in the supplementary materials.
+-   1/ Access and download locally georoc and pofatu repositories
+-   2/ Run the R script [helper-functions-globals](analysis/helper-functions-globals.R) after inserting the path to the sqlite files on your machine
+-   3/ Run the R script [sql-queries](analysis/sql-queries.R)
+-   4/ Run any of the R scripts in [paper](/analysis/paper) or in [supplementary-materials](/analysis/supplementary-materials) to reproduce the figures in the paper or in the supplementary materials.
 
 ### Licenses
 
