@@ -56,6 +56,11 @@ packages this analysis depends on (also listed in the
 `analysis/paper/paper.Rmd` and knit to produce the `paper.docx`, or run
 `rmarkdown::render("analysis/paper/paper.Rmd")` in the R console
 
+## How to reproduce the analysis
+
+- Access and download locally georoc and pofatu repositories
+
+
 ### Licenses
 
 **Text and figures :**
