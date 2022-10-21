@@ -1,9 +1,9 @@
 Package: polynesianoutliersvoyaging
-Title: What the Package Does (One Line, Title Case)
+Title: Code and data for analysis of geochemical data in Hermann et al. (paper submitted to Science Advances).
 Version: 0.0.0.9000
 Authors@R:
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person("Aymeric", "Hermann", , "aymeric.hermann@cnrs.fr", role = c("aut", "cre"))
+Description: Analyses and figures in Hermann et al. (paper submitted to Science Advances).
 License: MIT + file LICENSE
 ByteCompile: true
 Encoding: UTF-8
