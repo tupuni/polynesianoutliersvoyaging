@@ -1,10 +1,6 @@
 require(here)
 require(tidyverse)
-require(RSQLite)
 require(patchwork)
-
-georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
-pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
 
 #### Fig S19 ####
 OIB <- q36

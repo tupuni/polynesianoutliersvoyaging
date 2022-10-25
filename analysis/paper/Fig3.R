@@ -1,6 +1,5 @@
 require(here)
 require(tidyverse)
-require(RSQLite)
 require(patchwork)
 require(stats)
 require(FactoMineR)

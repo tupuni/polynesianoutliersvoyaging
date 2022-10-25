@@ -1,6 +1,5 @@
 require(tidyverse)
 require(RSQLite)
-require(DBI)
 
 georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
 pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
