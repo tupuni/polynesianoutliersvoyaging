@@ -800,12 +800,17 @@ q19 %>% group_by(Location) %>% tally()
 
 #### Fig S11 ####
 q20 <- dbGetQuery(georoc,
-"SELECT * FROM 'sample'
+"SELECT id AS Sample, file_id, LOCATION,
+LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
+ND143_ND144 AS Nd143_Nd144, SR87_SR86 AS Sr87_Sr86,
+PB206_PB204 AS Pb206_Pb204, PB207_PB204 AS Pb207_Pb204,
+PB208_PB204 AS Pb208_Pb204
+FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE='VOL' AND
 (LONGITUDE_MAX > 90 OR LONGITUDE_MAX < 0) AND
 LATITUDE_MAX < 20 AND TECTONIC_SETTING='CONVERGENT MARGIN'") %>%
   get_georoc_location() %>% dplyr::filter(Location != "na") %>%
-  rename_georoc() %>% dplyr::select(
+  dplyr::select(
     Sample,Location,lat,long,Sr87_Sr86,Nd143_Nd144,Pb206_Pb204,Pb207_Pb204,Pb208_Pb204)
 
 #### Fig S13 ####
