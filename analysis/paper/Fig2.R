@@ -95,7 +95,7 @@ B <- ggplot(OIB, aes(Nb_La)) +
 B
 
 #save
-pdf(here("analysis","figures","Figure_2.pdf"), width=10, height=10)
+pdf(here("analysis","figures","Figure_2.pdf"), width=10, height=16)
 A / B
 dev.off()
 
