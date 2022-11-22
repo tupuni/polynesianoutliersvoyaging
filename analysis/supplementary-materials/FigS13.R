@@ -665,7 +665,6 @@ K_12_29_spider|K_12_29
 dev.off()
 
 #### K_12_29 min max ####
-q9 >> q27
 V <- q27 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
                            Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Vanuatu Arc")) %>% dplyr::na_if(0)
