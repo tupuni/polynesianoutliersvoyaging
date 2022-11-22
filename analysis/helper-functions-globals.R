@@ -151,7 +151,7 @@ normalize_to_pm <- function(df) {
     gather("var","conc",Cs:Lu)
   return(df_normalized)
 }
-
+joined_data_norm <- normalize_to_pm(joined_data)
 
 ## georoc_location_from_file_id()
 get_georoc_location <- function(georoc_output) {

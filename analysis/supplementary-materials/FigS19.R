@@ -107,7 +107,8 @@ p1 <- OIB %>%
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(.23,.36)) + scale_y_continuous(limits=c(13.6,16.3)) +
+  #scale_x_continuous(limits=c(.23,.36)) +
+  scale_y_continuous(limits=c(13.6,16.3)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -121,7 +122,8 @@ p2 <- OIB %>%
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(.23,.36)) + scale_y_continuous(limits=c(4,7.5)) +
+  #scale_x_continuous(limits=c(.23,.36)) +
+  scale_y_continuous(limits=c(4,7.5)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -135,7 +137,8 @@ p3 <- OIB %>%
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(.23,.36)) + scale_y_continuous(limits=c(3.5,6)) +
+  #scale_x_continuous(limits=c(.23,.36)) +
+  scale_y_continuous(limits=c(3.5,6)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -149,7 +152,8 @@ p4 <- OIB %>%
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(40,110)) + scale_y_continuous(limits=c(450,850)) +
+  #scale_x_continuous(limits=c(40,110)) +
+  scale_y_continuous(limits=c(450,850)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -162,7 +166,8 @@ p5 <- OIB %>%
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(40,110)) + scale_y_continuous(limits=c(20,60)) +
+  #scale_x_continuous(limits=c(40,110)) +
+  scale_y_continuous(limits=c(20,60)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
@@ -175,7 +180,8 @@ p6 <- OIB %>%
   geom_point(size=3, stroke=.25) + geom_point(data=s, size=3) +
   scale_shape_manual(values=shapes) +
   scale_fill_manual(values=cols) + scale_color_manual(values=contour) +
-  scale_x_continuous(limits=c(40,110)) + scale_y_continuous(limits=c(30,60)) +
+  #scale_x_continuous(limits=c(40,110)) +
+  scale_y_continuous(limits=c(30,60)) +
   theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "white"), title = element_blank(),
