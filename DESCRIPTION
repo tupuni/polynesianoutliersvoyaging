@@ -10,6 +10,20 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
-Imports: here, tidyverse, RSQLite, stats, gridExtra, FactoMineR, factoextra, ggridges, patchwork, osmdata
-Suggests: devtools,
-    git2r
+Imports:
+  sf,
+  BBmisc,
+  maps,
+  here,
+  tidyverse,
+  RSQLite,
+  stats,
+  gridExtra,
+  FactoMineR,
+  factoextra,
+  ggridges,
+  patchwork,
+  osmdata
+Suggests:
+  devtools,
+  git2r
