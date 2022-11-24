@@ -142,7 +142,7 @@ sun <- read.csv(here(
 normalize_to_pm <- function(df) {
   df_normalized <- df %>%
     dplyr::transmute(
-      Sample=Sample, Cs=Cs/sun[2,"Cs"],Rb=Rb/sun[2,"Rb"],Ba=Ba/sun[2,"Ba"],
+      Sample=Sample, Location=Location, Cs=Cs/sun[2,"Cs"],Rb=Rb/sun[2,"Rb"],Ba=Ba/sun[2,"Ba"],
       Th=Th/sun[2,"Th"],U=U/sun[2,"U"],Nb=Nb/sun[2,"Nb"],Ta=Ta/sun[2,"Ta"],La=La/sun[2,"La"],
       Ce=Ce/sun[2,"Ce"],Pr=Pr/sun[2,"Pr"],Pb=Pb/sun[2,"Pb"],Nd=Nd/sun[2,"Nd"],Sr=Sr/sun[2,"Sr"],
       Sm=Sm/sun[2,"Sm"],Zr=Zr/sun[2,"Zr"],Hf=Hf/sun[2,"Hf"],Ti=Ti/sun[2,"Ti"],Eu=Eu/sun[2,"Eu"],

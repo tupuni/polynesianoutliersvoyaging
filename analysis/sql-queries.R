@@ -905,10 +905,11 @@ LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
 `TIO2(WT%)` AS TiO2, `K2O(WT%)`AS K2O,
 `CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
 `U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
-`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
-`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
-`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
-`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `PB(PPM)` AS Pb, `ND(PPM)` AS Nd,
+`SR(PPM)` AS Sr, `SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `HF(PPM)` AS Hf,
+`TI(PPM)` AS Ti, `EU(PPM)` AS Eu, `GD(PPM)` AS Gd, `TB(PPM)` AS Tb,
+`DY(PPM)` AS Dy, `HO(PPM)` AS Ho, `Y(PPM)` AS Y, `ER(PPM)` AS Er,
+`LI(PPM)` AS Li, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
 FROM 'sample'
 WHERE
 id='13423-E5/11' OR
@@ -943,10 +944,11 @@ LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
 `SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `K2O(WT%)`AS K2O,
 `CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
 `U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
-`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
-`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
-`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
-`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `PB(PPM)` AS Pb, `ND(PPM)` AS Nd,
+`SR(PPM)` AS Sr, `SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `HF(PPM)` AS Hf,
+`TI(PPM)` AS Ti, `EU(PPM)` AS Eu, `GD(PPM)` AS Gd, `TB(PPM)` AS Tb,
+`DY(PPM)` AS Dy, `HO(PPM)` AS Ho, `Y(PPM)` AS Y, `ER(PPM)` AS Er,
+`LI(PPM)` AS Li, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
 FROM 'sample'
 WHERE LAND_OR_SEA = 'SAE' AND ROCK_TYPE = 'VOL' AND
 (long > 90 OR long < 0) AND
@@ -966,10 +968,11 @@ LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
 `SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `K2O(WT%)`AS K2O,
 `CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
 `U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
-`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
-`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
-`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
-`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `PB(PPM)` AS Pb, `ND(PPM)` AS Nd,
+`SR(PPM)` AS Sr, `SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `HF(PPM)` AS Hf,
+`TI(PPM)` AS Ti, `EU(PPM)` AS Eu, `GD(PPM)` AS Gd, `TB(PPM)` AS Tb,
+`DY(PPM)` AS Dy, `HO(PPM)` AS Ho, `Y(PPM)` AS Y, `ER(PPM)` AS Er,
+`LI(PPM)` AS Li, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
 FROM 'sample'
 WHERE
 id = '70512' OR
@@ -1006,10 +1009,11 @@ LOCATION, LATITUDE_MAX AS lat, LONGITUDE_MAX AS long,
 `SIO2(WT%)`AS SiO2, `TIO2(WT%)` AS TiO2, `K2O(WT%)`AS K2O,
 `CS(PPM)` AS Cs, `RB(PPM)` AS Rb, `BA(PPM)` AS Ba, `TH(PPM)` AS Th,
 `U(PPM)` AS U, `NB(PPM)` AS Nb, `TA(PPM)` AS Ta, `LA(PPM)` AS La,
-`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `ND(PPM)` AS Nd, `SR(PPM)` AS Sr,
-`SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `TI(PPM)` AS Ti, `EU(PPM)` AS Eu,
-`GD(PPM)` AS Gd, `TB(PPM)` AS Tb, `DY(PPM)` AS Dy, `Y(PPM)` AS Y,
-`ER(PPM)` AS Er, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
+`CE(PPM)` AS Ce, `PR(PPM)` AS Pr, `PB(PPM)` AS Pb, `ND(PPM)` AS Nd,
+`SR(PPM)` AS Sr, `SM(PPM)` AS Sm, `ZR(PPM)` AS Zr, `HF(PPM)` AS Hf,
+`TI(PPM)` AS Ti, `EU(PPM)` AS Eu, `GD(PPM)` AS Gd, `TB(PPM)` AS Tb,
+`DY(PPM)` AS Dy, `HO(PPM)` AS Ho, `Y(PPM)` AS Y, `ER(PPM)` AS Er,
+`LI(PPM)` AS Li, `YB(PPM)` AS Yb, `LU(PPM)` AS Lu
 FROM 'sample'
 WHERE LAND_OR_SEA='SAE' AND ROCK_TYPE='VOL' AND
 (long > 90 OR long < 0) AND lat < 20 AND

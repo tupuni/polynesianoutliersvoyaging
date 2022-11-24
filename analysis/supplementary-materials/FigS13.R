@@ -73,17 +73,12 @@ d_spider <- d %>%
     grepl("reepmeyer2008_ANU9009", Sample) ~ "[ANU9009] Vanua Lava (Vanuatu)",
     grepl("reepmeyer2008_ANU9008", Sample) ~ "[ANU9008] Vanua Lava (Vanuatu)",
     grepl("reepmeyer2008_ANU9003", Sample) ~ "[ANU9003] Vanua Lava (Vanuatu)")) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("E-11-03")) %>%
   dplyr::mutate(Location = Sample) %>%
   dplyr::mutate(Island = Sample) %>%
-  dplyr::select(Sample,Location,Island,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
-
 
 shapes <- c("[ANU9006] Vanua Lava (Vanuatu)"=0,
             "[ANU9009] Vanua Lava (Vanuatu)"=1,
@@ -191,15 +186,11 @@ d <- joined_data %>% dplyr::filter(Sample %in% c(
     grepl("E-11-19", Sample) ~ "[E-11-19] Emae (Vanuatu)"))
 
 d_spider <- d %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("E-11-06","E-11-07")) %>%
   dplyr::mutate(Location = Sample) %>%
   dplyr::mutate(Island = Sample) %>%
-  dplyr::select(Sample,Location,Island,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
 
 shapes <- c("[E-11-10] Emae (Vanuatu)"=0,
@@ -288,14 +279,10 @@ d_spider <- q22 %>%
     grepl("13436-2654A", Sample) ~ "[2654A] Sulu (New Britain)",
     grepl("13437-F5/2", Sample) ~ "[F5/2] Wulai Is.(New Britain)",
     grepl("634326", Sample) ~ "[634326] Manam Is. (New Britain)")) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-28")) %>%
   dplyr::mutate(Location = Sample) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
   normalize_to_pm()
 
 shapes <- c("[2649] Sulu (New Britain)"=0,
@@ -394,8 +381,10 @@ dev.off()
 
 #### K_12_28 min max ####
 V <- q24 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
-                          Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+                          Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                          Li,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Vanuatu Arc")) %>% dplyr::na_if(0)
+
 V_minmax <- data.frame (Sample  = c("Vanuatu_min", "Vanuatu_max"),
                         Location = c("Vanuatu Arc", "Vanuatu Arc"),
                         Cs = c(min(V[,"Cs"],na.rm=TRUE),max(V[,"Cs"],na.rm=TRUE)),
@@ -408,51 +397,61 @@ V_minmax <- data.frame (Sample  = c("Vanuatu_min", "Vanuatu_max"),
                         La = c(min(V[,"La"],na.rm=TRUE),max(V[,"La"],na.rm=TRUE)),
                         Ce = c(min(V[,"Ce"],na.rm=TRUE),max(V[,"Ce"],na.rm=TRUE)),
                         Pr = c(min(V[,"Pr"],na.rm=TRUE),max(V[,"Pr"],na.rm=TRUE)),
+                        Pb = c(min(V[,"Pb"],na.rm=TRUE),max(V[,"Pb"],na.rm=TRUE)),
                         Nd = c(min(V[,"Nd"],na.rm=TRUE),max(V[,"Nd"],na.rm=TRUE)),
                         Sr = c(min(V[,"Sr"],na.rm=TRUE),max(V[,"Sr"],na.rm=TRUE)),
                         Sm = c(min(V[,"Sm"],na.rm=TRUE),max(V[,"Sm"],na.rm=TRUE)),
                         Zr = c(min(V[,"Zr"],na.rm=TRUE),max(V[,"Zr"],na.rm=TRUE)),
+                        Hf = c(min(V[,"Hf"],na.rm=TRUE),max(V[,"Hf"],na.rm=TRUE)),
                         Ti = c(min(V[,"Ti"],na.rm=TRUE),max(V[,"Ti"],na.rm=TRUE)),
                         Eu = c(min(V[,"Eu"],na.rm=TRUE),max(V[,"Eu"],na.rm=TRUE)),
                         Gd = c(min(V[,"Gd"],na.rm=TRUE),max(V[,"Gd"],na.rm=TRUE)),
                         Tb = c(min(V[,"Tb"],na.rm=TRUE),max(V[,"Tb"],na.rm=TRUE)),
                         Dy = c(min(V[,"Dy"],na.rm=TRUE),max(V[,"Dy"],na.rm=TRUE)),
+                        Ho = c(min(V[,"Ho"],na.rm=TRUE),max(V[,"Ho"],na.rm=TRUE)),
                         Y = c(min(V[,"Y"],na.rm=TRUE),max(V[,"Y"],na.rm=TRUE)),
                         Er = c(min(V[,"Er"],na.rm=TRUE),max(V[,"Er"],na.rm=TRUE)),
+                        Li = c(min(V[,"Li"],na.rm=TRUE),max(V[,"Li"],na.rm=TRUE)),
                         Yb = c(min(V[,"Yb"],na.rm=TRUE),max(V[,"Yb"],na.rm=TRUE)),
                         Lu = c(min(V[,"Lu"],na.rm=TRUE),max(V[,"Lu"],na.rm=TRUE)))
 
 B <- q24 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
-                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+                           Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                           Li,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Bismarck Arc")) %>% dplyr::na_if(0)
 B_minmax <- data.frame (Sample  = c("Bismarck_Arc_min", "Bismarck_Arc_max"),
-                         Location = c("Bismarck Arc", "Bismarck Arc"),
-                         Cs = c(min(B[,"Cs"],na.rm=TRUE),max(B[,"Cs"],na.rm=TRUE)),
-                         Rb = c(min(B[,"Rb"],na.rm=TRUE),max(B[,"Rb"],na.rm=TRUE)),
-                         Ba = c(min(B[,"Ba"],na.rm=TRUE),max(B[,"Ba"],na.rm=TRUE)),
-                         Th = c(min(B[,"Th"],na.rm=TRUE),max(B[,"Th"],na.rm=TRUE)),
-                         U = c(min(B[,"U"],na.rm=TRUE),max(B[,"U"],na.rm=TRUE)),
-                         Nb = c(min(B[,"Nb"],na.rm=TRUE),max(B[,"Nb"],na.rm=TRUE)),
-                         Ta = c(min(B[,"Ta"],na.rm=TRUE),max(B[,"Ta"],na.rm=TRUE)),
-                         La = c(min(B[,"La"],na.rm=TRUE),max(B[,"La"],na.rm=TRUE)),
-                         Ce = c(min(B[,"Ce"],na.rm=TRUE),max(B[,"Ce"],na.rm=TRUE)),
-                         Pr = c(min(B[,"Pr"],na.rm=TRUE),max(B[,"Pr"],na.rm=TRUE)),
-                         Nd = c(min(B[,"Nd"],na.rm=TRUE),max(B[,"Nd"],na.rm=TRUE)),
-                         Sr = c(min(B[,"Sr"],na.rm=TRUE),max(B[,"Sr"],na.rm=TRUE)),
-                         Sm = c(min(B[,"Sm"],na.rm=TRUE),max(B[,"Sm"],na.rm=TRUE)),
-                         Zr = c(min(B[,"Zr"],na.rm=TRUE),max(B[,"Zr"],na.rm=TRUE)),
-                         Ti = c(min(B[,"Ti"],na.rm=TRUE),max(B[,"Ti"],na.rm=TRUE)),
-                         Eu = c(min(B[,"Eu"],na.rm=TRUE),max(B[,"Eu"],na.rm=TRUE)),
-                         Gd = c(min(B[,"Gd"],na.rm=TRUE),max(B[,"Gd"],na.rm=TRUE)),
-                         Tb = c(min(B[,"Tb"],na.rm=TRUE),max(B[,"Tb"],na.rm=TRUE)),
-                         Dy = c(min(B[,"Dy"],na.rm=TRUE),max(B[,"Dy"],na.rm=TRUE)),
-                         Y = c(min(B[,"Y"],na.rm=TRUE),max(B[,"Y"],na.rm=TRUE)),
-                         Er = c(min(B[,"Er"],na.rm=TRUE),max(B[,"Er"],na.rm=TRUE)),
-                         Yb = c(min(B[,"Yb"],na.rm=TRUE),max(B[,"Yb"],na.rm=TRUE)),
-                         Lu = c(min(B[,"Lu"],na.rm=TRUE),max(B[,"Lu"],na.rm=TRUE)))
+                        Location = c("Bismarck Arc", "Bismarck Arc"),
+                        Cs = c(min(B[,"Cs"],na.rm=TRUE),max(B[,"Cs"],na.rm=TRUE)),
+                        Rb = c(min(B[,"Rb"],na.rm=TRUE),max(B[,"Rb"],na.rm=TRUE)),
+                        Ba = c(min(B[,"Ba"],na.rm=TRUE),max(B[,"Ba"],na.rm=TRUE)),
+                        Th = c(min(B[,"Th"],na.rm=TRUE),max(B[,"Th"],na.rm=TRUE)),
+                        U = c(min(B[,"U"],na.rm=TRUE),max(B[,"U"],na.rm=TRUE)),
+                        Nb = c(min(B[,"Nb"],na.rm=TRUE),max(B[,"Nb"],na.rm=TRUE)),
+                        Ta = c(min(B[,"Ta"],na.rm=TRUE),max(B[,"Ta"],na.rm=TRUE)),
+                        La = c(min(B[,"La"],na.rm=TRUE),max(B[,"La"],na.rm=TRUE)),
+                        Ce = c(min(B[,"Ce"],na.rm=TRUE),max(B[,"Ce"],na.rm=TRUE)),
+                        Pr = c(min(B[,"Pr"],na.rm=TRUE),max(B[,"Pr"],na.rm=TRUE)),
+                        Pb = c(min(B[,"Pb"],na.rm=TRUE),max(B[,"Pb"],na.rm=TRUE)),
+                        Nd = c(min(B[,"Nd"],na.rm=TRUE),max(B[,"Nd"],na.rm=TRUE)),
+                        Sr = c(min(B[,"Sr"],na.rm=TRUE),max(B[,"Sr"],na.rm=TRUE)),
+                        Sm = c(min(B[,"Sm"],na.rm=TRUE),max(B[,"Sm"],na.rm=TRUE)),
+                        Zr = c(min(B[,"Zr"],na.rm=TRUE),max(B[,"Zr"],na.rm=TRUE)),
+                        Hf = c(min(B[,"Hf"],na.rm=TRUE),max(B[,"Hf"],na.rm=TRUE)),
+                        Ti = c(min(B[,"Ti"],na.rm=TRUE),max(B[,"Ti"],na.rm=TRUE)),
+                        Eu = c(min(B[,"Eu"],na.rm=TRUE),max(B[,"Eu"],na.rm=TRUE)),
+                        Gd = c(min(B[,"Gd"],na.rm=TRUE),max(B[,"Gd"],na.rm=TRUE)),
+                        Tb = c(min(B[,"Tb"],na.rm=TRUE),max(B[,"Tb"],na.rm=TRUE)),
+                        Dy = c(min(B[,"Dy"],na.rm=TRUE),max(B[,"Dy"],na.rm=TRUE)),
+                        Ho = c(min(B[,"Ho"],na.rm=TRUE),max(B[,"Ho"],na.rm=TRUE)),
+                        Y = c(min(B[,"Y"],na.rm=TRUE),max(B[,"Y"],na.rm=TRUE)),
+                        Er = c(min(B[,"Er"],na.rm=TRUE),max(B[,"Er"],na.rm=TRUE)),
+                        Li = c(min(B[,"Li"],na.rm=TRUE),max(B[,"Li"],na.rm=TRUE)),
+                        Yb = c(min(B[,"Yb"],na.rm=TRUE),max(B[,"Yb"],na.rm=TRUE)),
+                        Lu = c(min(B[,"Lu"],na.rm=TRUE),max(B[,"Lu"],na.rm=TRUE)))
 
 L <- q24 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
-                          Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+                           Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                           Li,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Luzon Arc")) %>% dplyr::na_if(0)
 L_minmax <- data.frame (Sample  = c("Luzon_min", "Luzon_max"),
                         Location = c("Luzon Arc", "Luzon Arc"),
@@ -470,13 +469,16 @@ L_minmax <- data.frame (Sample  = c("Luzon_min", "Luzon_max"),
                         Sr = c(min(L[,"Sr"],na.rm=TRUE),max(L[,"Sr"],na.rm=TRUE)),
                         Sm = c(min(L[,"Sm"],na.rm=TRUE),max(L[,"Sm"],na.rm=TRUE)),
                         Zr = c(min(L[,"Zr"],na.rm=TRUE),max(L[,"Zr"],na.rm=TRUE)),
+                        Hf = c(min(L[,"Hf"],na.rm=TRUE),max(L[,"Hf"],na.rm=TRUE)),
                         Ti = c(min(L[,"Ti"],na.rm=TRUE),max(L[,"Ti"],na.rm=TRUE)),
                         Eu = c(min(L[,"Eu"],na.rm=TRUE),max(L[,"Eu"],na.rm=TRUE)),
                         Gd = c(min(L[,"Gd"],na.rm=TRUE),max(L[,"Gd"],na.rm=TRUE)),
                         Tb = c(min(L[,"Tb"],na.rm=TRUE),max(L[,"Tb"],na.rm=TRUE)),
                         Dy = c(min(L[,"Dy"],na.rm=TRUE),max(L[,"Dy"],na.rm=TRUE)),
+                        Ho = c(min(L[,"Ho"],na.rm=TRUE),max(L[,"Ho"],na.rm=TRUE)),
                         Y = c(min(L[,"Y"],na.rm=TRUE),max(L[,"Y"],na.rm=TRUE)),
                         Er = c(min(L[,"Er"],na.rm=TRUE),max(L[,"Er"],na.rm=TRUE)),
+                        Li = c(min(L[,"Li"],na.rm=TRUE),max(L[,"Li"],na.rm=TRUE)),
                         Yb = c(min(L[,"Yb"],na.rm=TRUE),max(L[,"Yb"],na.rm=TRUE)),
                         Lu = c(min(L[,"Lu"],na.rm=TRUE),max(L[,"Lu"],na.rm=TRUE)))
 
@@ -486,8 +488,9 @@ d_spider <- d %>% normalize_to_pm()
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-28")) %>%
   dplyr::mutate(Location = Sample) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                Li,Yb,Lu) %>%
   normalize_to_pm()
 
 shapes <- c("Vanuatu Arc"=0,
@@ -548,14 +551,16 @@ d_spider <- full_join(d,s_d) %>%
     grepl("1871790", Sample) ~ "[1871790] Buhias Is. (Indonesia)",
     grepl("144138-KS094", Sample) ~ "[KS094] Cebu (Philippines)",
     grepl("E-11-13", Sample) ~ "[E-11-13] Emae (Vanuatu)")) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                Li,Yb,Lu) %>%
   normalize_to_pm()
 
 s_spider <- joined_data %>% filter(Sample %in% c("K-12-29")) %>%
   mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29")) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                Li,Yb,Lu) %>%
   normalize_to_pm()
 
 
@@ -666,7 +671,8 @@ dev.off()
 
 #### K_12_29 min max ####
 V <- q27 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
-                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+                           Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                           Li,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Vanuatu Arc")) %>% dplyr::na_if(0)
 V_minmax <- data.frame (Sample  = c("Vanuatu_min", "Vanuatu_max"),
                         Location = c("Vanuatu Arc", "Vanuatu Arc"),
@@ -680,22 +686,27 @@ V_minmax <- data.frame (Sample  = c("Vanuatu_min", "Vanuatu_max"),
                         La = c(min(V[,"La"],na.rm=TRUE),max(V[,"La"],na.rm=TRUE)),
                         Ce = c(min(V[,"Ce"],na.rm=TRUE),max(V[,"Ce"],na.rm=TRUE)),
                         Pr = c(min(V[,"Pr"],na.rm=TRUE),max(V[,"Pr"],na.rm=TRUE)),
+                        Pb = c(min(V[,"Pb"],na.rm=TRUE),max(V[,"Pb"],na.rm=TRUE)),
                         Nd = c(min(V[,"Nd"],na.rm=TRUE),max(V[,"Nd"],na.rm=TRUE)),
                         Sr = c(min(V[,"Sr"],na.rm=TRUE),max(V[,"Sr"],na.rm=TRUE)),
                         Sm = c(min(V[,"Sm"],na.rm=TRUE),max(V[,"Sm"],na.rm=TRUE)),
                         Zr = c(min(V[,"Zr"],na.rm=TRUE),max(V[,"Zr"],na.rm=TRUE)),
+                        Hf = c(min(V[,"Hf"],na.rm=TRUE),max(V[,"Hf"],na.rm=TRUE)),
                         Ti = c(min(V[,"Ti"],na.rm=TRUE),max(V[,"Ti"],na.rm=TRUE)),
                         Eu = c(min(V[,"Eu"],na.rm=TRUE),max(V[,"Eu"],na.rm=TRUE)),
                         Gd = c(min(V[,"Gd"],na.rm=TRUE),max(V[,"Gd"],na.rm=TRUE)),
                         Tb = c(min(V[,"Tb"],na.rm=TRUE),max(V[,"Tb"],na.rm=TRUE)),
                         Dy = c(min(V[,"Dy"],na.rm=TRUE),max(V[,"Dy"],na.rm=TRUE)),
+                        Ho = c(min(V[,"Ho"],na.rm=TRUE),max(V[,"Ho"],na.rm=TRUE)),
                         Y = c(min(V[,"Y"],na.rm=TRUE),max(V[,"Y"],na.rm=TRUE)),
                         Er = c(min(V[,"Er"],na.rm=TRUE),max(V[,"Er"],na.rm=TRUE)),
+                        Li = c(min(V[,"Li"],na.rm=TRUE),max(V[,"Li"],na.rm=TRUE)),
                         Yb = c(min(V[,"Yb"],na.rm=TRUE),max(V[,"Yb"],na.rm=TRUE)),
                         Lu = c(min(V[,"Lu"],na.rm=TRUE),max(V[,"Lu"],na.rm=TRUE)))
 
 TF <- q27 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
-                          Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+                            Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                            Li,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Tonga-Fiji")) %>% dplyr::na_if(0)
 TF_minmax <- data.frame (Sample  = c("Tonga-Fiji_min", "Tonga-Fiji_max"),
                         Location = c("Tonga-Fiji", "Tonga-Fiji"),
@@ -709,57 +720,68 @@ TF_minmax <- data.frame (Sample  = c("Tonga-Fiji_min", "Tonga-Fiji_max"),
                         La = c(min(TF[,"La"],na.rm=TRUE),max(TF[,"La"],na.rm=TRUE)),
                         Ce = c(min(TF[,"Ce"],na.rm=TRUE),max(TF[,"Ce"],na.rm=TRUE)),
                         Pr = c(min(TF[,"Pr"],na.rm=TRUE),max(TF[,"Pr"],na.rm=TRUE)),
+                        Pb = c(min(TF[,"Pb"],na.rm=TRUE),max(TF[,"Pb"],na.rm=TRUE)),
                         Nd = c(min(TF[,"Nd"],na.rm=TRUE),max(TF[,"Nd"],na.rm=TRUE)),
                         Sr = c(min(TF[,"Sr"],na.rm=TRUE),max(TF[,"Sr"],na.rm=TRUE)),
                         Sm = c(min(TF[,"Sm"],na.rm=TRUE),max(TF[,"Sm"],na.rm=TRUE)),
                         Zr = c(min(TF[,"Zr"],na.rm=TRUE),max(TF[,"Zr"],na.rm=TRUE)),
+                        Hf = c(min(TF[,"Hf"],na.rm=TRUE),max(TF[,"Hf"],na.rm=TRUE)),
                         Ti = c(min(TF[,"Ti"],na.rm=TRUE),max(TF[,"Ti"],na.rm=TRUE)),
                         Eu = c(min(TF[,"Eu"],na.rm=TRUE),max(TF[,"Eu"],na.rm=TRUE)),
                         Gd = c(min(TF[,"Gd"],na.rm=TRUE),max(TF[,"Gd"],na.rm=TRUE)),
                         Tb = c(min(TF[,"Tb"],na.rm=TRUE),max(TF[,"Tb"],na.rm=TRUE)),
                         Dy = c(min(TF[,"Dy"],na.rm=TRUE),max(TF[,"Dy"],na.rm=TRUE)),
+                        Ho = c(min(TF[,"Ho"],na.rm=TRUE),max(TF[,"Ho"],na.rm=TRUE)),
                         Y = c(min(TF[,"Y"],na.rm=TRUE),max(TF[,"Y"],na.rm=TRUE)),
                         Er = c(min(TF[,"Er"],na.rm=TRUE),max(TF[,"Er"],na.rm=TRUE)),
+                        Li = c(min(TF[,"Li"],na.rm=TRUE),max(TF[,"Li"],na.rm=TRUE)),
                         Yb = c(min(TF[,"Yb"],na.rm=TRUE),max(TF[,"Yb"],na.rm=TRUE)),
                         Lu = c(min(TF[,"Lu"],na.rm=TRUE),max(TF[,"Lu"],na.rm=TRUE)))
 
 L <- q27 %>% dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
-                           Ce,Pr,Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+                           Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                           Li,Yb,Lu) %>%
   dplyr::filter(Location %in% c("Luzon Arc")) %>% dplyr::na_if(0)
 L_minmax <- data.frame (Sample  = c("Luzon_min", "Luzon_max"),
                          Location = c("Luzon Arc", "Luzon Arc"),
-                         Cs = c(min(L[,"Cs"],na.rm=TRUE),max(L[,"Cs"],na.rm=TRUE)),
-                         Rb = c(min(L[,"Rb"],na.rm=TRUE),max(L[,"Rb"],na.rm=TRUE)),
-                         Ba = c(min(L[,"Ba"],na.rm=TRUE),max(L[,"Ba"],na.rm=TRUE)),
-                         Th = c(min(L[,"Th"],na.rm=TRUE),max(L[,"Th"],na.rm=TRUE)),
-                         U = c(min(L[,"U"],na.rm=TRUE),max(L[,"U"],na.rm=TRUE)),
-                         Nb = c(min(L[,"Nb"],na.rm=TRUE),max(L[,"Nb"],na.rm=TRUE)),
-                         Ta = c(min(L[,"Ta"],na.rm=TRUE),max(L[,"Ta"],na.rm=TRUE)),
-                         La = c(min(L[,"La"],na.rm=TRUE),max(L[,"La"],na.rm=TRUE)),
-                         Ce = c(min(L[,"Ce"],na.rm=TRUE),max(L[,"Ce"],na.rm=TRUE)),
-                         Pr = c(min(L[,"Pr"],na.rm=TRUE),max(L[,"Pr"],na.rm=TRUE)),
-                         Nd = c(min(L[,"Nd"],na.rm=TRUE),max(L[,"Nd"],na.rm=TRUE)),
-                         Sr = c(min(L[,"Sr"],na.rm=TRUE),max(L[,"Sr"],na.rm=TRUE)),
-                         Sm = c(min(L[,"Sm"],na.rm=TRUE),max(L[,"Sm"],na.rm=TRUE)),
-                         Zr = c(min(L[,"Zr"],na.rm=TRUE),max(L[,"Zr"],na.rm=TRUE)),
-                         Ti = c(min(L[,"Ti"],na.rm=TRUE),max(L[,"Ti"],na.rm=TRUE)),
-                         Eu = c(min(L[,"Eu"],na.rm=TRUE),max(L[,"Eu"],na.rm=TRUE)),
-                         Gd = c(min(L[,"Gd"],na.rm=TRUE),max(L[,"Gd"],na.rm=TRUE)),
-                         Tb = c(min(L[,"Tb"],na.rm=TRUE),max(L[,"Tb"],na.rm=TRUE)),
-                         Dy = c(min(L[,"Dy"],na.rm=TRUE),max(L[,"Dy"],na.rm=TRUE)),
-                         Y = c(min(L[,"Y"],na.rm=TRUE),max(L[,"Y"],na.rm=TRUE)),
-                         Er = c(min(L[,"Er"],na.rm=TRUE),max(L[,"Er"],na.rm=TRUE)),
-                         Yb = c(min(L[,"Yb"],na.rm=TRUE),max(L[,"Yb"],na.rm=TRUE)),
-                         Lu = c(min(L[,"Lu"],na.rm=TRUE),max(L[,"Lu"],na.rm=TRUE)))
+                        Cs = c(min(L[,"Cs"],na.rm=TRUE),max(L[,"Cs"],na.rm=TRUE)),
+                        Rb = c(min(L[,"Rb"],na.rm=TRUE),max(L[,"Rb"],na.rm=TRUE)),
+                        Ba = c(min(L[,"Ba"],na.rm=TRUE),max(L[,"Ba"],na.rm=TRUE)),
+                        Th = c(min(L[,"Th"],na.rm=TRUE),max(L[,"Th"],na.rm=TRUE)),
+                        U = c(min(L[,"U"],na.rm=TRUE),max(L[,"U"],na.rm=TRUE)),
+                        Nb = c(min(L[,"Nb"],na.rm=TRUE),max(L[,"Nb"],na.rm=TRUE)),
+                        Ta = c(min(L[,"Ta"],na.rm=TRUE),max(L[,"Ta"],na.rm=TRUE)),
+                        La = c(min(L[,"La"],na.rm=TRUE),max(L[,"La"],na.rm=TRUE)),
+                        Ce = c(min(L[,"Ce"],na.rm=TRUE),max(L[,"Ce"],na.rm=TRUE)),
+                        Pr = c(min(L[,"Pr"],na.rm=TRUE),max(L[,"Pr"],na.rm=TRUE)),
+                        Pb = c(min(L[,"Pb"],na.rm=TRUE),max(L[,"Pb"],na.rm=TRUE)),
+                        Nd = c(min(L[,"Nd"],na.rm=TRUE),max(L[,"Nd"],na.rm=TRUE)),
+                        Sr = c(min(L[,"Sr"],na.rm=TRUE),max(L[,"Sr"],na.rm=TRUE)),
+                        Sm = c(min(L[,"Sm"],na.rm=TRUE),max(L[,"Sm"],na.rm=TRUE)),
+                        Zr = c(min(L[,"Zr"],na.rm=TRUE),max(L[,"Zr"],na.rm=TRUE)),
+                        Hf = c(min(L[,"Hf"],na.rm=TRUE),max(L[,"Hf"],na.rm=TRUE)),
+                        Ti = c(min(L[,"Ti"],na.rm=TRUE),max(L[,"Ti"],na.rm=TRUE)),
+                        Eu = c(min(L[,"Eu"],na.rm=TRUE),max(L[,"Eu"],na.rm=TRUE)),
+                        Gd = c(min(L[,"Gd"],na.rm=TRUE),max(L[,"Gd"],na.rm=TRUE)),
+                        Tb = c(min(L[,"Tb"],na.rm=TRUE),max(L[,"Tb"],na.rm=TRUE)),
+                        Dy = c(min(L[,"Dy"],na.rm=TRUE),max(L[,"Dy"],na.rm=TRUE)),
+                        Ho = c(min(L[,"Ho"],na.rm=TRUE),max(L[,"Ho"],na.rm=TRUE)),
+                        Y = c(min(L[,"Y"],na.rm=TRUE),max(L[,"Y"],na.rm=TRUE)),
+                        Er = c(min(L[,"Er"],na.rm=TRUE),max(L[,"Er"],na.rm=TRUE)),
+                        Li = c(min(L[,"Li"],na.rm=TRUE),max(L[,"Li"],na.rm=TRUE)),
+                        Yb = c(min(L[,"Yb"],na.rm=TRUE),max(L[,"Yb"],na.rm=TRUE)),
+                        Lu = c(min(L[,"Lu"],na.rm=TRUE),max(L[,"Lu"],na.rm=TRUE)))
 
 d <- full_join(V_minmax,TF_minmax)
 d <- full_join(d,L_minmax)
 d_spider <- d %>% normalize_to_pm()
+is.na(d_spider) <- sapply(d_spider, is.infinite) #replace Inf by NA
 
 s_spider <- joined_data %>% dplyr::filter(Sample %in% c("K-12-29")) %>%
   dplyr::mutate(Location = case_when(grepl("K-12-29", Sample) ~ "K-12-29")) %>%
-  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,Ce,Pr,
-                Nd,Sr,Sm,Zr,Ti,Eu,Gd,Tb,Dy,Y,Er,Yb,Lu) %>%
+  dplyr::select(Sample,Location,lat,long,Cs,Rb,Ba,Th,U,Nb,Ta,La,
+                Ce,Pr,Pb,Nd,Sr,Sm,Zr,Hf,Ti,Eu,Gd,Tb,Dy,Ho,Y,Er,
+                Li,Yb,Lu) %>%
   normalize_to_pm()
 
 shapes <- c("Vanuatu Arc"=0,
@@ -803,9 +825,3 @@ K_12_29_spider_minmax
 pdf(here("analysis","supplementary-materials","FigS13","FigS13-d(bis).pdf"), width=6, height=2)
 K_12_29_spider_minmax|K_12_29
 dev.off()
-
-
-
-
-
-
