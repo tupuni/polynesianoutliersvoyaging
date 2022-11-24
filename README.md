@@ -65,8 +65,7 @@ packages this analysis depends on (also listed in the
 
 **Code :** See the [DESCRIPTION](DESCRIPTION) file
 
-**Data :** [CC-0](http://creativecommons.org/publicdomain/zero/1.0/)
-attribution requested in reuse
+**Data :** [CC BY-NC 4.0]([http://creativecommons.org/publicdomain/zero/1.0/](https://creativecommons.org/licenses/by-nc/4.0/))
 
 ### Contributions
 
