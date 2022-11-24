@@ -7,13 +7,8 @@ require(patchwork)
 sunmcdonough <- read.csv(here("analysis", "data", "raw_data", "sun_mcdonough.csv"),
                          header=TRUE, sep=",", stringsAsFactors=FALSE)
 # tidy and normalize datasets
-oib <- sunmcdonough %>% filter(Sample=="OIB") %>% normalize()
-iab <- sunmcdonough %>% filter(Sample=="IAB") %>% normalize()
-
-# wide to long format
-oib <- gather(oib,"var","conc",Cs:Lu)
-iab <- gather(iab,"var","conc",Cs:Lu)
-spider <- gather(joined_data_norm,"var","conc",Cs:Lu)
+oib <- sunmcdonough %>% dplyr::filter(Sample=="OIB") %>% normalize_to_pm()
+iab <- sunmcdonough %>% dplyr::filter(Sample=="IAB") %>% normalize_to_pm()
 
 shapes <- c("E-11-03"=0,"E-11-06"=1,"E-11-07"=8,"E-11-10"=0,"E-11-11"=1,
             "E-11-13"=2,"E-11-16"=5,"E-11-18"=6,"E-11-19"=8,"K-12-28"=3,"K-12-29"=4,
@@ -35,10 +30,10 @@ contour <- c("E-11-03"="red","E-11-06"="red","E-11-07"="red","E-11-10"="#7AD04F"
           "T-12-10"="red","K-12-24"="red","K-12-25"="red","K-12-26"="red",
           "OIB"="black","IAB"="black")
 
-p1 <- spider %>%
-  filter(Sample %in% c(
+p1 <- joined_data_norm %>%
+  dplyr::filter(Sample %in% c(
     "E-11-10", "E-11-11", "E-11-13", "E-11-16", "E-11-18", "E-11-19")) %>%
-  mutate(var = fct_relevel(
+  dplyr::mutate(var = fct_relevel(
     var, "Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr","Pb","Nd","Sr","Sm",
     "Zr","Hf","Ti","Eu","Gd","Tb","Dy","Ho","Y","Er","Li","Yb","Lu")) %>%
   ggplot(aes(x=var, y=conc, color=factor(Sample), shape=factor(Sample),
@@ -52,14 +47,14 @@ p1 <- spider %>%
   ylab("Sample / Primitive mantle") + annotation_logticks(sides="l") +
   theme(panel.border=element_rect(fill=NA,size=.8),panel.background=element_blank(),
         panel.grid.major=element_blank(),panel.grid.minor=element_blank(),
-        axis.title.x=element_blank(),axis.title.y=element_text(size=9),
+        axis.title.x=element_blank(),axis.title.y=element_blank(),
         axis.text=element_text(size=9),axis.ticks.y=element_blank(),
         legend.title=element_blank(),legend.text=element_text(size=9),
         legend.position = "none") +
   annotate("text", x=27, y=140, size=6, label="A", fontface="bold")
-p2 <- spider %>%
-  filter(Sample %in% c("E-11-03", "E-11-06", "E-11-07", "K-12-28", "K-12-29")) %>%
-  mutate(var = fct_relevel(
+p2 <- joined_data_norm %>%
+  dplyr::filter(Sample %in% c("E-11-03", "E-11-06", "E-11-07", "K-12-28", "K-12-29")) %>%
+  dplyr::mutate(var = fct_relevel(
     var,"Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr","Pb","Nd","Sr","Sm",
     "Zr","Hf","Ti","Eu","Gd","Tb","Dy","Ho","Y","Er","Li","Yb","Lu")) %>%
   ggplot(aes(x=var, y=conc, color=factor(Sample), shape=factor(Sample),
@@ -78,11 +73,11 @@ p2 <- spider %>%
         legend.title=element_blank(),legend.text=element_text(size=9),
         legend.position = "none") +
   annotate("text", x=27, y=140, size=6, label="B", fontface="bold")
-p3 <- spider %>%
-  filter(Sample %in% c(
+p3 <- joined_data_norm %>%
+  dplyr::filter(Sample %in% c(
     "E-11-08","K-12-24","K-12-25","K-12-26","T-12-06","T-12-06dup",
     "T-12-07","T-12-08","T-12-09","T-12-10")) %>%
-  mutate(var = fct_relevel(
+  dplyr::mutate(var = fct_relevel(
     var,"Cs","Rb","Ba","Th","U","Nb","Ta","La","Ce","Pr","Pb","Nd","Sr","Sm",
     "Zr","Hf","Ti","Eu","Gd","Tb","Dy","Ho","Y","Er","Li","Yb","Lu")) %>%
   ggplot(aes(x=var, y=conc, color=factor(Sample), shape=factor(Sample),
@@ -96,7 +91,7 @@ p3 <- spider %>%
   ylab("Sample / Primitive mantle") + annotation_logticks(sides="l") +
   theme(panel.border=element_rect(fill=NA,size=.8),panel.background=element_blank(),
         panel.grid.major=element_blank(),panel.grid.minor=element_blank(),
-        axis.title.x=element_blank(),axis.title.y=element_text(size=9),
+        axis.title.x=element_blank(),axis.title.y=element_blank(),
         axis.text=element_text(size=9),axis.ticks.y=element_blank(),
         legend.title=element_blank(),legend.text=element_text(size=9),
         legend.position = "none") +

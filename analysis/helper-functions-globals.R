@@ -141,13 +141,13 @@ sun <- read.csv(here(
 
 normalize_to_pm <- function(df) {
   df_normalized <- df %>%
-    dplyr::mutate(
-      Cs=Cs/sun[2,"Cs"],Rb=Rb/sun[2,"Rb"],Ba=Ba/sun[2,"Ba"],Th=Th/sun[2,"Th"],
-      U=U/sun[2,"U"],Nb=Nb/sun[2,"Nb"],Ta=Ta/sun[2,"Ta"],La=La/sun[2,"La"],
-      Ce=Ce/sun[2,"Ce"],Pr=Pr/sun[2,"Pr"],Nd=Nd/sun[2,"Nd"],Sr=Sr/sun[2,"Sr"],
-      Sm=Sm/sun[2,"Sm"],Zr=Zr/sun[2,"Zr"],Ti=Ti/sun[2,"Ti"],Eu=Eu/sun[2,"Eu"],
-      Gd=Gd/sun[2,"Gd"],Tb=Tb/sun[2,"Tb"],Dy=Dy/sun[2,"Dy"],Y=Y/sun[2,"Y"],
-      Er=Er/sun[2,"Er"],Yb=Yb/sun[2,"Yb"],Lu=Lu/sun[2,"Lu"]) %>%
+    dplyr::transmute(
+      Sample=Sample, Cs=Cs/sun[2,"Cs"],Rb=Rb/sun[2,"Rb"],Ba=Ba/sun[2,"Ba"],
+      Th=Th/sun[2,"Th"],U=U/sun[2,"U"],Nb=Nb/sun[2,"Nb"],Ta=Ta/sun[2,"Ta"],La=La/sun[2,"La"],
+      Ce=Ce/sun[2,"Ce"],Pr=Pr/sun[2,"Pr"],Pb=Pb/sun[2,"Pb"],Nd=Nd/sun[2,"Nd"],Sr=Sr/sun[2,"Sr"],
+      Sm=Sm/sun[2,"Sm"],Zr=Zr/sun[2,"Zr"],Hf=Hf/sun[2,"Hf"],Ti=Ti/sun[2,"Ti"],Eu=Eu/sun[2,"Eu"],
+      Gd=Gd/sun[2,"Gd"],Tb=Tb/sun[2,"Tb"],Dy=Dy/sun[2,"Dy"],Ho=Ho/sun[2,"Ho"],Y=Y/sun[2,"Y"],
+      Er=Er/sun[2,"Er"],Li=Li/sun[2,"Li"],Yb=Yb/sun[2,"Yb"],Lu=Lu/sun[2,"Lu"]) %>%
     gather("var","conc",Cs:Lu)
   return(df_normalized)
 }
