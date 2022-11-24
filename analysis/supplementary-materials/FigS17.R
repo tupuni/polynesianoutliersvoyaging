@@ -2,6 +2,7 @@ require(here)
 require(tidyverse)
 require(osmdata)
 require(patchwork)
+require(sf)
 
 #### Fig S17 ####
 OIB <- q35

@@ -3,7 +3,7 @@
 
 # polynesianoutliersvoyaging
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tupuni/polynesianoutliersvoyaging/master?urlpath=rstudio)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tupuni/polynesianoutliersvoyaging/main?urlpath=rstudio)
 
 This repository contains the data and code for our paper:
 
@@ -44,7 +44,7 @@ software](https://cloud.r-project.org/) itself and optionally [RStudio
 Desktop](https://rstudio.com/products/rstudio/download/).
 
 You can download the compendium as a zip from from this URL:
-[master.zip](/archive/master.zip). After unzipping: - open the `.Rproj`
+[main.zip](/archive/main.zip). After unzipping: - open the `.Rproj`
 file in RStudio - run `devtools::install()` to ensure you have the
 packages this analysis depends on (also listed in the
 [DESCRIPTION](/DESCRIPTION) file). - finally, open
