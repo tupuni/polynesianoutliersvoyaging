@@ -53,7 +53,7 @@ packages this analysis depends on (also listed in the
 
 ## How to reproduce the analysis
 
--   1/ Download locally [pofatu/georoc-data](https://github.com/pofatu/georoc-data) and [pofatu/pofatu-data](https://github.com/pofatu/pofatu-data) repositories and unzip the SQLite database `georoc.sqlite.gz` (`dist/pofatu.sqlite` does not need unzipping). To reproduce the results please use [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4726799.svg)](https://doi.org/10.5281/zenodo.4726799) and [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6782177.svg)](https://doi.org/10.5281/zenodo.6782177)
+-   1/ Download locally [pofatu/georoc-data](https://github.com/pofatu/georoc-data) and [pofatu/pofatu-data](https://github.com/pofatu/pofatu-data) repositories and unzip the SQLite database `georoc.sqlite.gz` (`dist/pofatu.sqlite` does not need unzipping). To reproduce the results please use Pofatu version v1.2 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4726799.svg)](https://doi.org/10.5281/zenodo.4726799) and Georoc version v1.0 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6782177.svg)](https://doi.org/10.5281/zenodo.6782177)
 -   2/ Run the R script [helper-functions-globals](analysis/helper-functions-globals.R) after inserting the local path to the sqlite files.
 -   3/ Run the R script [sql-queries](analysis/sql-queries.R).
 -   4/ Run any of the R scripts in [paper](/analysis/paper) or in [supplementary-materials](/analysis/supplementary-materials) to reproduce the figures in the paper or in the supplementary materials.
