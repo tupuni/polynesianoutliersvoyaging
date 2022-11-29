@@ -43,6 +43,9 @@ installed on your computer the [R
 software](https://cloud.r-project.org/) itself and optionally [RStudio
 Desktop](https://rstudio.com/products/rstudio/download/).
 
+In order to install all of the dependencies required by the analyses
+`devtools` is required (`install.packages("devtools")`.
+
 You can download the compendium as a zip from from this URL:
 [main.zip](/archive/main.zip). After unzipping: - open the `.Rproj`
 file in RStudio - run `devtools::install()` to ensure you have the
