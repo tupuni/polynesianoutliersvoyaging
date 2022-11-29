@@ -124,8 +124,12 @@ OIB <- OIB %>% filter(Nb_La < 2)
 IAB$long <- ifelse(IAB$long < -25, IAB$long + 360, IAB$long)
 OIB$long <- ifelse(OIB$long < -25, OIB$long + 360, OIB$long)
 
+# we make our own world2 map:
+# see https://www.rdocumentation.org/packages/maps/versions/3.4.1/topics/world2
+world2new <- map('world', wrap=c(0,360), plot=FALSE, fill=TRUE)
+
 map <- ggplot() +
-  geom_polygon(data = fortify(maps::map("world2", plot=FALSE, fill=TRUE)),
+  geom_polygon(data = fortify(maps::map(world2new, plot=FALSE, fill=TRUE)),
                aes(x=long, y=lat, group=group),
                color="black", fill="gray90", size=.25) +
   coord_equal(xlim = c(65,315), ylim = c(-55,60)) +

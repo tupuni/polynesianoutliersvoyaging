@@ -73,13 +73,17 @@ d_map %>% group_by(file_id) %>% tally() %>% print(n=150)
 d_map$long <- ifelse(d_map$long < -25, d_map$long + 360, d_map$long)
 d_map <- d_map %>% dplyr::filter(long > 95 & long < 255 & lat > -45.5 & lat < 22.5)
 
+# we make our own world2 map:
+world2new <- map('world', wrap=c(0,360), plot=FALSE, fill=TRUE)
+# map(ww2, xlim = c(100, 300), fill=TRUE)
+
 Fig1_A <- d_map %>% ggplot() +
   geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf),
             fill = "#EDF5F7") +
-  geom_polygon(data = fortify(maps::map("world2", plot=FALSE, fill=TRUE)),
+  geom_polygon(data = fortify(maps::map(world2new, plot=FALSE, fill=TRUE)),
                aes(x=long, y=lat, group=group),
                color="white", fill=NA, size=1) +
-  geom_polygon(data = fortify(maps::map("world2", plot=FALSE, fill=TRUE)),
+  geom_polygon(data = fortify(maps::map(world2new, plot=FALSE, fill=TRUE)),
                aes(x=long, y=lat, group=group),
                color="#757575", fill="#DBD8C6", size=.2) +
   coord_equal(xlim = c(95,255), ylim = c(-45.5,22.5)) +
