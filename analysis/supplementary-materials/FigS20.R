@@ -114,9 +114,9 @@ tutuila_spider <- d_spider %>%
         axis.ticks.x.top = element_line(size=.25),
         axis.title = element_blank(), axis.ticks.y = element_blank(),
         axis.text.y = element_text(hjust=1, margin = margin(r=5)),
-        legend.title = element_blank(),legend.text = element_text(size = 5),
-        legend.key.size = unit(.2, 'cm'),
-        legend.position = c(.3,.4), legend.direction = "vertical") +
+        legend.title = element_blank(),legend.text = element_text(size = 4),
+        legend.key.size = unit(.1, 'cm'), legend.background=element_blank(),
+        legend.position = c(.3,.35), legend.direction = "vertical") +
   guides(color = guide_legend(override.aes = list(size = 1))) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) + # dodge = 2 to stagger
   scale_y_log10(breaks=c(1,10,100,1000), limits=c(.11,1000),
@@ -126,11 +126,7 @@ tutuila_spider <- d_spider %>%
   coord_cartesian(clip = "off")
 tutuila_spider
 
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-a.pdf"), width=3.5, height=2)
-tutuila_spider
-dev.off()
-
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-a-class.pdf"), width=6, height=2)
+pdf(here("analysis","supplementary-materials","FigS20","FigS20-a.pdf"), width=6, height=2)
 tutuila_spider|tutuila
 dev.off()
 
@@ -161,8 +157,9 @@ K_12_24_TAS <- tas +
         panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.title = element_text(size = 9),
         axis.text = element_text(size = 7),
-        legend.title = element_blank(), legend.text = element_text(size = 5),
-        legend.position=c(.1,.8), aspect.ratio=1)
+        legend.title = element_blank(), legend.text = element_text(size = 4),
+        legend.key.size = unit(.2, 'cm'), legend.background=element_blank(),
+        legend.position=c(.2,.85), aspect.ratio=1)
 K_12_24_TAS
 
 d <- q40
@@ -207,9 +204,9 @@ K_12_24_spider <- d_spider %>%
         axis.ticks.x.top = element_line(size=.25),
         axis.title = element_blank(), axis.ticks.y = element_blank(),
         axis.text.y = element_text(hjust=1, margin = margin(r=5)),
-        legend.title = element_blank(),legend.text = element_text(size = 5),
-        legend.key.size = unit(.2, 'cm'),
-        legend.position = c(.7,.86), legend.direction = "vertical") +
+        legend.title = element_blank(),legend.text = element_text(size = 4),
+        legend.key.size = unit(.2, 'cm'), legend.background=element_blank(),
+        legend.position = c(.3,.35), legend.direction = "vertical") +
   guides(color = guide_legend(override.aes = list(size = 1))) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) + # dodge = 2 to stagger
   scale_y_log10(breaks=c(1,10,100,1000), limits=c(.11,1000),
@@ -219,11 +216,7 @@ K_12_24_spider <- d_spider %>%
   coord_cartesian(clip = "off")
 K_12_24_spider
 
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-b.pdf"), width=3.5, height=2)
-K_12_24_spider
-dev.off()
-
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-b-class.pdf"), width=6, height=2)
+pdf(here("analysis","supplementary-materials","FigS20","FigS20-b.pdf"), width=6, height=2)
 K_12_24_spider|K_12_24_TAS
 dev.off()
 
@@ -265,8 +258,9 @@ K_12_25_TAS_2 <- tas +
         panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.title = element_text(size = 9),
         axis.text = element_text(size = 7),
-        legend.title = element_blank(), legend.text = element_text(size = 5),
-        legend.position=c(.1,.8), aspect.ratio=1)
+        legend.title = element_blank(), legend.text = element_text(size = 4),
+        legend.key.size = unit(.2, 'cm'), legend.background=element_blank(),
+        legend.position=c(.2,.85), aspect.ratio=1)
 K_12_25_TAS_2
 
 d_spider <- d  %>%
@@ -298,9 +292,9 @@ K_12_25_spider_2 <- d_spider %>%
         axis.ticks.x.top = element_line(size=.25),
         axis.title = element_blank(), axis.ticks.y = element_blank(),
         axis.text.y = element_text(hjust=1, margin = margin(r=5)),
-        legend.title = element_blank(),legend.text = element_text(size = 5),
-        legend.key.size = unit(.2, 'cm'),
-        legend.position = c(.7,.86), legend.direction = "vertical") +
+        legend.title = element_blank(),legend.text = element_text(size = 4),
+        legend.key.size = unit(.2, 'cm'), legend.background=element_blank(),
+        legend.position = c(.3,.3), legend.direction = "vertical") +
   guides(color = guide_legend(override.aes = list(size = 1))) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) + # dodge = 2 to stagger
   scale_y_log10(breaks=c(1,10,100,1000), limits=c(.11,1000),
@@ -310,7 +304,7 @@ K_12_25_spider_2 <- d_spider %>%
   coord_cartesian(clip = "off")
 K_12_25_spider_2
 
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-c-class(2).pdf"), width=6, height=2)
+pdf(here("analysis","supplementary-materials","FigS20","FigS20-c.pdf"), width=6, height=2)
 K_12_25_spider_2|K_12_25_TAS_2
 dev.off()
 
@@ -349,8 +343,9 @@ K_12_26_TAS <- tas +
         panel.grid.major = element_blank(),panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.title = element_text(size = 9),
         axis.text = element_text(size = 7),
-        legend.title = element_blank(), legend.text = element_text(size = 5),
-        legend.position=c(.1,.8), aspect.ratio=1)
+        legend.title = element_blank(), legend.text = element_text(size = 4),
+        legend.key.size = unit(.2, 'cm'), legend.background=element_blank(),
+        legend.position=c(.2,.85), aspect.ratio=1)
 K_12_26_TAS
 
 d_spider <- d  %>%
@@ -382,9 +377,9 @@ K_12_26_spider <- d_spider %>%
         axis.ticks.x.top = element_line(size=.25),
         axis.title = element_blank(), axis.ticks.y = element_blank(),
         axis.text.y = element_text(hjust=1, margin = margin(r=5)),
-        legend.title = element_blank(),legend.text = element_text(size = 5),
-        legend.key.size = unit(.2, 'cm'),
-        legend.position = c(.7,.86), legend.direction = "vertical") +
+        legend.title = element_blank(),legend.text = element_text(size = 4),
+        legend.key.size = unit(.2, 'cm'), legend.background=element_blank(),
+        legend.position = c(.3,.3), legend.direction = "vertical") +
   guides(color = guide_legend(override.aes = list(size = 1))) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) + # dodge = 2 to stagger
   scale_y_log10(breaks=c(1,10,100,1000), limits=c(.11,1000),
@@ -394,7 +389,7 @@ K_12_26_spider <- d_spider %>%
   coord_cartesian(clip = "off")
 K_12_26_spider
 
-pdf(here("analysis","supplementary-materials","FigS20","FigS20-d-class(2).pdf"), width=6, height=2)
+pdf(here("analysis","supplementary-materials","FigS20","FigS20-d.pdf"), width=6, height=2)
 K_12_26_spider|K_12_26_TAS
 dev.off()
 
