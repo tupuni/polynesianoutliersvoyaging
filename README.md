@@ -3,8 +3,6 @@
 
 # polynesianoutliersvoyaging
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tupuni/polynesianoutliersvoyaging/main?urlpath=rstudio)
-
 This repository contains the data and code for our paper:
 
 > A. Hermann, P. Gutiérrez, C. Chauvel, R. Maury, C. Liorzou, E. Willie, I. Phillip, R. Forkel, C. Rzymski, S. Bedford (in review). *Artefact geochemistry demonstrates long-distance voyaging in the Polynesian Outliers (submitted to Science Advances)*. 
