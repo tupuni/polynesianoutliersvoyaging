@@ -3,6 +3,7 @@ require(tidyverse)
 require(RSQLite)
 require(patchwork)
 require(stats)
+require(maps)
 
 georoc <- dbConnect(RSQLite::SQLite(), path_to_georoc)
 pofatu <- dbConnect(RSQLite::SQLite(), path_to_pofatu)
@@ -21,8 +22,6 @@ TECTONIC_SETTING = 'CONVERGENT MARGIN'") %>%
 is.na(IAB) <- sapply(IAB, is.infinite) # replaces Inf or -Inf by NA
 IAB[IAB==0] <- NA # replaces 0 by NA
 IAB <- IAB[complete.cases(IAB),] # removes rows with NA
-IAB <- IAB %>% dplyr::filter(Nb_La < 3)
-
 IAB <- IAB %>% dplyr::filter(Nb_La < 3)
 
 summary(IAB$Nb_La)
