@@ -13,7 +13,7 @@ This repository contains the data and code for our paper:
 
 Please cite this compendium as:
 
-> A. Hermann, (2022). *Artefact geochemistry demonstrates long-distance voyaging in the Polynesian Outliers*. Accessed 19 Oct 2022. Online at
+> A. Hermann, (2022). *Artefact geochemistry demonstrates long-distance voyaging in the Polynesian Outliers*. Accessed 20 Apr 2023. Online at
 > <https://doi.org/10.5281/zenodo.7388196>
 
 ## Contents
