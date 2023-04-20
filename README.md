@@ -5,9 +5,7 @@
 
 This repository contains the data and code for our paper:
 
-> A. Hermann, P. Gutiérrez, C. Chauvel, R. Maury, C. Liorzou, E. Willie, I. Phillip, R. Forkel, C. Rzymski, S. Bedford (in review). *Artefact geochemistry demonstrates long-distance voyaging in the Polynesian Outliers*.  
-> Science Advances.  
-> <https://doi.org/10.1126/sciadv.adf4487>
+> A. Hermann, P. Gutiérrez, C. Chauvel, R. Maury, C. Liorzou, E. Willie, I. Phillip, R. Forkel, C. Rzymski, S. Bedford, 2023. *Artefact geochemistry demonstrates long-distance voyaging in the Polynesian Outliers*. Science Advances. <https://doi.org/10.1126/sciadv.adf4487>
 
 ### How to cite
 
